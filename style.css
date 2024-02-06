@@ -1,9 +1,11 @@
 :root {
     --barSize: calc(var(--topBarBlockSize) + 16.2em);
+    --nearBlack: rgba(0, 0, 0, 0.81);
 }
 
 @media only screen and (min-width: 1000px) {
     #top-settings-holder {
+        background-color: var(--nearBlack);
         flex-direction: column;
         justify-content: flex-start;
         position: fixed;
@@ -32,7 +34,9 @@
     #logo_block, #extensions-settings-button {
         padding-left: 0.9em;
     }
-    #user-settings-button:not(:has(.openIcon)) ~ #logo_block:not(:has(.openIcon)) {
+    #top-bar, #user-settings-button:not(:has(.openIcon)) ~ #logo_block:not(:has(.openIcon)),
+    #persona-management-button .drawer-icon.fa-solid.fa-face-smile::before,
+    .select_chat_info.flex-container, .select_chat_block_mes {
         display: none;
     }
     .drawer-icon.fa-solid.fa-sliders::after {
@@ -77,9 +81,6 @@
     #extensions-settings-button {
         order: 5;
     }
-    #persona-management-button .drawer-icon.fa-solid.fa-face-smile::before {
-        display: none;
-    }
     #persona-management-button {
         position: fixed;
         background-color: black;
@@ -118,37 +119,32 @@
         left: initial;
         width: calc(100vw - var(--barSize) - 40.5vw);
     }
-}
+    .persona_avatar {
+        width: 27px;
+        height: 27px;
+        border-radius: 50%;
+    }
 
-.persona_avatar {
-    width: 27px;
-    height: 27px;
-    border-radius: 50%;
-}
+    #new_chat > span, #close_chat > span {
+        padding: 3px 5px;
+    }
 
-#new_chat > span, #close_chat > span {
-    padding: 3px 5px;
-}
+    .chat-flex {
+        justify-content: space-evenly;
+        order: 9;
+    }
 
-.chat-flex {
-    justify-content: space-evenly;
-    order: 9;
-}
+    #select_chat_div {
+        order: 10;
+        overflow-y: scroll;
+        padding-bottom: 2.7em;
+    }
 
-#select_chat_div {
-    order: 10;
-    overflow-y: scroll;
-    padding-bottom: 2.7em;
-}
+    .select_chat_block_filename.select_chat_block_filename_item {
+        opacity: 100%;
+    }
 
-.select_chat_info.flex-container, .select_chat_block_mes {
-    display: none;
-}
-
-.select_chat_block_filename.select_chat_block_filename_item {
-    opacity: 100%;
-}
-
-.PastChat_cross.opacity50p.hoverglow.fa-solid.fa-skull::before {
-    content: '\f1f8'
+    .PastChat_cross.opacity50p.hoverglow.fa-solid.fa-skull::before {
+        content: '\f1f8'
+    }
 }
