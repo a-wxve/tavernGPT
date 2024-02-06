@@ -1,0 +1,154 @@
+:root {
+    --barSize: calc(var(--topBarBlockSize) + 16.2em);
+}
+
+@media only screen and (min-width: 1000px) {
+    #top-settings-holder {
+        flex-direction: column;
+        justify-content: flex-start;
+        position: fixed;
+        height: 100vh;
+        width: var(--barSize);
+        gap: 9px;
+        padding: 0.63rem;
+    }
+    .drawer {
+        justify-content: left;
+    }
+    .drawer-icon {
+        font-size: 1.53em;
+    }
+    .drawer-icon.fa-solid::before {
+        display: inline-block;
+        width: 36px;
+    }
+    .drawer-icon.fa-solid::after, #persona-management-button .drawer-icon.fa-solid.fa-face-smile span {
+        vertical-align: middle;
+        font-size: 18px;
+        font-weight: 720;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    #sys-settings-button, #advanced-formatting-button, #WI-SP-button,
+    #logo_block, #extensions-settings-button {
+        padding-left: 0.9em;
+    }
+    #user-settings-button:not(:has(.openIcon)) ~ #logo_block:not(:has(.openIcon)) {
+        display: none;
+    }
+    .drawer-icon.fa-solid.fa-sliders::after {
+        content: " Settings";
+    }
+    #ai-config-button {
+        order: 1;
+    }
+    .drawer-icon.fa-solid.fa-plug::after {
+        content: " API";
+    }
+    #sys-settings-button {
+        order: 2;
+    }
+    .drawer-icon.fa-solid.fa-font::after {
+        content: " Formatting";
+    }
+    #advanced-formatting-button {
+        order: 3;
+    }
+    .drawer-icon.fa-solid.fa-book-atlas::after {
+        content: " World Info";
+    }
+    #WI-SP-button {
+        order: 4;
+    }
+    .drawer-icon.fa-solid.fa-user-cog::after {
+        content: " UI Settings";
+    }
+    #user-settings-button {
+        order: 7;
+    }
+    .drawer-icon.fa-solid.fa-panorama::after {
+        content: " Backgrounds";
+    }
+    #logo_block {
+        order: 8;
+    }
+    .drawer-icon.fa-solid.fa-cubes::after {
+        content: " Extensions";
+    }
+    #extensions-settings-button {
+        order: 5;
+    }
+    #persona-management-button .drawer-icon.fa-solid.fa-face-smile::before {
+        display: none;
+    }
+    #persona-management-button {
+        position: fixed;
+        background-color: black;
+        bottom: -3px;
+        padding: 0.63em;
+        margin-left: -0.666em;
+        z-index: 1;
+        width: var(--barSize);
+    }
+    #persona-management-button .drawer-icon.fa-solid.fa-face-smile.closedIcon {
+        opacity: 72% !important;
+    }
+    .drawer-icon.fa-solid.fa-address-card::after {
+        content: "Characters";
+        margin-left: -3px;
+    }
+    #rightNavHolder {
+        order: 8;
+    }
+    .drawer-content, #left-nav-panel, #right-nav-panel, #character_popup {
+        position: fixed;
+        top: 0;
+        max-height: 100vh !important;
+        height: 100vh;
+        width: 40.5vw;
+        right: inherit;
+        left: var(--barSize);
+    }
+    #sheld {
+        left: var(--barSize);
+        max-width: calc(100vw - var(--barSize)) !important;
+    }
+    #top-settings-holder:has(.drawer-icon.openIcon) ~ #sheld,
+    #top-settings-holder:has(.drawer-content.pinnedOpen) ~ #sheld,
+    body:has(#character_popup[style*="display: flex"]) > #sheld {
+        left: initial;
+        width: calc(100vw - var(--barSize) - 40.5vw);
+    }
+}
+
+.persona_avatar {
+    width: 27px;
+    height: 27px;
+    border-radius: 50%;
+}
+
+#new_chat > span, #close_chat > span {
+    padding: 3px 5px;
+}
+
+.chat-flex {
+    justify-content: space-evenly;
+    order: 9;
+}
+
+#select_chat_div {
+    order: 10;
+    overflow-y: scroll;
+    padding-bottom: 2.7em;
+}
+
+.select_chat_info.flex-container, .select_chat_block_mes {
+    display: none;
+}
+
+.select_chat_block_filename.select_chat_block_filename_item {
+    opacity: 100%;
+}
+
+.PastChat_cross.opacity50p.hoverglow.fa-solid.fa-skull::before {
+    content: '\f1f8'
+}
