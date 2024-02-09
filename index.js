@@ -1,4 +1,5 @@
 import { eventSource, displayPastChats, getUserAvatar, getRequestHeaders, name1, getThumbnailUrl, getEntitiesList, generateQuietPrompt, characters, this_chid, reloadCurrentChat, callPopup } from '../../../../script.js';
+import { getContext } from '../../../extensions.js';
 import { getGroupAvatar, groups, renameGroupChat, selected_group } from '../../../group-chats.js';
 import { delay } from '../../../utils.js';
 
@@ -66,14 +67,15 @@ async function loadFavorites() {
 async function loadHistory() {
     async function renameChat() {
         const old_filename = characters[this_chid].chat;
+        const context = getContext();
 
         function matchesTimePattern(string) {
             const regexPattern = /@\d\dh\s?\d\dm\s?\d\ds(\d{1,3}ms)?/;
             return regexPattern.test(string);
         }
 
-        if (matchesTimePattern(old_filename) && characters[this_chid].chat.length !== 1) {
-            const prompt = 'Generate a short descriptive name for this chat in less than 36 characters.';
+        if (matchesTimePattern(old_filename) && context.chat.length !== 1) {
+            const prompt = 'Generate a short name for this chat.';
             let newName = await generateQuietPrompt(prompt, false, false);
             newName = newName.toString().replace(/^"((?:\\"|[^"])*)"$/, '$1');
 
