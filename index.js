@@ -1,5 +1,5 @@
-import { eventSource, displayPastChats, getUserAvatar, getRequestHeaders, name1, getThumbnailUrl, getEntitiesList } from '../../../../script.js';
-import { getGroupAvatar, groups } from '../../../group-chats.js';
+import { eventSource, displayPastChats, getUserAvatar, getRequestHeaders, name1, getThumbnailUrl, getEntitiesList, generateQuietPrompt, characters, this_chid, reloadCurrentChat, callPopup } from '../../../../script.js';
+import { getGroupAvatar, groups, renameGroupChat, selected_group } from '../../../group-chats.js';
 import { delay } from '../../../utils.js';
 
 const extensionName = 'Extension-TavernGPT';
@@ -64,6 +64,63 @@ async function loadFavorites() {
 }
 
 async function loadHistory() {
+    async function renameChat() {
+        const old_filename = characters[this_chid].chat;
+
+        function matchesTimePattern(string) {
+            const regexPattern = /@\d\dh\s?\d\dm\s?\d\ds(\d{1,3}ms)?/;
+            return regexPattern.test(string);
+        }
+
+        if (matchesTimePattern(old_filename) && characters[this_chid].chat.length !== 1) {
+            const prompt = 'Generate a short name for this chat.';
+            const newName = await generateQuietPrompt(prompt, false, false);
+            newName.toString().replace(/^"(.*)"$/, '$1');
+
+            const body = {
+                is_group: !!selected_group,
+                avatar_url: characters[this_chid]?.avatar,
+                original_file: `${old_filename}.jsonl`,
+                renamed_file: `${newName}.jsonl`,
+            };
+
+
+            try {
+                const response = await fetch('/api/chats/rename', {
+                    method: 'POST',
+                    body: JSON.stringify(body),
+                    headers: getRequestHeaders(),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Unsuccessful request.');
+                }
+
+                const data = response.json();
+
+                if (data.error) {
+                    throw new Error('Server returned an error.');
+                }
+
+                if (selected_group) {
+                    await renameGroupChat(selected_group, old_filename, newName);
+                }
+                else {
+                    if (characters[this_chid].chat == old_filename) {
+                        characters[this_chid].chat = newName;
+                    }
+                }
+
+                await delay(250);
+                $('#option_select_chat').trigger('click');
+                $('#options').hide();
+            } catch {
+                await delay(500);
+                await callPopup('An error has occurred. Chat was not renamed.', 'text');
+            }
+        }
+    }
+
     const historyHTML = await $.get(`${extensionFolderPath}/history.html`);
     $('#top-settings-holder').append(historyHTML);
 
@@ -80,6 +137,7 @@ async function loadHistory() {
 
     eventSource.on('chatLoaded', async () => {
         await displayPastChats();
+        await renameChat();
     });
 }
 
