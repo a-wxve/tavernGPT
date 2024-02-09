@@ -103,7 +103,7 @@ async function loadHistory() {
                 }
 
                 if (selected_group) {
-                    await renameGroupChat(selected_group, old_filename, newName);
+                    await renameGroupChat(selected_group, old_filename, newName.toString().replace(/^"((?:\\"|[^"])*)"$/, '$1'));
                 }
                 else {
                     if (characters[this_chid].chat == old_filename) {
