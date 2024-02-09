@@ -148,3 +148,12 @@
         content: '\f1f8'
     }
 }
+.character_select.flex-container.wide100p.alignitemsflexstart,
+.group_select.flex-container.wide100p.alignitemsflexstart,
+.bogus_folder_select.flex-container.wide100p.alignitemsflexstart {
+    max-height: 5.4rem;
+    width: 50%;
+}
+.tags.tags_inline {
+    display: none;
+}
