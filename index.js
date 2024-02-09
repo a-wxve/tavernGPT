@@ -74,7 +74,8 @@ async function loadHistory() {
 
         if (matchesTimePattern(old_filename) && characters[this_chid].chat.length !== 1) {
             const prompt = 'Generate a short descriptive name for this chat in less than 36 characters.';
-            const newName = await generateQuietPrompt(prompt, false, false);
+            let newName = await generateQuietPrompt(prompt, false, false);
+            newName = newName.toString().replace(/^"((?:\\"|[^"])*)"$/, '$1');
 
 
             const body = {
@@ -103,11 +104,11 @@ async function loadHistory() {
                 }
 
                 if (selected_group) {
-                    await renameGroupChat(selected_group, old_filename, newName.toString().replace(/^"((?:\\"|[^"])*)"$/, '$1'));
+                    await renameGroupChat(selected_group, old_filename, newName);
                 }
                 else {
                     if (characters[this_chid].chat == old_filename) {
-                        characters[this_chid].chat = newName.toString().replace(/^"((?:\\"|[^"])*)"$/, '$1');
+                        characters[this_chid].chat = newName;
                     }
                 }
 
