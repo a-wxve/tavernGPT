@@ -11,14 +11,30 @@
         position: fixed;
         height: 100vh;
         width: var(--barSize);
-        gap: 9px;
+        gap: 3px;
         padding: 0.63rem;
+    }
+    #ai-config-button, #sys-settings-button, #advanced-formatting-button,
+    #WI-SP-button, #user-settings-button, #logo_block,
+    #extensions-settings-button, #rightNavHolder {
+        padding: 0.36rem;
+        border-radius: 0.63rem;
+    }
+    #ai-config-button:hover, #sys-settings-button:hover, #advanced-formatting-button:hover,
+    #WI-SP-button:hover, #user-settings-button:hover, #logo_block:hover,
+    #extensions-settings-button:hover, #rightNavHolder:hover {
+        background-color: rgb(45,45,45);
     }
     .drawer {
         justify-content: left;
     }
     .drawer-icon {
         font-size: 1.53em;
+    }
+    .drawer-toggle, .drawer-icon {
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
     }
     .drawer-icon.fa-solid::before {
         display: inline-block;
@@ -32,7 +48,7 @@
     }
     #sys-settings-button, #advanced-formatting-button, #WI-SP-button,
     #logo_block, #extensions-settings-button {
-        padding-left: 0.9em;
+        padding-left: 1.08em;
     }
     #top-bar, #user-settings-button:not(:has(.openIcon)) ~ #logo_block:not(:has(.openIcon)),
     #persona-management-button .drawer-icon.fa-solid.fa-face-smile::before,
@@ -153,6 +169,10 @@
 .bogus_folder_select.flex-container.wide100p.alignitemsflexstart {
     max-height: 5.4rem;
     width: 50%;
+}
+.wide100p.character_name_block {
+    flex-direction: column;
+    gap: 0;
 }
 .tags.tags_inline {
     display: none;
