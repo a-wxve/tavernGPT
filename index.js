@@ -75,7 +75,7 @@ async function loadHistory() {
         }
 
         if (matchesTimePattern(old_filename) && context.chat.length !== 1) {
-            const prompt = 'Generate a short name for this chat.';
+            const prompt = 'Generate a short name for this chat in less than 6 words.';
             let newName = await generateQuietPrompt(prompt, false, false);
             newName = newName.toString().replace(/^"((?:\\"|[^"])*)"$/, '$1');
 
@@ -99,7 +99,7 @@ async function loadHistory() {
                     throw new Error('Unsuccessful request.');
                 }
 
-                const data = response.json();
+                const data = await response.json();
 
                 if (data.error) {
                     throw new Error('Server returned an error.');
@@ -112,6 +112,7 @@ async function loadHistory() {
                     if (characters[this_chid].chat == old_filename) {
                         characters[this_chid].chat = newName;
                     }
+                    $('#selected_chat_pole').val(characters[this_chid].chat);
                 }
 
                 await delay(250);
