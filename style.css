@@ -164,11 +164,13 @@
         overflow-y: scroll;
         padding-bottom: 2.7em;
     }
-
     .select_chat_block_filename.select_chat_block_filename_item {
         opacity: 100%;
     }
-
+    #select_chat_name_wrapper,
+    #select_chat_name_wrapper > .flex-container.gap10px > .flex-container.gap10px {
+        flex-wrap: nowrap;
+    }
     .PastChat_cross.opacity50p.hoverglow.fa-solid.fa-skull::before {
         content: '\f1f8'
     }
