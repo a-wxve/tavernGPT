@@ -171,8 +171,26 @@ async function getPersona() {
     });
 }
 
+function closeSidebar() {
+    const closeHTML = `<button class="closeSidebar">
+                            <div class="arrow1"></div>
+                            <div class="arrow2"></div>
+                        </button>`;
+    $('#top-settings-holder').append(closeHTML);
+
+    $('.closeSidebar').on('click', function() {
+        if (!$('#top-settings-holder').hasClass('collapsed')) {
+            $('#top-settings-holder, #sheld').addClass('collapsed');
+        }
+        else {
+            $('#top-settings-holder, #sheld').removeClass('collapsed');
+        }
+    });
+}
+
 jQuery(async () => {
     $(loadFavorites);
     $(loadHistory);
     $(getPersona);
+    $(closeSidebar);
 });

@@ -1,5 +1,5 @@
 :root {
-    --barSize: calc(var(--topBarBlockSize) + 16.2em);
+    --barSize: calc(var(--topBarBlockSize) + 14.4rem);
     --nearBlack: rgba(0, 0, 0, 0.81);
 }
 
@@ -13,6 +13,11 @@
         width: var(--barSize);
         gap: 3px;
         padding: 0.63rem;
+        transition: 0.09s all ease-in-out;
+    }
+    #top-settings-holder.collapsed {
+        visibility: collapse;
+        width: 0;
     }
     #ai-config-button, #sys-settings-button, #advanced-formatting-button,
     #WI-SP-button, #user-settings-button, #logo_block,
@@ -128,6 +133,10 @@
     #sheld {
         left: var(--barSize);
         max-width: calc(100vw - var(--barSize)) !important;
+        transition: 0.09s all ease-in-out;
+    }
+    #sheld.collapsed {
+        left: 0;
     }
     #top-settings-holder:has(.drawer-icon.openIcon) ~ #sheld,
     #top-settings-holder:has(.drawer-content.pinnedOpen) ~ #sheld,
@@ -162,6 +171,46 @@
 
     .PastChat_cross.opacity50p.hoverglow.fa-solid.fa-skull::before {
         content: '\f1f8'
+    }
+    .closeSidebar {
+        position: absolute;
+        left: 17.1rem;
+        top: 45%;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        order: 11;
+        visibility: visible !important;
+        transition: 0.09s all ease-in-out;
+        .arrow1, .arrow2 {
+            height: 1.08rem;
+            width: 0.36em;
+            background-color: white;
+            transition: 0.09s all ease-in-out;
+        }
+        .arrow1 {
+            border-top-left-radius: 0.18rem;
+            border-top-right-radius: 0.18rem;
+        }
+        .arrow2 {
+            border-bottom-left-radius: 0.18rem;
+            border-bottom-right-radius: 0.18rem;
+        }
+    }
+    .closeSidebar:hover .arrow1 {
+        transform: rotate(36deg) translateY(0.18rem);
+    }
+    .closeSidebar:hover .arrow2 {
+        transform: rotate(-36deg) translateY(-0.18rem);
+    }
+    #top-settings-holder.collapsed .closeSidebar:hover .arrow1 {
+        transform: rotate(-36deg) translateY(0.18rem);
+    }
+    #top-settings-holder.collapsed .closeSidebar:hover .arrow2 {
+        transform: rotate(36deg) translateY(-0.18rem);
+    }
+    #top-settings-holder.collapsed .closeSidebar {
+        left: 0.54rem;
     }
 }
 .character_select.flex-container.wide100p.alignitemsflexstart,
