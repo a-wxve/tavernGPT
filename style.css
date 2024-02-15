@@ -109,7 +109,7 @@
         padding: 0.63em;
         margin-left: -0.666em;
         z-index: 1;
-        width: var(--barSize);
+        width: inherit;
     }
     #persona-management-button .drawer-icon.fa-solid.fa-face-smile.closedIcon {
         opacity: 72% !important;
@@ -133,10 +133,10 @@
     #sheld {
         left: var(--barSize);
         max-width: calc(100vw - var(--barSize)) !important;
-        transition: 0.09s all ease-in-out;
     }
     #sheld.collapsed {
         left: 0;
+        transition: 0.09s all ease-in-out;
     }
     #top-settings-holder:has(.drawer-icon.openIcon) ~ #sheld,
     #top-settings-holder:has(.drawer-content.pinnedOpen) ~ #sheld,
@@ -210,7 +210,7 @@
         transform: rotate(36deg) translateY(-0.18rem);
     }
     #top-settings-holder.collapsed .closeSidebar {
-        left: 0.54rem;
+        left: 0.45rem;
     }
 }
 .character_select.flex-container.wide100p.alignitemsflexstart,
