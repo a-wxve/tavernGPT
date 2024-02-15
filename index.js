@@ -75,7 +75,7 @@ async function loadHistory() {
         }
 
         if (matchesTimePattern(old_filename) && context.chat.length !== 1) {
-            const prompt = 'Generate a short name for this chat in less than 6 words.';
+            const prompt = 'Generate a name for this chat in less than 6 words.';
             let newName = await generateQuietPrompt(prompt, false, false);
             newName = newName.toString().replace(/^"((?:\\"|[^"])*)"$/, '$1');
 
