@@ -2,6 +2,9 @@
     --barSize: calc(var(--topBarBlockSize) + 14.4rem);
     --nearBlack: rgba(0, 0, 0, 0.81);
 }
+html, body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
 
 @media only screen and (min-width: 1000px) {
     #top-settings-holder {
@@ -14,10 +17,21 @@
         gap: 3px;
         padding: 0.63rem;
         transition: 0.09s all ease-in-out;
-    }
-    #top-settings-holder.collapsed {
-        visibility: collapse;
-        width: 0;
+        &.collapsed {
+            visibility: collapse;
+            width: 0;
+            .closeSidebar {
+                left: 0.45rem;
+                &:hover {
+                    .arrow1 {
+                        transform: rotate(-36deg) translateY(0.18rem);
+                    }
+                    .arrow2 {
+                        transform: rotate(36deg) translateY(-0.18rem);
+                    }
+                }
+            }
+        }
     }
     .drawer {
         justify-content: left;
@@ -33,9 +47,9 @@
     .drawer-toggle {
         padding: 0.36rem;
         border-radius: 0.63rem;
-    }
-    .drawer-toggle:hover {
-        background-color: rgb(45,45,45);
+        &:hover {
+            background-color: rgb(45,45,45);
+        }
     }
     .drawer-icon.fa-solid::before {
         display: inline-block;
@@ -53,7 +67,9 @@
     }
     #top-bar, #user-settings-button:not(:has(.openIcon)) ~ #logo_block:not(:has(.openIcon)),
     #persona-management-button .drawer-icon.fa-solid.fa-face-smile::before,
-    .select_chat_info.flex-container, .select_chat_block_mes {
+    .select_chat_info.flex-container, .select_chat_block_mes,
+    #ReverseProxyWarningMessage, #quickReplyPopoutButton,
+    br, .mes_create_bookmark {
         display: none;
     }
     .drawer-icon.fa-solid.fa-sliders::after {
@@ -106,9 +122,14 @@
         margin-left: -0.666em;
         z-index: 1;
         width: inherit;
-    }
-    #persona-management-button .drawer-icon.fa-solid.fa-face-smile.closedIcon {
-        opacity: 72% !important;
+        .drawer-icon.fa-solid.fa-face-smile.closedIcon {
+            opacity: 72% !important;
+        }
+        .persona_avatar {
+            width: 27px;
+            height: 27px;
+            border-radius: 50%;
+        }
     }
     .drawer-icon.fa-solid.fa-address-card::after {
         content: "Characters";
@@ -116,6 +137,51 @@
     }
     #rightNavHolder {
         order: 8;
+        #right-nav-panel {
+            #rm_button_characters {
+                width: max-content;
+                &::after {
+                    content: " All Cards";
+                    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;;
+                    font-weight: 720;
+                }
+            }
+            #right-nav-panel:has(#rm_ch_create_block[style*="display: block"]) #rm_button_characters::before {
+                content: "\f053";
+            }
+            #right-nav-panel:has(#rm_ch_create_block[style*="display: block"]) #rm_button_characters::after {
+                content: " Back";
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+                font-weight: 720;
+            }
+            #right-nav-panel:has(#rm_ch_create_block[style*="display: none"]) #rm_button_selected_ch h2:not(:empty)::after {
+                content: " \f054";
+                font-family: 'Font Awesome 6 Free';
+                font-weight: 900;
+            }
+            #rm_button_create {
+                order: -2;
+            }
+            #rm_button_group_chats {
+                order: -1;
+            }
+            #rm_print_characters_block {
+                flex-flow: wrap;
+            }
+            .character_select.flex-container.wide100p.alignitemsflexstart,
+            .group_select.flex-container.wide100p.alignitemsflexstart,
+            .bogus_folder_select.flex-container.wide100p.alignitemsflexstart {
+                max-height: 5.4rem;
+                width: 50%;
+            }
+            .wide100p.character_name_block {
+                flex-direction: column;
+                gap: 0;
+            }
+            .tags.tags_inline {
+                display: none;
+            }
+        }
     }
     .drawer-content, #left-nav-panel, #right-nav-panel, #character_popup {
         position: fixed;
@@ -125,14 +191,49 @@
         width: 40.5vw;
         right: inherit;
         left: var(--barSize);
+        border-radius: 0px;
+        box-shadow: none;
     }
     #sheld {
         left: var(--barSize);
         max-width: calc(100vw - var(--barSize)) !important;
-    }
-    #sheld.collapsed {
-        left: 0;
-        transition: 0.09s all ease-in-out;
+        max-height: 100svh;
+        height: 100svh;
+        top: 0;
+        &.collapsed {
+            left: 0;
+        }
+        #chat {
+            max-height: 100svh;
+            border-bottom-left-radius: 0.9rem;
+            border-bottom-right-radius: 0.9rem;
+        }
+        #form_sheld {
+            #send_form {
+                border-radius: 0;
+                background-color: transparent !important;
+                #nonQRFormItems {
+                    border-radius: 0.9rem;
+                    border: 1px rgb(63,63,63) solid;
+                    background-color: rgb(45,45,45);
+                }
+                #send_textarea {
+                    margin: 0.36rem;
+                    background-color: rgb(45,45,45);
+                    order: 1;
+                    resize: none;
+                }
+                #leftSendForm {
+                    order: 2;
+                }
+                #rightSendForm {
+                    margin-right: 0.27rem;
+                    #send_but.fa-solid.fa-paper-plane::before {
+                        content: "\f062";
+                    }
+                }
+            }
+        }
     }
     #top-settings-holder:has(.drawer-icon.openIcon) ~ #sheld,
     #top-settings-holder:has(.drawer-content.pinnedOpen) ~ #sheld,
@@ -140,21 +241,13 @@
         left: initial;
         width: calc(100vw - var(--barSize) - 40.5vw);
     }
-    .persona_avatar {
-        width: 27px;
-        height: 27px;
-        border-radius: 50%;
-    }
-
     #new_chat > span, #close_chat > span {
         padding: 3px 5px;
     }
-
     .chat-flex {
         justify-content: space-evenly;
         order: 9;
     }
-
     #select_chat_div {
         order: 10;
         overflow-y: scroll;
@@ -163,9 +256,15 @@
     .select_chat_block_filename.select_chat_block_filename_item {
         opacity: 100%;
     }
-    #select_chat_name_wrapper,
-    #select_chat_name_wrapper > .flex-container.gap10px > .flex-container.gap10px {
+    #select_chat_name_wrapper {
         flex-wrap: nowrap;
+        > .flex-container.gap10px > .flex-container.gap10px {
+            flex-wrap: nowrap;
+            gap: 5px !important;
+            .exportRawChatButton.fa-solid.fa-file-export::before {
+                content: "\f1c9";
+            }
+        }
     }
     .PastChat_cross.opacity50p.hoverglow.fa-solid.fa-skull::before {
         content: '\f1f8'
@@ -194,33 +293,79 @@
             border-bottom-left-radius: 0.18rem;
             border-bottom-right-radius: 0.18rem;
         }
+        &:hover {
+            .arrow1 {
+                transform: rotate(36deg) translateY(0.18rem);
+            }
+            .arrow2 {
+                transform: rotate(-36deg) translateY(-0.18rem);
+            }
+        }
     }
-    .closeSidebar:hover .arrow1 {
-        transform: rotate(36deg) translateY(0.18rem);
+    .mes {
+        &[is_user="true"] {
+            .name_text {
+                visibility: hidden;
+                text-indent: -999px;
+                line-height: 0;
+                &::after {
+                    content: '(You)' !important;
+                    text-indent: 0px;
+                    visibility: visible;
+                    display: block;
+                    line-height: initial;
+                }
+            }
+        }
+        .mes_block {
+            transform: none !important;
+        }
+        &:not(:hover) {
+            .mes_buttons, .swipe_left {
+                opacity: 0%;
+            }
+            .swipe_right {
+                display: none !important;
+            }
+            .mesAvatarWrapper {
+                .mesIDDisplay, .mes_timer, .tokenCounterDisplay {
+                    display: none;
+                }
+            }
+        }
+        .swipe_left {
+            left: 0.18em;
+        }
+        .swipe_right {
+            left: 0.81em;
+        }
+        .swipes-counter {
+            margin-bottom: -12px;
+            margin-left: -1.8em;
+            pointer-events: none;
+        }
+        .mes_img_controls {
+            height: 100%;
+        }
+        .right_menu_button.fa-lg.fa-solid.fa-magnifying-glass.mes_img_enlarge {
+            opacity: 0;
+            height: 100%;
+            width: 100%;
+            cursor: pointer;
+        }
     }
-    .closeSidebar:hover .arrow2 {
-        transform: rotate(-36deg) translateY(-0.18rem);
+    #extensions_settings .inline-drawer-toggle.inline-drawer-header,
+    #extensions_settings2 .inline-drawer-toggle.inline-drawer-header,
+    #user-settings-block h4, .standoutHeader {
+        background-image: none;
     }
-    #top-settings-holder.collapsed .closeSidebar:hover .arrow1 {
-        transform: rotate(-36deg) translateY(0.18rem);
-    }
-    #top-settings-holder.collapsed .closeSidebar:hover .arrow2 {
-        transform: rotate(36deg) translateY(-0.18rem);
-    }
-    #top-settings-holder.collapsed .closeSidebar {
-        left: 0.45rem;
+    .expression-holder {
+        left: calc(54px * -0.54);
+        width: calc(54vw - 54px);
     }
 }
-.character_select.flex-container.wide100p.alignitemsflexstart,
-.group_select.flex-container.wide100p.alignitemsflexstart,
-.bogus_folder_select.flex-container.wide100p.alignitemsflexstart {
-    max-height: 5.4rem;
-    width: 50%;
-}
-.wide100p.character_name_block {
-    flex-direction: column;
-    gap: 0;
-}
-.tags.tags_inline {
-    display: none;
+body.big-avatars .avatar,
+body.big-avatars .avatar img {
+    width: 50px;
+    height: 75px;
 }
