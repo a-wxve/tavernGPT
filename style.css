@@ -22,13 +22,11 @@ html, body {
             width: 0;
             .closeSidebar {
                 left: 0.45rem;
-                &:hover {
-                    .arrow1 {
-                        transform: rotate(-36deg) translateY(0.18rem);
-                    }
-                    .arrow2 {
-                        transform: rotate(36deg) translateY(-0.18rem);
-                    }
+                .arrow1 {
+                    transform: rotate(-36deg) translateY(0.18rem);
+                }
+                .arrow2 {
+                    transform: rotate(36deg) translateY(-0.18rem);
                 }
             }
         }
@@ -69,8 +67,11 @@ html, body {
     #persona-management-button .drawer-icon.fa-solid.fa-face-smile::before,
     .select_chat_info.flex-container, .select_chat_block_mes,
     #ReverseProxyWarningMessage, #quickReplyPopoutButton,
-    br, .mes_create_bookmark {
+    .mes_text br, .mes_create_bookmark {
         display: none;
+    }
+    .mes_text p + br:has(+p) {
+        display: block;
     }
     .drawer-icon.fa-solid.fa-sliders::after {
         content: " Settings";
@@ -122,12 +123,16 @@ html, body {
         margin-left: -0.666em;
         z-index: 1;
         width: inherit;
+        .drawer-icon.fa-solid.fa-face-smile span {
+            vertical-align: super;
+            padding-left: 0.09rem;
+        }
         .drawer-icon.fa-solid.fa-face-smile.closedIcon {
             opacity: 72% !important;
         }
         .persona_avatar {
-            width: 27px;
-            height: 27px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
         }
     }
@@ -142,7 +147,7 @@ html, body {
                 width: max-content;
                 &::after {
                     content: " All Cards";
-                    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;;
+                    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
                     font-weight: 720;
                 }
             }
@@ -207,8 +212,10 @@ html, body {
             max-height: 100svh;
             border-bottom-left-radius: 0.9rem;
             border-bottom-right-radius: 0.9rem;
+            margin-bottom: -2px;
         }
         #form_sheld {
+            margin-bottom: 0.9rem;
             #send_form {
                 border-radius: 0;
                 background-color: transparent !important;
@@ -216,6 +223,12 @@ html, body {
                     border-radius: 0.9rem;
                     border: 1px rgb(63,63,63) solid;
                     background-color: rgb(45,45,45);
+                    #extensionsMenuButton.fa-magic-wand-sparkles::before {
+                        content: "\2b";
+                    }
+                    #options_button.fa-bars::before {
+                        content: "\f141";
+                    }
                 }
                 #send_textarea {
                     margin: 0.36rem;
@@ -229,7 +242,7 @@ html, body {
                 #rightSendForm {
                     margin-right: 0.27rem;
                     #send_but.fa-solid.fa-paper-plane::before {
-                        content: "\f062";
+                        content: "\f0aa";
                     }
                 }
             }
@@ -241,8 +254,11 @@ html, body {
         left: initial;
         width: calc(100vw - var(--barSize) - 40.5vw);
     }
-    #new_chat > span, #close_chat > span {
-        padding: 3px 5px;
+    .historyButton {
+        background-color: rgb(18, 18, 18);
+        > span {
+            padding: 3px 5px;
+        }
     }
     .chat-flex {
         justify-content: space-evenly;
@@ -251,7 +267,7 @@ html, body {
     #select_chat_div {
         order: 10;
         overflow-y: scroll;
-        padding-bottom: 2.7em;
+        padding-bottom: 4.05em;
     }
     .select_chat_block_filename.select_chat_block_filename_item {
         opacity: 100%;
@@ -304,6 +320,11 @@ html, body {
     }
     .mes {
         &[is_user="true"] {
+            .mesAvatarWrapper {
+                .tokenCounterDisplay {
+                    display: none;
+                }
+            }.mesIDDisplay
             .name_text {
                 visibility: hidden;
                 text-indent: -999px;

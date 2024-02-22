@@ -1,4 +1,4 @@
-import { eventSource, displayPastChats, getUserAvatar, getRequestHeaders, name1, getThumbnailUrl, getEntitiesList, generateQuietPrompt, characters, this_chid, reloadCurrentChat, callPopup } from '../../../../script.js';
+import { eventSource, displayPastChats, getUserAvatar, getRequestHeaders, name1, getThumbnailUrl, getEntitiesList, generateQuietPrompt, characters, this_chid, callPopup } from '../../../../script.js';
 import { getContext } from '../../../extensions.js';
 import { getGroupAvatar, groups, renameGroupChat, selected_group } from '../../../group-chats.js';
 import { delay } from '../../../utils.js';
@@ -75,7 +75,7 @@ async function loadHistory() {
         }
 
         if (matchesTimePattern(old_filename) && context.chat.length !== 1) {
-            const prompt = 'Generate a name for this chat in less than 6 words.';
+            const prompt = 'Generate a name for this chat in less than 6 words. Avoid including non-alphanumeric characters, words like "chat", or the user\'s name.';
             let newName = await generateQuietPrompt(prompt, false, false);
             newName = newName.toString().replace(/^"((?:\\"|[^"])*)"$/, '$1');
 
