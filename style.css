@@ -2,8 +2,28 @@
     --barSize: calc(var(--topBarBlockSize) + 14.4rem);
     --nearBlack: rgba(0, 0, 0, 0.81);
 }
-html, body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+html,
+body {
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        "Open Sans",
+        "Helvetica Neue",
+        sans-serif;
+}
+
+body.big-avatars {
+    .avatar,
+    .avatar img {
+        width: 50px;
+        height: 75px;
+    }
 }
 
 @media only screen and (min-width: 1000px) {
@@ -37,7 +57,8 @@ html, body {
     .drawer-icon {
         font-size: 1.53em;
     }
-    .drawer-toggle, .drawer-icon {
+    .drawer-toggle,
+    .drawer-icon {
         cursor: pointer;
         width: 100%;
         height: 100%;
@@ -46,32 +67,49 @@ html, body {
         padding: 0.36rem;
         border-radius: 0.63rem;
         &:hover {
-            background-color: rgb(45,45,45);
+            background-color: rgb(45, 45, 45);
         }
     }
     .drawer-icon.fa-solid::before {
         display: inline-block;
         width: 36px;
     }
-    .drawer-icon.fa-solid::after, #persona-management-button .drawer-icon.fa-solid.fa-face-smile span {
+    .drawer-icon.fa-solid::after,
+    #persona-management-button .drawer-icon.fa-solid.fa-face-smile span {
         vertical-align: middle;
         font-size: 18px;
         font-weight: 720;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        font-family:
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            Oxygen,
+            Ubuntu,
+            Cantarell,
+            "Open Sans",
+            "Helvetica Neue",
+            sans-serif;
     }
-    #sys-settings-button, #advanced-formatting-button, #WI-SP-button,
-    #logo_block, #extensions-settings-button {
+    #sys-settings-button,
+    #advanced-formatting-button,
+    #WI-SP-button,
+    #logo_block,
+    #extensions-settings-button {
         padding-left: 1.08em;
     }
-    #top-bar, #user-settings-button:not(:has(.openIcon)) ~ #logo_block:not(:has(.openIcon)),
+    #top-bar,
+    #user-settings-button:not(:has(.openIcon))
+        ~ #logo_block:not(:has(.openIcon)),
     #persona-management-button .drawer-icon.fa-solid.fa-face-smile::before,
-    .select_chat_info.flex-container, .select_chat_block_mes,
-    #ReverseProxyWarningMessage, #quickReplyPopoutButton,
-    .mes_text br, .mes_create_bookmark {
+    .select_chat_info.flex-container,
+    .select_chat_block_mes,
+    #ReverseProxyWarningMessage,
+    #quickReplyPopoutButton,
+    .mes_text br,
+    .mes_create_bookmark {
         display: none;
-    }
-    .mes_text p + br:has(+p) {
-        display: block;
     }
     .drawer-icon.fa-solid.fa-sliders::after {
         content: " Settings";
@@ -147,21 +185,47 @@ html, body {
                 width: max-content;
                 &::after {
                     content: " All Cards";
-                    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+                    font-family:
+                        system-ui,
+                        -apple-system,
+                        BlinkMacSystemFont,
+                        "Segoe UI",
+                        Roboto,
+                        Oxygen,
+                        Ubuntu,
+                        Cantarell,
+                        "Open Sans",
+                        "Helvetica Neue",
+                        sans-serif;
                     font-weight: 720;
                 }
             }
-            #right-nav-panel:has(#rm_ch_create_block[style*="display: block"]) #rm_button_characters::before {
+            #right-nav-panel:has(#rm_ch_create_block[style*="display: block"])
+                #rm_button_characters::before {
                 content: "\f053";
             }
-            #right-nav-panel:has(#rm_ch_create_block[style*="display: block"]) #rm_button_characters::after {
+            #right-nav-panel:has(#rm_ch_create_block[style*="display: block"])
+                #rm_button_characters::after {
                 content: " Back";
-                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+                font-family:
+                    system-ui,
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    "Segoe UI",
+                    Roboto,
+                    Oxygen,
+                    Ubuntu,
+                    Cantarell,
+                    "Open Sans",
+                    "Helvetica Neue",
+                    sans-serif;
                 font-weight: 720;
             }
-            #right-nav-panel:has(#rm_ch_create_block[style*="display: none"]) #rm_button_selected_ch h2:not(:empty)::after {
+            #right-nav-panel:has(#rm_ch_create_block[style*="display: none"])
+                #rm_button_selected_ch
+                h2:not(:empty)::after {
                 content: " \f054";
-                font-family: 'Font Awesome 6 Free';
+                font-family: "Font Awesome 6 Free";
                 font-weight: 900;
             }
             #rm_button_create {
@@ -188,7 +252,10 @@ html, body {
             }
         }
     }
-    .drawer-content, #left-nav-panel, #right-nav-panel, #character_popup {
+    .drawer-content,
+    #left-nav-panel,
+    #right-nav-panel,
+    #character_popup {
         position: fixed;
         top: 0;
         max-height: 100vh !important;
@@ -221,23 +288,19 @@ html, body {
                 background-color: transparent !important;
                 #nonQRFormItems {
                     border-radius: 0.9rem;
-                    border: 1px rgb(63,63,63) solid;
-                    background-color: rgb(45,45,45);
+                    border: 1px rgb(63, 63, 63) solid;
+                    background-color: rgb(45, 45, 45);
                     #extensionsMenuButton.fa-magic-wand-sparkles::before {
-                        content: "\2b";
+                        content: "\f0c6";
                     }
                     #options_button.fa-bars::before {
-                        content: "\f141";
+                        content: "\f142";
                     }
                 }
                 #send_textarea {
                     margin: 0.36rem;
-                    background-color: rgb(45,45,45);
-                    order: 1;
+                    background-color: rgb(45, 45, 45);
                     resize: none;
-                }
-                #leftSendForm {
-                    order: 2;
                 }
                 #rightSendForm {
                     margin-right: 0.27rem;
@@ -283,7 +346,7 @@ html, body {
         }
     }
     .PastChat_cross.opacity50p.hoverglow.fa-solid.fa-skull::before {
-        content: '\f1f8'
+        content: "\f1f8";
     }
     .closeSidebar {
         position: absolute;
@@ -295,7 +358,8 @@ html, body {
         order: 11;
         visibility: visible !important;
         transition: 0.09s all ease-in-out;
-        .arrow1, .arrow2 {
+        .arrow1,
+        .arrow2 {
             height: 1.08rem;
             width: 0.36em;
             background-color: white;
@@ -319,18 +383,55 @@ html, body {
         }
     }
     .mes {
-        &[is_user="true"] {
-            .mesAvatarWrapper {
-                .tokenCounterDisplay {
-                    display: none;
+        body.bubblechat & {
+            background-color: transparent;
+            .mes_text {
+                width: fit-content;
+                padding: 0.27rem 0.54rem;
+                margin-top: 10px;
+                border-radius: 27px;
+                border-top-left-radius: 6px;
+                background-color: var(--SmartThemeBotMesBlurTintColor);
+                p {
+                    margin: 10px;
                 }
-            }.mesIDDisplay
+            }
+        }
+        &[is_user="true"] {
+            body.bubblechat & {
+                background-color: transparent;
+                .mesAvatarWrapper {
+                    order: 2;
+                }
+                .mes_block {
+                    text-align: right;
+                    padding-left: 3.6rem;
+                    padding-right: 10px;
+                    .mes_text {
+                        float: right;
+                        border-top-left-radius: 27px;
+                        border-top-right-radius: 6px;
+                        background-color: var(--SmartThemeUserMesBlurTintColor);
+                        code {
+                            text-align: left;
+                        }
+                    }
+                    .ch_name.flex-container.justifySpaceBetween {
+                        justify-content: end;
+                        .flex-container.flex1.alignitemscenter {
+                            order: 2;
+                            flex-direction: row-reverse;
+                            flex: 0;
+                        }
+                    }
+                }
+            }
             .name_text {
                 visibility: hidden;
                 text-indent: -999px;
                 line-height: 0;
                 &::after {
-                    content: '(You)' !important;
+                    content: "(You)" !important;
                     text-indent: 0px;
                     visibility: visible;
                     display: block;
@@ -340,16 +441,22 @@ html, body {
         }
         .mes_block {
             transform: none !important;
+            .icon-svg.timestamp-icon {
+                align-self: center;
+            }
         }
         &:not(:hover) {
-            .mes_buttons, .swipe_left {
+            .mes_buttons,
+            .swipe_left {
                 opacity: 0%;
             }
             .swipe_right {
                 display: none !important;
             }
             .mesAvatarWrapper {
-                .mesIDDisplay, .mes_timer, .tokenCounterDisplay {
+                .mesIDDisplay,
+                .mes_timer,
+                .tokenCounterDisplay {
                     display: none;
                 }
             }
@@ -377,16 +484,12 @@ html, body {
     }
     #extensions_settings .inline-drawer-toggle.inline-drawer-header,
     #extensions_settings2 .inline-drawer-toggle.inline-drawer-header,
-    #user-settings-block h4, .standoutHeader {
+    #user-settings-block h4,
+    .standoutHeader {
         background-image: none;
     }
     .expression-holder {
         left: calc(54px * -0.54);
         width: calc(54vw - 54px);
     }
-}
-body.big-avatars .avatar,
-body.big-avatars .avatar img {
-    width: 50px;
-    height: 75px;
 }
