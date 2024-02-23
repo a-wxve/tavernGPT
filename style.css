@@ -327,10 +327,17 @@ body.big-avatars {
         justify-content: space-evenly;
         order: 9;
     }
-    #select_chat_div {
+    #select_chat_search {
         order: 10;
+        max-height: 36px;
+        #select_chat_div:empty ~ & {
+            display: none;
+        }
+    }
+    #select_chat_div {
+        order: 11;
         overflow-y: scroll;
-        padding-bottom: 4.05em;
+        margin-bottom: 4.05em;
     }
     .select_chat_block_filename.select_chat_block_filename_item {
         opacity: 100%;
@@ -390,7 +397,7 @@ body.big-avatars {
                 padding: 0.27rem 0.54rem;
                 margin-top: 10px;
                 border-radius: 27px;
-                border-top-left-radius: 6px;
+                border-top-left-radius: 3px;
                 background-color: var(--SmartThemeBotMesBlurTintColor);
                 p {
                     margin: 10px;
@@ -410,7 +417,7 @@ body.big-avatars {
                     .mes_text {
                         float: right;
                         border-top-left-radius: 27px;
-                        border-top-right-radius: 6px;
+                        border-top-right-radius: 3px;
                         background-color: var(--SmartThemeUserMesBlurTintColor);
                         code {
                             text-align: left;
