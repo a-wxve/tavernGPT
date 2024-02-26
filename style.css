@@ -1,5 +1,6 @@
 :root {
     --barSize: calc(var(--topBarBlockSize) + 14.4rem);
+    --panelSize: calc(var(--barSize) * 1.44);
     --nearBlack: rgba(0, 0, 0, 0.81);
 }
 
@@ -121,14 +122,6 @@ body.big-avatars {
             sans-serif;
     }
 
-    #sys-settings-button,
-    #advanced-formatting-button,
-    #WI-SP-button,
-    #logo_block,
-    #extensions-settings-button {
-        padding-left: 1.08em;
-    }
-
     #top-bar,
     #user-settings-button:not(:has(.openIcon))~#logo_block:not(:has(.openIcon)),
     #persona-management-button .drawer-icon.fa-solid.fa-face-smile::before,
@@ -141,20 +134,57 @@ body.big-avatars {
         display: none;
     }
 
+    #sys-settings-button,
+    #advanced-formatting-button,
+    #WI-SP-button,
+    #logo_block,
+    #extensions-settings-button {
+        padding-left: 1.08em;
+    }
+
     .drawer-icon.fa-solid.fa-sliders::after {
         content: " Settings";
     }
 
     #ai-config-button {
         order: 1;
+
+        &:not(:has(.openIcon)) {
+
+            ~#sys-settings-button:not(:has(.openIcon)),
+            ~#advanced-formatting-button:not(:has(.openIcon)),
+            ~#WI-SP-button:not(:has(.openIcon)),
+            ~#extensions-settings-button:not(:has(.openIcon)) {
+                display: none;
+            }
+        }
+
+        .drawer-icon.fa-solid.fa-sliders::before {
+            content: "\f013"
+        }
     }
 
     .drawer-icon.fa-solid.fa-plug::after {
-        content: " API";
+        content: " API Settings";
     }
 
     #sys-settings-button {
         order: 2;
+
+        &:has(.openIcon) {
+
+            ~#advanced-formatting-button,
+            ~#WI-SP-button,
+            ~#extensions-settings-button {
+                display: flex !important;
+            }
+        }
+
+        &:has(+#advanced-formatting-button .openIcon),
+        &:has(~#WI-SP-button .openIcon),
+        &:has(~#extensions-settings-button .openIcon) {
+            display: flex !important;
+        }
     }
 
     .drawer-icon.fa-solid.fa-font::after {
@@ -163,14 +193,38 @@ body.big-avatars {
 
     #advanced-formatting-button {
         order: 3;
+
+        &:has(.openIcon) {
+
+            ~#WI-SP-button,
+            ~#extensions-settings-button {
+                display: flex !important;
+            }
+        }
+
+        &:has(~#WI-SP-button .openIcon),
+        &:has(~#extensions-settings-button .openIcon) {
+            display: flex !important;
+        }
     }
 
     .drawer-icon.fa-solid.fa-book-atlas::after {
-        content: " World Info";
+        content: " Lorebooks";
     }
 
     #WI-SP-button {
         order: 4;
+
+        &:has(.openIcon) {
+
+            ~#extensions-settings-button {
+                display: flex !important;
+            }
+        }
+
+        &:has(~#extensions-settings-button .openIcon) {
+            display: flex !important;
+        }
     }
 
     .drawer-icon.fa-solid.fa-user-cog::after {
@@ -232,6 +286,12 @@ body.big-avatars {
         order: 8;
 
         #right-nav-panel {
+            #CharListButtonAndHotSwaps .flexFlowColumn.flex-container {
+                flex: 1;
+                flex-flow: row-reverse;
+                justify-content: space-between;
+            }
+
             #rm_button_characters {
                 width: max-content;
 
@@ -280,23 +340,29 @@ body.big-avatars {
                 font-weight: 900;
             }
 
-            #rm_button_create {
-                order: -2;
+            #CharListButtonAndHotSwaps {
+                flex-wrap: wrap;
             }
 
-            #rm_button_group_chats {
-                order: -1;
+            #form_character_search_form {
+                flex-wrap: wrap;
+
+                #rm_button_create {
+                    order: -2;
+                }
+
+                #rm_button_group_chats {
+                    order: -1;
+                }
+
+                #character_search_bar {
+                    flex: 0 0 100%;
+                    order: 1;
+                }
             }
 
-            #rm_print_characters_block {
-                flex-flow: wrap;
-            }
-
-            .character_select.flex-container.wide100p.alignitemsflexstart,
-            .group_select.flex-container.wide100p.alignitemsflexstart,
-            .bogus_folder_select.flex-container.wide100p.alignitemsflexstart {
-                max-height: 5.4rem;
-                width: 50%;
+            .rm_tag_controls {
+                justify-content: center;
             }
 
             .wide100p.character_name_block {
@@ -318,7 +384,7 @@ body.big-avatars {
         top: 0;
         max-height: 100vh !important;
         height: 100vh;
-        width: 40.5vw;
+        width: var(--panelSize);
         right: inherit;
         left: var(--barSize);
         border-radius: 0px;
@@ -386,7 +452,7 @@ body.big-avatars {
     #top-settings-holder:has(.drawer-content.pinnedOpen)~#sheld,
     body:has(#character_popup[style*="display: flex"])>#sheld {
         left: initial;
-        width: calc(100vw - var(--barSize) - 40.5vw);
+        width: calc(100vw - var(--barSize) - var(--panelSize));
     }
 
     .historyButton {
@@ -403,7 +469,7 @@ body.big-avatars {
 
     .chat-flex {
         justify-content: space-evenly;
-        order: 9;
+        order: 10;
     }
 
     #select_chat_search {
@@ -543,6 +609,7 @@ body.big-avatars {
 
                     .mes_img_container.img_extra {
                         float: right;
+                        clear: both;
                         width: fit-content;
                         border-radius: 27px;
                         border-top-right-radius: 3px;
@@ -670,4 +737,129 @@ body.big-avatars {
         left: calc(54px * -0.54);
         width: calc(54vw - 54px);
     }
+
+    .zoomed_avatar,
+    .zoomed_avatar img {
+        left: var(--barSize)
+    }
+}
+
+/* chub.ai character seach CSS. taken from the chubsearch extension */
+#explore-button {
+    order: 9;
+
+    .drawer-icon::after {
+        content: " Explore";
+    }
+
+    & .drawer-content {
+        width: calc(100vw - var(--barSize));
+    }
+}
+
+.list-and-search-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .flex-container {
+        display: flex;
+        flex-flow: row;
+    }
+
+    .flex-align-center {
+        align-items: center;
+    }
+
+    .flex-container label {
+        align-self: center;
+        white-space: nowrap;
+    }
+}
+
+.search-container {
+    position: fixed;
+    background-color: var(--SmartThemeBlurTintColor);
+    width: calc(98vw - var(--barSize));
+    z-index: 1;
+    top: 0;
+    padding: 0.63rem;
+}
+
+.character-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-top: 8.1rem;
+
+    .character-list-item {
+        display: inline-flex;
+        align-items: flex-start;
+        margin: 10px 0;
+        width: 49%;
+        padding: 0.36rem;
+        border-radius: 0.63rem;
+
+        img.thumbnail {
+            flex: 0 0 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-right: 10px;
+            border-radius: 0.63rem;
+        }
+
+        .info {
+            flex: 1;
+            text-align: left;
+            overflow: hidden;
+        }
+
+        .info .name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-align: left;
+            color: var(--SmartThemeBodyColor)
+        }
+
+        .info .name a {
+            color: var(--SmartThemeBodyColor)
+        }
+
+        .menu_button.download-btn.fa-solid.fa-cloud-arrow-down.faSmallFontSquareFix {
+            display: inline-flex;
+            margin: 0;
+        }
+
+        .info .description {
+            overflow: hidden;
+            text-overflow: visble;
+            text-align: left;
+        }
+
+        .info .tags {
+            margin-top: 10px;
+        }
+
+        .info .author {
+            font-size: 0.8rem;
+            color: var(--SmartThemeEmColor)
+        }
+
+    }
+}
+
+body img.thumbnail {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.page-buttons {
+    align-content: center;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.searching {
+    filter: grayscale(100%);
 }
