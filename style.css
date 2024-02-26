@@ -123,7 +123,6 @@ body.big-avatars {
     }
 
     #top-bar,
-    #user-settings-button:not(:has(.openIcon))~#logo_block:not(:has(.openIcon)),
     #persona-management-button .drawer-icon.fa-solid.fa-face-smile::before,
     .select_chat_info.flex-container,
     .select_chat_block_mes,
@@ -138,12 +137,9 @@ body.big-avatars {
     #advanced-formatting-button,
     #WI-SP-button,
     #logo_block,
-    #extensions-settings-button {
+    #extensions-settings-button,
+    #user-settings-button {
         padding-left: 1.08em;
-    }
-
-    .drawer-icon.fa-solid.fa-sliders::after {
-        content: " Settings";
     }
 
     #ai-config-button {
@@ -154,13 +150,19 @@ body.big-avatars {
             ~#sys-settings-button:not(:has(.openIcon)),
             ~#advanced-formatting-button:not(:has(.openIcon)),
             ~#WI-SP-button:not(:has(.openIcon)),
-            ~#extensions-settings-button:not(:has(.openIcon)) {
+            ~#extensions-settings-button:not(:has(.openIcon)),
+            ~#logo_block:not(:has(.openIcon)),
+            ~#user-settings-button:not(:has(.openIcon)) {
                 display: none;
             }
         }
 
         .drawer-icon.fa-solid.fa-sliders::before {
             content: "\f013"
+        }
+
+        .drawer-icon.fa-solid.fa-sliders::after {
+            content: " Settings";
         }
     }
 
@@ -175,14 +177,18 @@ body.big-avatars {
 
             ~#advanced-formatting-button,
             ~#WI-SP-button,
-            ~#extensions-settings-button {
+            ~#extensions-settings-button,
+            ~#logo_block,
+            ~#user-settings-button {
                 display: flex !important;
             }
         }
 
         &:has(+#advanced-formatting-button .openIcon),
         &:has(~#WI-SP-button .openIcon),
-        &:has(~#extensions-settings-button .openIcon) {
+        &:has(~#extensions-settings-button .openIcon),
+        &:has(~#logo_block .openIcon),
+        &:has(~#user-settings-button .openIcon) {
             display: flex !important;
         }
     }
@@ -197,23 +203,67 @@ body.big-avatars {
         &:has(.openIcon) {
 
             ~#WI-SP-button,
-            ~#extensions-settings-button {
+            ~#extensions-settings-button,
+            ~#logo_block,
+            ~#user-settings-button {
                 display: flex !important;
             }
         }
 
         &:has(~#WI-SP-button .openIcon),
-        &:has(~#extensions-settings-button .openIcon) {
+        &:has(~#extensions-settings-button .openIcon),
+        &:has(~#logo_block .openIcon),
+        &:has(~#user-settings-button .openIcon) {
             display: flex !important;
         }
     }
 
-    .drawer-icon.fa-solid.fa-book-atlas::after {
-        content: " Lorebooks";
-    }
-
     #WI-SP-button {
         order: 4;
+
+        &:has(.openIcon) {
+
+            ~#extensions-settings-button,
+            ~#logo_block,
+            ~#user-settings-button {
+                display: flex !important;
+            }
+        }
+
+        &:has(~#extensions-settings-button .openIcon),
+        &:has(~#logo_block .openIcon),
+        &:has(~#user-settings-button .openIcon) {
+            display: flex !important;
+        }
+
+        .drawer-icon.fa-solid.fa-book-atlas::after {
+            content: " Lorebooks";
+        }
+    }
+
+    #user-settings-button {
+        order: 7;
+
+        &:has(.openIcon) {
+
+            ~#extensions-settings-button,
+            ~#logo_block {
+                display: flex !important;
+            }
+        }
+
+        &:has(~#extensions-settings-button .openIcon),
+        &:has(~#logo_block .openIcon) {
+            display: flex !important;
+        }
+
+        .drawer-icon.fa-solid.fa-user-cog::after {
+            content: " UI Settings";
+        }
+    }
+
+    #logo_block {
+        order: 8;
 
         &:has(.openIcon) {
 
@@ -225,30 +275,18 @@ body.big-avatars {
         &:has(~#extensions-settings-button .openIcon) {
             display: flex !important;
         }
-    }
 
-    .drawer-icon.fa-solid.fa-user-cog::after {
-        content: " UI Settings";
-    }
-
-    #user-settings-button {
-        order: 7;
-    }
-
-    .drawer-icon.fa-solid.fa-panorama::after {
-        content: " Backgrounds";
-    }
-
-    #logo_block {
-        order: 8;
-    }
-
-    .drawer-icon.fa-solid.fa-cubes::after {
-        content: " Extensions";
+        .drawer-icon.fa-solid.fa-panorama::after {
+            content: " Backgrounds";
+        }
     }
 
     #extensions-settings-button {
         order: 5;
+
+        .drawer-icon.fa-solid.fa-cubes::after {
+            content: " Extensions";
+        }
     }
 
     #persona-management-button {
