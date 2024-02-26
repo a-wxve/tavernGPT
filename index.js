@@ -4,9 +4,7 @@ import {
     displayPastChats,
     eventSource,
     generateQuietPrompt,
-    getEntitiesList,
     getRequestHeaders,
-    getThumbnailUrl,
     getUserAvatar,
     name1,
     processDroppedFiles,
@@ -14,8 +12,6 @@ import {
 } from '../../../../script.js';
 import { getContext } from '../../../extensions.js';
 import {
-    getGroupAvatar,
-    groups,
     renameGroupChat,
     selected_group,
 } from '../../../group-chats.js';
@@ -23,64 +19,6 @@ import { debounce, delay } from '../../../utils.js';
 
 const extensionName = 'Extension-TavernGPT';
 const extensionFolderPath = `scripts/extensions/third-party/${extensionName}`;
-
-async function loadFavorites() {
-    const favHTML = await $.get(`${extensionFolderPath}/favorites.html`);
-    $('#top-settings-holder').append(favHTML);
-
-    const entities = getEntitiesList({ doFilter: false });
-    const container = $('#right-nav-panel .hotswap');
-    const template = $('#hotswap_template .hotswapAvatar');
-
-    const promises = [];
-    const newContainer = container.clone();
-    newContainer.empty();
-
-    for (const entity of entities) {
-        const isFavorite = entity.item.fav || entity.item.fav == 'true';
-
-        if (!isFavorite) {
-            continue;
-        }
-
-        const isCharacter = entity.type === 'character';
-        const isGroup = entity.type === 'group';
-
-        const grid = isGroup ? entity.id : '';
-        const chid = isCharacter ? entity.id : '';
-
-        let slot = template.clone();
-        slot.toggleClass('character_select', isCharacter);
-        slot.toggleClass('group_select', isGroup);
-        slot.attr('grid', isGroup ? grid : '');
-        slot.attr('chid', isCharacter ? chid : '');
-        slot.data('id', isGroup ? grid : chid);
-
-        if (isGroup) {
-            const group = groups.find((x) => x.id === grid);
-            const avatar = getGroupAvatar(group);
-            $(slot).find('img').replaceWith(avatar);
-            $(slot).attr('title', group.name);
-        }
-
-        if (isCharacter) {
-            const imgLoadPromise = new Promise((resolve) => {
-                const avatarUrl = getThumbnailUrl('avatar', entity.item.avatar);
-                $(slot).find('img').attr('src', avatarUrl).on('load', resolve);
-                $(slot).attr('title', entity.item.avatar);
-            });
-
-            // if the image doesn't load in 500ms, resolve the promise anyway
-            promises.push(Promise.race([imgLoadPromise, delay(500)]));
-        }
-
-        $(slot).css('cursor', 'pointer');
-        newContainer.append(slot);
-    }
-
-    await Promise.allSettled(promises);
-    container.replaceWith(newContainer);
-}
 
 async function loadHistory() {
     async function renameChat() {
@@ -537,7 +475,6 @@ async function loadExplorer() {
 }
 
 jQuery(async () => {
-    $(loadFavorites);
     $(loadHistory);
     $(getPersona);
     $(loadExplorer);
