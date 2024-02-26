@@ -1,6 +1,6 @@
 :root {
     --barSize: calc(var(--topBarBlockSize) + 14.4rem);
-    --panelSize: calc(var(--barSize) * 1.44);
+    --panelSize: 40.5vw;
     --nearBlack: rgba(0, 0, 0, 0.81);
 }
 
@@ -29,334 +29,313 @@ body.big-avatars {
     }
 }
 
-@media only screen and (min-width: 1000px) {
-    #top-settings-holder {
-        background-color: var(--nearBlack);
-        flex-direction: column;
-        justify-content: flex-start;
-        position: fixed;
-        height: 100vh;
-        width: var(--barSize);
-        gap: 3px;
-        padding: 0.63rem;
-        transition: 0.18s all ease-in-out;
+#top-settings-holder {
+    background-color: var(--nearBlack);
+    flex-direction: column;
+    justify-content: flex-start;
+    position: fixed;
+    height: 100vh;
+    width: var(--barSize);
+    gap: 3px;
+    padding: 0.63rem;
+    transition: 0.18s all ease-in-out;
 
-        &.collapsed {
-            visibility: collapse;
-            width: 0;
+    &.collapsed {
+        visibility: collapse;
+        width: 0;
 
-            #ai-config-button,
-            #sys-settings-button,
-            #advanced-formatting-button,
-            #WI-SP-button,
-            #logo_block,
-            #extensions-settings-button,
-            #persona-management-button,
-            #user-settings-button,
-            #rightNavHolder,
-            .historyButton,
-            #select_chat_div,
-            #select_chat_search {
-                display: none;
+        #ai-config-button,
+        #sys-settings-button,
+        #advanced-formatting-button,
+        #WI-SP-button,
+        #logo_block,
+        #extensions-settings-button,
+        #persona-management-button,
+        #user-settings-button,
+        #rightNavHolder,
+        .historyButton,
+        #select_chat_div,
+        #select_chat_search,
+        #explore-button {
+            display: none;
+        }
+
+        .closeSidebar {
+            left: 0.45rem;
+
+            .arrow1 {
+                transform: rotate(-36deg) translateY(0.18rem);
             }
 
-            .closeSidebar {
-                left: 0.45rem;
-
-                .arrow1 {
-                    transform: rotate(-36deg) translateY(0.18rem);
-                }
-
-                .arrow2 {
-                    transform: rotate(36deg) translateY(-0.18rem);
-                }
+            .arrow2 {
+                transform: rotate(36deg) translateY(-0.18rem);
             }
         }
     }
+}
 
-    .drawer {
-        justify-content: left;
+.drawer {
+    justify-content: left;
+}
+
+.drawer-icon {
+    font-size: 1.53em;
+}
+
+.drawer-toggle,
+.drawer-icon {
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+
+.drawer-toggle {
+    padding: 0.36rem;
+    border-radius: 0.63rem;
+
+    &:hover {
+        background-color: rgb(45, 45, 45);
     }
+}
 
-    .drawer-icon {
-        font-size: 1.53em;
-    }
+.drawer-icon.fa-solid::before {
+    display: inline-block;
+    width: 36px;
+}
 
-    .drawer-toggle,
-    .drawer-icon {
-        cursor: pointer;
-        width: 100%;
-        height: 100%;
-    }
+.drawer-icon.fa-solid::after,
+#persona-management-button .drawer-icon.fa-solid.fa-face-smile span {
+    vertical-align: middle;
+    font-size: 18px;
+    font-weight: 720;
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        "Open Sans",
+        "Helvetica Neue",
+        sans-serif;
+}
 
-    .drawer-toggle {
-        padding: 0.36rem;
-        border-radius: 0.63rem;
+#top-bar,
+#persona-management-button .drawer-icon.fa-solid.fa-face-smile::before,
+.select_chat_info.flex-container,
+.select_chat_block_mes,
+#ReverseProxyWarningMessage,
+#quickReplyPopoutButton,
+.mes_text br,
+.mes_create_bookmark {
+    display: none;
+}
 
-        &:hover {
-            background-color: rgb(45, 45, 45);
+#sys-settings-button,
+#advanced-formatting-button,
+#WI-SP-button,
+#logo_block,
+#extensions-settings-button,
+#user-settings-button {
+    padding-left: 1.08em;
+}
+
+#ai-config-button {
+    order: 1;
+
+    &:not(:has(.openIcon)) {
+
+        ~#sys-settings-button:not(:has(.openIcon)),
+        ~#advanced-formatting-button:not(:has(.openIcon)),
+        ~#WI-SP-button:not(:has(.openIcon)),
+        ~#extensions-settings-button:not(:has(.openIcon)),
+        ~#logo_block:not(:has(.openIcon)),
+        ~#user-settings-button:not(:has(.openIcon)) {
+            display: none;
         }
     }
 
-    .drawer-icon.fa-solid::before {
-        display: inline-block;
+    .drawer-icon.fa-solid.fa-sliders::before {
+        content: "\f013"
+    }
+
+    .drawer-icon.fa-solid.fa-sliders::after {
+        content: " Settings";
+    }
+}
+
+.drawer-icon.fa-solid.fa-plug::after {
+    content: " API Settings";
+}
+
+#sys-settings-button {
+    order: 2;
+
+    &:has(.openIcon) {
+
+        ~#advanced-formatting-button,
+        ~#WI-SP-button,
+        ~#extensions-settings-button,
+        ~#logo_block,
+        ~#user-settings-button {
+            display: flex !important;
+        }
+    }
+
+    &:has(+#advanced-formatting-button .openIcon),
+    &:has(~#WI-SP-button .openIcon),
+    &:has(~#extensions-settings-button .openIcon),
+    &:has(~#logo_block .openIcon),
+    &:has(~#user-settings-button .openIcon) {
+        display: flex !important;
+    }
+}
+
+.drawer-icon.fa-solid.fa-font::after {
+    content: " Formatting";
+}
+
+#advanced-formatting-button {
+    order: 3;
+
+    &:has(.openIcon) {
+
+        ~#WI-SP-button,
+        ~#extensions-settings-button,
+        ~#logo_block,
+        ~#user-settings-button {
+            display: flex !important;
+        }
+    }
+
+    &:has(~#WI-SP-button .openIcon),
+    &:has(~#extensions-settings-button .openIcon),
+    &:has(~#logo_block .openIcon),
+    &:has(~#user-settings-button .openIcon) {
+        display: flex !important;
+    }
+}
+
+#WI-SP-button {
+    order: 4;
+
+    &:has(.openIcon) {
+
+        ~#extensions-settings-button,
+        ~#logo_block,
+        ~#user-settings-button {
+            display: flex !important;
+        }
+    }
+
+    &:has(~#extensions-settings-button .openIcon),
+    &:has(~#logo_block .openIcon),
+    &:has(~#user-settings-button .openIcon) {
+        display: flex !important;
+    }
+
+    .drawer-icon.fa-solid.fa-book-atlas::after {
+        content: " Lorebooks";
+    }
+}
+
+#user-settings-button {
+    order: 5;
+
+    &:has(.openIcon) {
+
+        ~#extensions-settings-button,
+        ~#logo_block {
+            display: flex !important;
+        }
+    }
+
+    &:has(~#extensions-settings-button .openIcon),
+    &:has(~#logo_block .openIcon) {
+        display: flex !important;
+    }
+
+    .drawer-icon.fa-solid.fa-user-cog::after {
+        content: " User Settings";
+    }
+}
+
+#logo_block {
+    order: 6;
+
+    &:has(.openIcon) {
+
+        ~#extensions-settings-button {
+            display: flex !important;
+        }
+    }
+
+    &:has(~#extensions-settings-button .openIcon) {
+        display: flex !important;
+    }
+
+    .drawer-icon.fa-solid.fa-panorama::after {
+        content: " Backgrounds";
+    }
+}
+
+#extensions-settings-button {
+    order: 7;
+
+    .drawer-icon.fa-solid.fa-cubes::after {
+        content: " Extensions";
+    }
+}
+
+#persona-management-button {
+    position: fixed;
+    background-color: black;
+    bottom: -3px;
+    padding: 0.63em;
+    margin-left: -0.666em;
+    z-index: 1;
+    width: inherit;
+
+    .drawer-icon.fa-solid.fa-face-smile span {
+        vertical-align: super;
+        padding-left: 0.09rem;
+    }
+
+    .drawer-icon.fa-solid.fa-face-smile.closedIcon {
+        opacity: 72% !important;
+    }
+
+    .persona_avatar {
         width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
     }
+}
 
-    .drawer-icon.fa-solid::after,
-    #persona-management-button .drawer-icon.fa-solid.fa-face-smile span {
-        vertical-align: middle;
-        font-size: 18px;
-        font-weight: 720;
-        font-family:
-            system-ui,
-            -apple-system,
-            BlinkMacSystemFont,
-            "Segoe UI",
-            Roboto,
-            Oxygen,
-            Ubuntu,
-            Cantarell,
-            "Open Sans",
-            "Helvetica Neue",
-            sans-serif;
-    }
 
-    #top-bar,
-    #persona-management-button .drawer-icon.fa-solid.fa-face-smile::before,
-    .select_chat_info.flex-container,
-    .select_chat_block_mes,
-    #ReverseProxyWarningMessage,
-    #quickReplyPopoutButton,
-    .mes_text br,
-    .mes_create_bookmark {
-        display: none;
-    }
-
-    #sys-settings-button,
-    #advanced-formatting-button,
-    #WI-SP-button,
-    #logo_block,
-    #extensions-settings-button,
-    #user-settings-button {
-        padding-left: 1.08em;
-    }
-
-    #ai-config-button {
-        order: 1;
-
-        &:not(:has(.openIcon)) {
-
-            ~#sys-settings-button:not(:has(.openIcon)),
-            ~#advanced-formatting-button:not(:has(.openIcon)),
-            ~#WI-SP-button:not(:has(.openIcon)),
-            ~#extensions-settings-button:not(:has(.openIcon)),
-            ~#logo_block:not(:has(.openIcon)),
-            ~#user-settings-button:not(:has(.openIcon)) {
-                display: none;
-            }
-        }
-
-        .drawer-icon.fa-solid.fa-sliders::before {
-            content: "\f013"
-        }
-
-        .drawer-icon.fa-solid.fa-sliders::after {
-            content: " Settings";
-        }
-    }
-
-    .drawer-icon.fa-solid.fa-plug::after {
-        content: " API Settings";
-    }
-
-    #sys-settings-button {
-        order: 2;
-
-        &:has(.openIcon) {
-
-            ~#advanced-formatting-button,
-            ~#WI-SP-button,
-            ~#extensions-settings-button,
-            ~#logo_block,
-            ~#user-settings-button {
-                display: flex !important;
-            }
-        }
-
-        &:has(+#advanced-formatting-button .openIcon),
-        &:has(~#WI-SP-button .openIcon),
-        &:has(~#extensions-settings-button .openIcon),
-        &:has(~#logo_block .openIcon),
-        &:has(~#user-settings-button .openIcon) {
-            display: flex !important;
-        }
-    }
-
-    .drawer-icon.fa-solid.fa-font::after {
-        content: " Formatting";
-    }
-
-    #advanced-formatting-button {
-        order: 3;
-
-        &:has(.openIcon) {
-
-            ~#WI-SP-button,
-            ~#extensions-settings-button,
-            ~#logo_block,
-            ~#user-settings-button {
-                display: flex !important;
-            }
-        }
-
-        &:has(~#WI-SP-button .openIcon),
-        &:has(~#extensions-settings-button .openIcon),
-        &:has(~#logo_block .openIcon),
-        &:has(~#user-settings-button .openIcon) {
-            display: flex !important;
-        }
-    }
-
-    #WI-SP-button {
-        order: 4;
-
-        &:has(.openIcon) {
-
-            ~#extensions-settings-button,
-            ~#logo_block,
-            ~#user-settings-button {
-                display: flex !important;
-            }
-        }
-
-        &:has(~#extensions-settings-button .openIcon),
-        &:has(~#logo_block .openIcon),
-        &:has(~#user-settings-button .openIcon) {
-            display: flex !important;
-        }
-
-        .drawer-icon.fa-solid.fa-book-atlas::after {
-            content: " Lorebooks";
-        }
-    }
-
-    #user-settings-button {
-        order: 7;
-
-        &:has(.openIcon) {
-
-            ~#extensions-settings-button,
-            ~#logo_block {
-                display: flex !important;
-            }
-        }
-
-        &:has(~#extensions-settings-button .openIcon),
-        &:has(~#logo_block .openIcon) {
-            display: flex !important;
-        }
-
-        .drawer-icon.fa-solid.fa-user-cog::after {
-            content: " UI Settings";
-        }
-    }
-
-    #logo_block {
-        order: 8;
-
-        &:has(.openIcon) {
-
-            ~#extensions-settings-button {
-                display: flex !important;
-            }
-        }
-
-        &:has(~#extensions-settings-button .openIcon) {
-            display: flex !important;
-        }
-
-        .drawer-icon.fa-solid.fa-panorama::after {
-            content: " Backgrounds";
-        }
-    }
-
-    #extensions-settings-button {
-        order: 5;
-
-        .drawer-icon.fa-solid.fa-cubes::after {
-            content: " Extensions";
-        }
-    }
-
-    #persona-management-button {
-        position: fixed;
-        background-color: black;
-        bottom: -3px;
-        padding: 0.63em;
-        margin-left: -0.666em;
-        z-index: 1;
-        width: inherit;
-
-        .drawer-icon.fa-solid.fa-face-smile span {
-            vertical-align: super;
-            padding-left: 0.09rem;
-        }
-
-        .drawer-icon.fa-solid.fa-face-smile.closedIcon {
-            opacity: 72% !important;
-        }
-
-        .persona_avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-    }
+#rightNavHolder {
+    order: 8;
 
     .drawer-icon.fa-solid.fa-address-card::after {
         content: "Characters";
         margin-left: -3px;
     }
 
-    #rightNavHolder {
-        order: 8;
+    #right-nav-panel {
+        #CharListButtonAndHotSwaps .flexFlowColumn.flex-container {
+            flex: 1;
+            flex-flow: row-reverse;
+            justify-content: space-between;
+        }
 
-        #right-nav-panel {
-            #CharListButtonAndHotSwaps .flexFlowColumn.flex-container {
-                flex: 1;
-                flex-flow: row-reverse;
-                justify-content: space-between;
-            }
+        #rm_button_characters {
+            width: max-content;
 
-            #rm_button_characters {
-                width: max-content;
-
-                &::after {
-                    content: " All Cards";
-                    font-family:
-                        system-ui,
-                        -apple-system,
-                        BlinkMacSystemFont,
-                        "Segoe UI",
-                        Roboto,
-                        Oxygen,
-                        Ubuntu,
-                        Cantarell,
-                        "Open Sans",
-                        "Helvetica Neue",
-                        sans-serif;
-                    font-weight: 720;
-                }
-            }
-
-            &:has(#rm_ch_create_block[style*="display: block"]) #rm_button_characters::before {
-                content: "\f053";
-            }
-
-            &:has(#rm_ch_create_block[style*="display: block"]) #rm_button_characters::after {
-                content: " Back";
+            &::after {
+                content: " All Cards";
                 font-family:
                     system-ui,
                     -apple-system,
@@ -371,159 +350,92 @@ body.big-avatars {
                     sans-serif;
                 font-weight: 720;
             }
-
-            &:has(#rm_ch_create_block[style*="display: none"]) #rm_button_selected_ch h2:not(:empty)::after {
-                content: " \f054";
-                font-family: "Font Awesome 6 Free";
-                font-weight: 900;
-            }
-
-            #CharListButtonAndHotSwaps {
-                flex-wrap: wrap;
-            }
-
-            #form_character_search_form {
-                flex-wrap: wrap;
-
-                #rm_button_create {
-                    order: -2;
-                }
-
-                #rm_button_group_chats {
-                    order: -1;
-                }
-
-                #character_search_bar {
-                    flex: 0 0 100%;
-                    order: 1;
-                }
-            }
-
-            .rm_tag_controls {
-                justify-content: center;
-            }
-
-            .wide100p.character_name_block {
-                flex-direction: column;
-                gap: 0;
-            }
-
-            .tags.tags_inline {
-                display: none;
-            }
-        }
-    }
-
-    .drawer-content,
-    #left-nav-panel,
-    #right-nav-panel,
-    #character_popup {
-        position: fixed;
-        top: 0;
-        max-height: 100vh !important;
-        height: 100vh;
-        width: var(--panelSize);
-        right: inherit;
-        left: var(--barSize);
-        border-radius: 0px;
-        box-shadow: none;
-    }
-
-    #sheld {
-        left: var(--barSize);
-        max-width: calc(100vw - var(--barSize)) !important;
-        max-height: 100svh;
-        height: 100svh;
-        top: 0;
-
-        &.collapsed {
-            left: 0;
-            transition: 0.18s all ease-in-out;
         }
 
-        #chat {
-            max-height: 100svh;
-            border-bottom-left-radius: 0.9rem;
-            border-bottom-right-radius: 0.9rem;
-            margin-bottom: -2px;
+        &:has(#rm_ch_create_block[style*="display: block"]) #rm_button_characters::before {
+            content: "\f053";
         }
 
-        #form_sheld {
-            margin-bottom: 0.9rem;
+        &:has(#rm_ch_create_block[style*="display: block"]) #rm_button_characters::after {
+            content: " Back";
+            font-family:
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Oxygen,
+                Ubuntu,
+                Cantarell,
+                "Open Sans",
+                "Helvetica Neue",
+                sans-serif;
+            font-weight: 720;
+        }
 
-            #send_form {
-                border-radius: 0;
-                background-color: transparent !important;
+        &:has(#rm_ch_create_block[style*="display: none"]) #rm_button_selected_ch h2:not(:empty)::after {
+            content: " \f054";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+        }
 
-                #nonQRFormItems {
-                    border-radius: 0.9rem;
-                    border: 1px rgb(63, 63, 63) solid;
-                    background-color: rgb(45, 45, 45);
+        #CharListButtonAndHotSwaps {
+            flex-wrap: wrap;
+        }
 
-                    #extensionsMenuButton.fa-magic-wand-sparkles::before {
-                        content: "\f0c6";
-                    }
+        #form_character_search_form {
+            flex-wrap: wrap;
 
-                    #options_button.fa-bars::before {
-                        content: "\f142";
-                    }
-                }
+            #rm_button_create {
+                order: -2;
+            }
 
-                #send_textarea {
-                    margin: 0.36rem;
-                    background-color: rgb(45, 45, 45);
-                    resize: none;
-                }
+            #rm_button_group_chats {
+                order: -1;
+            }
 
-                #rightSendForm {
-                    margin-right: 0.27rem;
-
-                    #send_but.fa-solid.fa-paper-plane::before {
-                        content: "\f0aa";
-                    }
-                }
+            #character_search_bar {
+                flex: 0 0 100%;
+                order: 1;
             }
         }
-    }
 
-    #top-settings-holder:has(.drawer-icon.openIcon)~#sheld,
-    #top-settings-holder:has(.drawer-content.pinnedOpen)~#sheld,
-    body:has(#character_popup[style*="display: flex"])>#sheld {
-        left: initial;
-        width: calc(100vw - var(--barSize) - var(--panelSize));
-    }
-
-    .historyButton {
-        background-color: rgb(18, 18, 18);
-
-        >span {
-            padding: 3px 5px 3px 0;
+        .rm_tag_controls {
+            justify-content: center;
         }
 
-        .fa-solid {
-            padding-left: 3px;
+        .wide100p.character_name_block {
+            flex-direction: column;
+            gap: 0;
         }
-    }
 
-    .chat-flex {
-        justify-content: space-evenly;
-        order: 10;
-    }
-
-    #select_chat_search {
-        order: 10;
-        max-height: 36px;
-
-        #select_chat_div:empty~& {
+        .tags.tags_inline {
             display: none;
         }
     }
+}
 
-    #select_chat_div {
-        order: 11;
-        overflow-y: scroll;
-        margin-bottom: 4.05em;
+.historyButton {
+    background-color: rgb(18, 18, 18);
+
+    >span {
+        padding: 3px 5px 3px 0;
     }
+
+    .fa-solid {
+        padding-left: 3px;
+    }
+}
+
+.chat-flex {
+    justify-content: space-evenly;
+    order: 10;
+}
+
+#select_chat_div {
+    order: 11;
+    overflow-y: scroll;
+    margin-bottom: 4.05em;
 
     .select_chat_block_filename.select_chat_block_filename_item {
         opacity: 100%;
@@ -545,242 +457,331 @@ body.big-avatars {
     .PastChat_cross.opacity50p.hoverglow.fa-solid.fa-skull::before {
         content: "\f1f8";
     }
+}
 
-    .closeSidebar {
-        position: absolute;
-        left: 17.1rem;
-        top: 45%;
-        background-color: transparent;
-        border: none;
-        cursor: pointer;
-        order: 11;
-        visibility: visible !important;
+#select_chat_search {
+    order: 10;
+    max-height: 36px;
+
+    #select_chat_div:empty~& {
+        display: none;
+    }
+}
+
+.drawer-content,
+#left-nav-panel,
+#right-nav-panel,
+#character_popup {
+    position: fixed;
+    top: 0;
+    max-height: 100vh !important;
+    height: 100vh;
+    width: var(--panelSize);
+    right: inherit;
+    left: var(--barSize);
+    border-radius: 0px;
+    box-shadow: none;
+}
+
+#sheld {
+    left: var(--barSize);
+    max-width: calc(100vw - var(--barSize)) !important;
+    max-height: 100svh;
+    height: 100svh;
+    top: 0;
+
+    &.collapsed {
+        left: 0;
         transition: 0.18s all ease-in-out;
+    }
 
-        .arrow1,
-        .arrow2 {
-            height: 1.08rem;
-            width: 0.36em;
-            background-color: white;
-            transition: 0.18s all ease-in-out;
-        }
+    #chat {
+        max-height: 100svh;
+        border-bottom-left-radius: 0.9rem;
+        border-bottom-right-radius: 0.9rem;
+        margin-bottom: -2px;
+    }
 
-        .arrow1 {
-            border-top-left-radius: 0.18rem;
-            border-top-right-radius: 0.18rem;
-        }
+    #form_sheld {
+        margin-bottom: 0.9rem;
 
-        .arrow2 {
-            border-bottom-left-radius: 0.18rem;
-            border-bottom-right-radius: 0.18rem;
-        }
+        #send_form {
+            border-radius: 0;
+            background-color: transparent !important;
 
-        &:hover {
-            .arrow1 {
-                transform: rotate(36deg) translateY(0.18rem);
+            #nonQRFormItems {
+                border-radius: 0.9rem;
+                border: 1px rgb(63, 63, 63) solid;
+                background-color: rgb(45, 45, 45);
+
+                #extensionsMenuButton.fa-magic-wand-sparkles::before {
+                    content: "\f0c6";
+                }
+
+                #options_button.fa-bars::before {
+                    content: "\f142";
+                }
             }
 
-            .arrow2 {
-                transform: rotate(-36deg) translateY(-0.18rem);
+            #send_textarea {
+                margin: 0.36rem;
+                background-color: rgb(45, 45, 45);
+                resize: none;
+            }
+
+            #rightSendForm {
+                margin-right: 0.27rem;
+
+                #send_but.fa-solid.fa-paper-plane::before {
+                    content: "\f0aa";
+                }
             }
         }
     }
+}
 
-    .mes {
+#top-settings-holder:has(.drawer-icon.openIcon)~#sheld,
+#top-settings-holder:has(.drawer-content.pinnedOpen)~#sheld,
+body:has(#character_popup[style*="display: flex"])>#sheld {
+    left: initial;
+    width: calc(100vw - var(--barSize) - var(--panelSize));
+}
+
+.closeSidebar {
+    position: absolute;
+    left: 17.1rem;
+    top: 45%;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    order: 11;
+    visibility: visible !important;
+    transition: 0.18s all ease-in-out;
+
+    .arrow1,
+    .arrow2 {
+        height: 1.08rem;
+        width: 0.36em;
+        background-color: white;
+        transition: 0.18s all ease-in-out;
+    }
+
+    .arrow1 {
+        border-top-left-radius: 0.18rem;
+        border-top-right-radius: 0.18rem;
+    }
+
+    .arrow2 {
+        border-bottom-left-radius: 0.18rem;
+        border-bottom-right-radius: 0.18rem;
+    }
+
+    &:hover {
+        .arrow1 {
+            transform: rotate(36deg) translateY(0.18rem);
+        }
+
+        .arrow2 {
+            transform: rotate(-36deg) translateY(-0.18rem);
+        }
+    }
+}
+
+.mes {
+    body.bubblechat & {
+        background-color: transparent;
+
+        .mesAvatarWrapper {
+
+            .avatar,
+            .avatar img {
+                height: 50px;
+                border-radius: 50%;
+            }
+        }
+
+        .mes_text {
+            width: fit-content;
+            padding: 0.27rem 0.54rem;
+            margin-top: 10px;
+            border-radius: 27px;
+            border-top-left-radius: 3px;
+            background-color: var(--SmartThemeBotMesBlurTintColor);
+
+            p {
+                margin: 10px;
+            }
+
+            h1,
+            h2,
+            h3,
+            h4,
+            a:not(.fa-solid) {
+                margin-left: 10px;
+            }
+        }
+
+        .mes_text:has(#curEditTextarea) {
+            width: unset;
+        }
+    }
+
+    &[is_user="true"] {
         body.bubblechat & {
             background-color: transparent;
 
             .mesAvatarWrapper {
-
-                .avatar,
-                .avatar img {
-                    height: 50px;
-                    border-radius: 50%;
-                }
+                order: 2;
             }
 
-            .mes_text {
-                width: fit-content;
-                padding: 0.27rem 0.54rem;
-                margin-top: 10px;
-                border-radius: 27px;
-                border-top-left-radius: 3px;
-                background-color: var(--SmartThemeBotMesBlurTintColor);
+            .mes_block {
+                padding-left: 63px;
+                padding-right: 10px;
+                overflow-y: hidden;
 
-                p {
-                    margin: 10px;
+                .mes_text {
+                    float: right;
+                    border-top-left-radius: 27px;
+                    border-top-right-radius: 3px;
+                    background-color: var(--SmartThemeUserMesBlurTintColor);
                 }
 
-                h1,
-                h2,
-                h3,
-                h4,
-                a:not(.fa-solid) {
-                    margin-left: 10px;
-                }
-            }
-
-            .mes_text:has(#curEditTextarea) {
-                width: unset;
-            }
-        }
-
-        &[is_user="true"] {
-            body.bubblechat & {
-                background-color: transparent;
-
-                .mesAvatarWrapper {
-                    order: 2;
+                .mes_img_container.img_extra {
+                    float: right;
+                    clear: both;
+                    width: fit-content;
+                    border-radius: 27px;
+                    border-top-right-radius: 3px;
+                    margin-top: 10px;
+                    padding: 0.81rem;
+                    background-color: var(--SmartThemeUserMesBlurTintColor);
                 }
 
-                .mes_block {
-                    padding-left: 63px;
-                    padding-right: 10px;
-                    overflow-y: hidden;
+                .ch_name.flex-container.justifySpaceBetween {
+                    justify-content: end;
 
-                    .mes_text {
-                        float: right;
-                        border-top-left-radius: 27px;
-                        border-top-right-radius: 3px;
-                        background-color: var(--SmartThemeUserMesBlurTintColor);
-                    }
-
-                    .mes_img_container.img_extra {
-                        float: right;
-                        clear: both;
-                        width: fit-content;
-                        border-radius: 27px;
-                        border-top-right-radius: 3px;
-                        margin-top: 10px;
-                        padding: 0.81rem;
-                        background-color: var(--SmartThemeUserMesBlurTintColor);
-                    }
-
-                    .ch_name.flex-container.justifySpaceBetween {
-                        justify-content: end;
-
-                        .flex-container.flex1.alignitemscenter {
-                            order: 2;
-                            flex-direction: row-reverse;
-                            flex: 0;
-                        }
-                    }
-
-                    .mes_buttons {
-                        align-self: flex-end;
-                    }
-                }
-            }
-
-            .flex-container.alignItemsBaseline {
-                flex-direction: row-reverse;
-                width: max-content;
-
-                .name_text {
-                    visibility: hidden;
-                    text-indent: -999px;
-                    line-height: 0;
-
-                    &::after {
-                        content: "(You)" !important;
-                        text-indent: 0px;
-                        visibility: visible;
-                        display: block;
-                        line-height: initial;
+                    .flex-container.flex1.alignitemscenter {
+                        order: 2;
+                        flex-direction: row-reverse;
+                        flex: 0;
                     }
                 }
 
-                .timestamp {
-                    align-self: end;
+                .mes_buttons {
+                    align-self: flex-end;
                 }
             }
         }
 
-        .mes_block {
-            transform: none !important;
+        .flex-container.alignItemsBaseline {
+            flex-direction: row-reverse;
+            width: max-content;
+
+            .name_text {
+                visibility: hidden;
+                text-indent: -999px;
+                line-height: 0;
+
+                &::after {
+                    content: "(You)" !important;
+                    text-indent: 0px;
+                    visibility: visible;
+                    display: block;
+                    line-height: initial;
+                }
+            }
 
             .timestamp {
-                order: 1;
-            }
-
-            .icon-svg.timestamp-icon {
-                height: 1rem;
-                align-self: center;
+                align-self: end;
             }
         }
+    }
 
-        &:not(:hover) {
+    .mes_block {
+        transform: none !important;
 
-            .mes_buttons,
-            .swipe_left {
-                opacity: 0%;
-            }
-
-            .swipe_right {
-                opacity: 0% !important;
-            }
-
-            .mesAvatarWrapper {
-
-                .mesIDDisplay,
-                .mes_timer,
-                .tokenCounterDisplay {
-                    opacity: 0%;
-                }
-            }
+        .timestamp {
+            order: 1;
         }
 
-        .swipe_left,
-        .swipe_right,
-        .mesIDDisplay,
-        .mes_timer,
-        .tokenCounterDisplay {
-            transition: 0.18s all ease-in-out;
+        .icon-svg.timestamp-icon {
+            height: 1rem;
+            align-self: center;
         }
+    }
 
+    &:not(:hover) {
+
+        .mes_buttons,
         .swipe_left {
-            left: 0.18em;
+            opacity: 0%;
         }
 
         .swipe_right {
-            left: 0.81em;
+            opacity: 0% !important;
         }
 
-        .swipes-counter {
-            margin-bottom: -12px;
-            margin-left: -1.8em;
-            pointer-events: none;
-        }
+        .mesAvatarWrapper {
 
-        .mes_img_controls {
-            height: 100%;
-        }
-
-        .right_menu_button.fa-lg.fa-solid.fa-magnifying-glass.mes_img_enlarge {
-            opacity: 0;
-            height: 100%;
-            width: 100%;
-            cursor: pointer;
+            .mesIDDisplay,
+            .mes_timer,
+            .tokenCounterDisplay {
+                opacity: 0%;
+            }
         }
     }
 
-    #extensions_settings .inline-drawer-toggle.inline-drawer-header,
-    #extensions_settings2 .inline-drawer-toggle.inline-drawer-header,
-    #user-settings-block h4,
-    .standoutHeader {
-        background-image: none;
+    .swipe_left,
+    .swipe_right,
+    .mesIDDisplay,
+    .mes_timer,
+    .tokenCounterDisplay {
+        transition: 0.18s all ease-in-out;
     }
 
-    .expression-holder {
-        left: calc(54px * -0.54);
-        width: calc(54vw - 54px);
+    .swipe_left {
+        left: 0.18em;
     }
 
-    .zoomed_avatar,
-    .zoomed_avatar img {
-        left: var(--barSize)
+    .swipe_right {
+        left: 0.81em;
+    }
+
+    .swipes-counter {
+        margin-bottom: -12px;
+        margin-left: -1.8em;
+        pointer-events: none;
+    }
+
+    .mes_img_controls {
+        height: 100%;
+    }
+
+    .right_menu_button.fa-lg.fa-solid.fa-magnifying-glass.mes_img_enlarge {
+        opacity: 0;
+        height: 100%;
+        width: 100%;
+        cursor: pointer;
     }
 }
+
+#extensions_settings .inline-drawer-toggle.inline-drawer-header,
+#extensions_settings2 .inline-drawer-toggle.inline-drawer-header,
+#user-settings-block h4,
+.standoutHeader {
+    background-image: none;
+}
+
+.expression-holder {
+    left: calc(54px * -0.54);
+    width: calc(54vw - 54px);
+}
+
+.zoomed_avatar,
+.zoomed_avatar img {
+    left: var(--barSize)
+}
+
 
 /* chub.ai character seach CSS. taken from the chubsearch extension */
 #explore-button {
@@ -821,21 +822,20 @@ body.big-avatars {
     width: calc(98vw - var(--barSize));
     z-index: 1;
     top: 0;
-    padding: 0.63rem;
+    right: 0;
+    padding: 0.9rem;
 }
 
 .character-list {
-    flex-grow: 1;
-    overflow-y: auto;
-    margin-top: 8.1rem;
+    display: flex;
+    flex-flow: wrap;
+    padding: 8.1rem 0.9rem 0;
 
     .character-list-item {
         display: inline-flex;
         align-items: flex-start;
         margin: 10px 0;
-        width: 49%;
-        padding: 0.36rem;
-        border-radius: 0.63rem;
+        width: 50%;
 
         img.thumbnail {
             flex: 0 0 100px;
@@ -868,6 +868,7 @@ body.big-avatars {
         }
 
         .info .description {
+            color: var(--SmartThemeEmColor);
             overflow: hidden;
             text-overflow: visble;
             text-align: left;
