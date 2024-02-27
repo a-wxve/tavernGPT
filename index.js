@@ -32,7 +32,7 @@ async function loadHistory() {
 
         if (matchesTimePattern(old_filename) && context.chat.length !== 1) {
             const prompt =
-                'Generate a name for this chat in less than 6 words. Avoid including non-alphanumeric characters, words like "chat", or the user\'s name.';
+                'Generate a name for this chat in as few words as possible. Avoid including non-alphanumeric characters, words like "chat", or the user\'s name.';
             let newName = await generateQuietPrompt(prompt, false, false);
             newName = newName.toString().replace(/^'((?:\\'|[^'])*)'$/, '$1');
 
@@ -441,26 +441,27 @@ async function loadExplorer() {
         return data;
     }
 
-    $('#explore-button .drawer-toggle').on('click', function() {
+    $('#explore-button .drawer-toggle').on('click', async function() {
         var icon = $(this).find('.drawer-icon');
         var drawer = $(this).parent().find('.drawer-content');
         if (drawer.hasClass('resizing')) { return; }
         var drawerWasOpenAlready = $(this).parent().find('.drawer-content').hasClass('openDrawer');
 
         if (!drawerWasOpenAlready) {
+            await displayCharactersInListViewPopup();
+
             $('.openDrawer').not('.pinnedOpen').addClass('resizing').slideToggle(200, 'swing', async function() {
                 await delay(50); $(this).closest('.drawer-content').removeClass('resizing');
             });
             $('.openIcon').toggleClass('closedIcon openIcon');
             $('.openDrawer').not('.pinnedOpen').toggleClass('closedDrawer openDrawer');
+
             icon.toggleClass('openIcon closedIcon');
             drawer.toggleClass('openDrawer closedDrawer');
 
             $(this).closest('.drawer').find('.drawer-content').addClass('resizing').slideToggle(200, 'swing', async function() {
                 await delay(50); $(this).closest('.drawer-content').removeClass('resizing');
             });
-
-            displayCharactersInListViewPopup();
 
         } else if (drawerWasOpenAlready) {
             icon.toggleClass('closedIcon openIcon');
@@ -479,4 +480,5 @@ jQuery(async () => {
     $(getPersona);
     $(loadExplorer);
     $(closeSidebar);
+    $('.expression-holder').appendTo('#sheld');
 });
