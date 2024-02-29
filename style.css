@@ -24,6 +24,11 @@ body {
     background-color: var(--SmartThemeBlurTintColor);
 }
 
+hr {
+    background-image: none;
+    background-color: var(--SmartThemeBodyColor);
+}
+
 body.big-avatars {
 
     .avatar,
@@ -132,7 +137,8 @@ body.big-avatars {
 #ReverseProxyWarningMessage,
 #quickReplyPopoutButton,
 .mes_text br,
-.mes_create_bookmark {
+.mes_create_bookmark,
+#summaryExtensionPopoutButton {
     display: none;
 }
 
@@ -313,6 +319,7 @@ body.big-avatars {
     margin-left: -0.666em;
     z-index: 1;
     width: inherit;
+    order: 13;
 
     .drawer-icon span {
         vertical-align: super;
@@ -454,7 +461,7 @@ body.big-avatars {
 }
 
 #select_chat_div {
-    order: 11;
+    order: 12;
     overflow-y: scroll;
     margin-bottom: 4.05em;
 
@@ -481,7 +488,7 @@ body.big-avatars {
 }
 
 #select_chat_search {
-    order: 10;
+    order: 11;
     max-height: 36px;
     background-color: var(--color1);
 
@@ -855,10 +862,6 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
 
 .search-container {
     position: sticky;
-    z-index: 1;
-    top: 0;
-    left: var(--barSize);
-    right: 0;
     padding: 0 0.9rem;
 }
 
@@ -939,4 +942,84 @@ body img.thumbnail {
 
 .searching {
     filter: grayscale(100%);
+}
+
+/* Mobile layout CSS */
+
+@media screen and (max-width: 1000px) {
+    #sheld {
+        margin: 0;
+        height: 100dvh;
+        max-width: 100dvw !important;
+        border-radius: 0;
+    }
+
+    #top-settings-holder {
+        padding: 0.62rem 0.18rem;
+
+        &:not(.collapsed)~#sheld {
+            filter: brightness(45%)
+        }
+
+        &.collapsed {
+
+            #ai-config-button,
+            #sys-settings-button,
+            #advanced-formatting-button,
+            #WI-SP-button,
+            #logo_block,
+            #extensions-settings-button,
+            #persona-management-button,
+            #user-settings-button,
+            #rightNavHolder,
+            .historyButton,
+            #select_chat_div,
+            #select_chat_search,
+            #explore-button {
+                display: none !important;
+            }
+        }
+    }
+
+    .drawer-content,
+    #explore-button .drawer-content,
+    #left-nav-panel,
+    #right-nav-panel,
+    #character_popup {
+        margin: 0;
+        top: 0 !important;
+        height: 100dvh;
+        left: 3.06rem !important;
+        max-width: calc(100dvw - 3.06rem) !important;
+        min-width: calc(100dvw - 3.06rem) !important;
+        border-radius: 0;
+    }
+
+    #sys-settings-button,
+    #advanced-formatting-button,
+    #WI-SP-button,
+    #logo_block,
+    #extensions-settings-button,
+    #user-settings-button {
+        padding-left: 0;
+        display: flex !important;
+    }
+
+    #leftSendForm,
+    #rightSendForm {
+        align-self: center;
+    }
+
+    #persona-management-button {
+        position: absolute;
+        align-self: center;
+    }
+
+    .page-buttons {
+        flex-flow: row wrap !important;
+    }
+
+    .character-list-item {
+        flex-flow: column;
+    }
 }
