@@ -17,7 +17,7 @@ import {
 } from '../../../group-chats.js';
 import { debounce, delay } from '../../../utils.js';
 
-const extensionName = 'Extension-TavernGPT';
+const extensionName = 'tavernGPT';
 const extensionFolderPath = `scripts/extensions/third-party/${extensionName}`;
 
 async function loadHistory() {
@@ -32,7 +32,7 @@ async function loadHistory() {
 
         if (matchesTimePattern(old_filename) && context.chat.length !== 1) {
             const prompt =
-                'Generate a name for this chat in as few words as possible. Avoid including non-alphanumeric characters, words like "chat", or the user\'s name.';
+                'Generate a name for this chat in as few words as possible. Avoid including special characters, words like "chat", or the user\'s name.';
             let newName = await generateQuietPrompt(prompt, false, false);
             newName = newName.toString().replace(/^'((?:\\'|[^'])*)'$/, '$1');
 
@@ -207,7 +207,7 @@ async function loadExplorer() {
     }
 
     function updateCharacterListInView(characters) {
-        $('.character-list').empty().html(characters.map(generateCharacterListItem).join(''));
+        $('.character-list').html(characters.map(generateCharacterListItem).join(''));
         $('.character-list').scrollTop(0);
     }
 
@@ -306,16 +306,16 @@ async function loadExplorer() {
     }
 
     async function displayCharactersInListViewPopup() {
-        let clone = null;  // Store reference to the cloned image
+        let clone = null;
 
         $('.character-list').on('click', function(event) {
             if (event.target.tagName === 'IMG') {
                 const image = event.target;
 
-                if (clone) {  // If clone exists, remove it
+                if (clone) {
                     document.body.removeChild(clone);
                     clone = null;
-                    return;  // Exit the function
+                    return;
                 }
 
                 const rect = image.getBoundingClientRect();
@@ -388,20 +388,28 @@ async function loadExplorer() {
 
         $('#characterSearchInput').on('change', handleSearch);
         $('#characterSearchButton').on('click', handleSearch);
-        $('#includeTags').on('keyup', handleSearch);
-        $('#excludeTags').on('keyup', handleSearch);
+
+        $('#includeTags').on('keyup', function(e) {
+            $('#pageNumber').val(1);
+            handleSearch(e);
+        });
+        $('#excludeTags').on('keyup', function(e) {
+            $('#pageNumber').val(1);
+            handleSearch(e);
+        });
+
         $('#findCount').on('change', handleSearch);
         $('#sortOrder').on('change', handleSearch);
         $('#nsfwCheckbox').on('change', handleSearch);
 
         $('#pageNumber').on('change', handleSearch);
         $('#pageUpButton').on('click', function(e) {
-            $('#pageNumber').val(parseInt($('#pageNumber').val().toString()) + 1);
+            $('#pageNumber').val(Math.max(1, parseInt($('#pageNumber').val().toString()) + 1));
             handleSearch(e);
         }
         );
         $('#pageDownButton').on('click', function(e) {
-            $('#pageNumber').val(parseInt($('#pageNumber').val().toString()) - 1);
+            $('#pageNumber').val(Math.max(1, parseInt($('#pageNumber').val().toString()) - 1));
             handleSearch(e);
         }
         );
@@ -445,13 +453,14 @@ async function loadExplorer() {
         var icon = $(this).find('.drawer-icon');
         var drawer = $(this).parent().find('.drawer-content');
         if (drawer.hasClass('resizing')) { return; }
-        var drawerWasOpenAlready = $(this).parent().find('.drawer-content').hasClass('openDrawer');
+        var drawerOpen = $(this).parent().find('.drawer-content').hasClass('openDrawer');
 
-        if (!drawerWasOpenAlready) {
+        if (!drawerOpen) {
             await displayCharactersInListViewPopup();
 
             $('.openDrawer').not('.pinnedOpen').addClass('resizing').slideToggle(200, 'swing', async function() {
-                await delay(50); $(this).closest('.drawer-content').removeClass('resizing');
+                await delay(50);
+                $(this).closest('.drawer-content').removeClass('resizing');
             });
             $('.openIcon').toggleClass('closedIcon openIcon');
             $('.openDrawer').not('.pinnedOpen').toggleClass('closedDrawer openDrawer');
@@ -460,10 +469,11 @@ async function loadExplorer() {
             drawer.toggleClass('openDrawer closedDrawer');
 
             $(this).closest('.drawer').find('.drawer-content').addClass('resizing').slideToggle(200, 'swing', async function() {
-                await delay(50); $(this).closest('.drawer-content').removeClass('resizing');
+                await delay(50);
+                $(this).closest('.drawer-content').removeClass('resizing');
             });
 
-        } else if (drawerWasOpenAlready) {
+        } else if (drawerOpen) {
             icon.toggleClass('closedIcon openIcon');
 
             $('.openDrawer').not('.pinnedOpen').addClass('resizing').slideToggle(200, 'swing', async function() {
@@ -475,7 +485,45 @@ async function loadExplorer() {
     });
 }
 
+async function settings() {
+    const settingsHTML = await $.get(`${extensionFolderPath}/settings.html`);
+    $('#extensions_settings2').append(settingsHTML);
+
+    $('#notificationSettings').on('click', function() {
+        console.log('Requesting notif permit...');
+        Notification.requestPermission().then((permission) => {
+            if (permission === 'granted') {
+                eventSource.on('message_received', (messageId) => {
+                    // if (document.hasFocus()) return;
+
+                    const context = getContext();
+                    const message = context.chat[messageId];
+
+                    if (!message || message.mes === '' || message.mes === '...' || message.is_user) return;
+
+                    const avatar = message.force_avatar ?? `/thumbnail?type=avatar&file=${encodeURIComponent(context.characters[context.characterId]?.avatar)}`;
+
+                    console.log('Sending notifications...')
+                    const notification = new Notification(message.name, {
+                        body: message.mes,
+                        icon: location.origin + avatar,
+                    });
+
+                    notification.onclick = () => {
+                        window.focus();
+                    };
+
+                    setTimeout(notification.close.bind(notification), 10000);
+                });
+            } else {
+                console.warn('Notifications not allowed');
+            }
+        });
+    });
+}
+
 jQuery(async () => {
+    $(settings);
     $(loadHistory);
     $(getPersona);
     $(loadExplorer);
