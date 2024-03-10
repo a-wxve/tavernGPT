@@ -633,15 +633,6 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
     body.bubblechat & {
         background-color: transparent;
 
-        .mesAvatarWrapper {
-
-            .avatar,
-            .avatar img {
-                height: 50px;
-                border-radius: 50%;
-            }
-        }
-
         .mes_text {
             width: fit-content;
             padding: 0.27rem 0.54rem;

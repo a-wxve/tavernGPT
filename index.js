@@ -109,29 +109,31 @@ async function loadHistory() {
 }
 
 async function getPersona() {
-    const response = await fetch('/api/settings/get', {
-        method: 'POST',
-        headers: getRequestHeaders(),
-        body: JSON.stringify({}),
-        cache: 'no-cache',
+    eventSource.on('settings_updated', async () => {
+        const response = await fetch('/api/settings/get', {
+            method: 'POST',
+            headers: getRequestHeaders(),
+            body: JSON.stringify({}),
+            cache: 'no-cache',
+        });
+
+        if (!response.ok) {
+            toastr.error('Settings could not be loaded. Try reloading the page.');
+            throw new Error('Error getting settings');
+        }
+
+        const data = await response.json();
+        let settings = JSON.parse(data.settings);
+
+        let user_avatar = settings.user_avatar;
+        let avatar_img = getUserAvatar(user_avatar);
+        $('#persona-management-button .drawer-icon.fa-solid.fa-face-smile').html(
+            `<img class='persona_avatar' src='${avatar_img}'/>`,
+        );
+        $('#persona-management-button .drawer-icon.fa-solid.fa-face-smile').append(
+            `<span> ${name1}</span>`,
+        );
     });
-
-    if (!response.ok) {
-        toastr.error('Settings could not be loaded. Try reloading the page.');
-        throw new Error('Error getting settings');
-    }
-
-    const data = await response.json();
-    let settings = JSON.parse(data.settings);
-
-    let user_avatar = settings.user_avatar;
-    let avatar_img = getUserAvatar(user_avatar);
-    $('#persona-management-button .drawer-icon.fa-solid.fa-face-smile').html(
-        `<img class='persona_avatar' src='${avatar_img}'/>`,
-    );
-    $('#persona-management-button .drawer-icon.fa-solid.fa-face-smile').append(
-        `<span> ${name1}</span>`,
-    );
 
     $('#persona-management-button .drawer-icon.fa-solid.fa-face-smile > *').on(
         'click',
