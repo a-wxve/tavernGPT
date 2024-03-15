@@ -516,11 +516,19 @@ async function settings() {
     });
 }
 
+function splashText() {
+    var splashes = ['desu~', 'desu~!', 'DESU~!', 'Jimmy Apples!', 'Sam Altman!', 'Better than ChatGPT!', 'Splash Text!', 'The Singularity!', 'AGI!', 'Shocking!', 'Shocking the industry!', 'e/acc!', 'Acceleration!', 'AGI achieved internally!', 'Q*!', 'GPT-7!'];
+
+    $("#version_display_welcome").after('<p id="subtitle">Loading...</p>');
+    $('#subtitle').html($("#subtitle").html().replace("Loading...", splashes[Math.floor(Math.random() * splashes.length)]));
+}
+
 jQuery(async () => {
     $(settings);
     $(loadHistory);
     $(getPersona);
     $(loadExplorer);
     $(closeSidebar);
+    $(splashText);
     $('.expression-holder').appendTo('#sheld');
 });

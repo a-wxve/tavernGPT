@@ -1022,3 +1022,28 @@ body img.thumbnail {
         flex-flow: column;
     }
 }
+
+/* Spash text */
+#subtitle {
+    text-align: center;
+    color: #FFFF00;
+    text-shadow: 1px 1px 0px #000;
+    position: relative;
+    margin: 0;
+    height: 0;
+    left: 180px;
+    bottom: 9px;
+    animation: subtitle .27s;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+}
+
+@keyframes subtitle {
+    0% {
+        transform: scale(0.875) rotate(-9deg)
+    }
+
+    100% {
+        transform: scale(1) rotate(-9deg)
+    }
+}
