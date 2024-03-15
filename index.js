@@ -171,20 +171,13 @@ async function loadExplorer() {
     async function downloadCharacter(input) {
         const url = input.trim();
         console.debug('Custom content import started', url);
+
         let request = null;
-        // try /api/content/import first and then /import_custom
-        request = await fetch('/api/content/import', {
+        request = await fetch('/api/content/importURL', {
             method: 'POST',
             headers: getRequestHeaders(),
             body: JSON.stringify({ url }),
         });
-        if (!request.ok) {
-            request = await fetch('/import_custom', {
-                method: 'POST',
-                headers: getRequestHeaders(),
-                body: JSON.stringify({ url }),
-            });
-        }
 
         if (!request.ok) {
             toastr.info('Click to go to the character page', 'Custom content import failed', { onclick: () => window.open(`https://www.chub.ai/characters/${url}`, '_blank') });
@@ -310,7 +303,7 @@ async function loadExplorer() {
     async function displayCharactersInListViewPopup() {
         let clone = null;
 
-        $('.character-list').on('click', function(event) {
+        $('.character-list').off().on('click', function(event) {
             if (event.target.tagName === 'IMG') {
                 const image = event.target;
 
@@ -344,7 +337,7 @@ async function loadExplorer() {
             }
         });
 
-        $('.character-list').on('click', async function(event) {
+        $('.character-list').off().on('click', async function(event) {
             if (event.target.classList.contains('download-btn')) {
                 downloadCharacter(event.target.getAttribute('data-path'));
             }
@@ -352,7 +345,6 @@ async function loadExplorer() {
 
         const executeCharacterSearchDebounced = debounce((options) => executeCharacterSearch(options), 750);
 
-        // Combine the 'keydown' and 'click' event listeners for search functionality, debounce the inputs
         const handleSearch = async function(e) {
             console.log('handleSearch', e);
             if (e.type === 'keydown' && e.key !== 'Enter' && e.target.id !== 'includeTags' && e.target.id !== 'excludeTags') {
@@ -388,35 +380,33 @@ async function loadExplorer() {
             });
         };
 
-        $('#characterSearchInput').on('change', handleSearch);
-        $('#characterSearchButton').on('click', handleSearch);
+        $('#characterSearchInput').off().on('change', handleSearch);
+        $('#characterSearchButton').off().on('click', handleSearch);
 
-        $('#includeTags').on('keyup', function(e) {
+        $('#includeTags').off().on('keyup', function(e) {
             $('#pageNumber').val(1);
             handleSearch(e);
         });
-        $('#excludeTags').on('keyup', function(e) {
+        $('#excludeTags').off().on('keyup', function(e) {
             $('#pageNumber').val(1);
             handleSearch(e);
         });
 
-        $('#findCount').on('change', handleSearch);
-        $('#sortOrder').on('change', handleSearch);
-        $('#nsfwCheckbox').on('change', handleSearch);
+        $('#findCount').off().on('change', handleSearch);
+        $('#sortOrder').off().on('change', handleSearch);
+        $('#nsfwCheckbox').off().on('change', handleSearch);
+        $('#pageNumber').off().on('change', handleSearch);
 
-        $('#pageNumber').on('change', handleSearch);
-        $('#pageUpButton').on('click', function(e) {
+        $('#pageUpButton').off().on('click', function(e) {
             $('#pageNumber').val(Math.max(1, parseInt($('#pageNumber').val().toString()) + 1));
             handleSearch(e);
         }
         );
-        $('#pageDownButton').on('click', function(e) {
+        $('#pageDownButton').off().on('click', function(e) {
             $('#pageNumber').val(Math.max(1, parseInt($('#pageNumber').val().toString()) - 1));
             handleSearch(e);
         }
         );
-
-        $('#characterSearchButton').trigger('click');
     }
 
     async function getCharacter(fullPath) {
@@ -474,6 +464,8 @@ async function loadExplorer() {
                 await delay(50);
                 $(this).closest('.drawer-content').removeClass('resizing');
             });
+
+            $('#characterSearchButton').trigger('click');
 
         } else if (drawerOpen) {
             icon.toggleClass('closedIcon openIcon');
