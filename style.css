@@ -21,7 +21,6 @@ body {
         "Open Sans",
         "Helvetica Neue",
         sans-serif;
-    background-color: var(--SmartThemeBlurTintColor);
 }
 
 hr {
@@ -80,6 +79,10 @@ body.big-avatars {
                 transform: rotate(36deg) translateY(-0.18rem);
             }
         }
+    }
+
+    &:has(.drawer-icon.openIcon) .closeSidebar {
+        display: none;
     }
 }
 
@@ -155,8 +158,9 @@ body.big-avatars {
     order: 1;
 
     .drawer-icon {
+
         &::before {
-            content: "\f013"
+            content: "\f013";
         }
 
         &::after {
@@ -591,7 +595,7 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
 
 .closeSidebar {
     position: absolute;
-    left: calc(17.1rem + 1px);
+    left: calc(17.1rem);
     top: 45%;
     background-color: transparent;
     border: none;
