@@ -947,8 +947,31 @@ body img.thumbnail {
     filter: grayscale(100%);
 }
 
-/* Mobile layout CSS */
+/* Spash text */
+#subtitle {
+    text-align: center;
+    color: #FFFF00;
+    text-shadow: 1px 1px 0px #000;
+    position: relative;
+    margin: 0;
+    height: 0;
+    left: 180px;
+    bottom: 9px;
+    animation: subtitle .27s alternate infinite;
+}
 
+@keyframes subtitle {
+    0% {
+        transform: scale(0.875) rotate(-9deg)
+    }
+
+    100% {
+        transform: scale(1) rotate(-9deg)
+    }
+}
+
+
+/* Mobile layout CSS */
 @media screen and (max-width: 1000px) {
     #sheld {
         margin: 0;
@@ -1021,27 +1044,8 @@ body img.thumbnail {
     .character-list-item {
         flex-flow: column;
     }
-}
 
-/* Spash text */
-#subtitle {
-    text-align: center;
-    color: #FFFF00;
-    text-shadow: 1px 1px 0px #000;
-    position: relative;
-    margin: 0;
-    height: 0;
-    left: 180px;
-    bottom: 9px;
-    animation: subtitle .27s alternate infinite;
-}
-
-@keyframes subtitle {
-    0% {
-        transform: scale(0.875) rotate(-9deg)
-    }
-
-    100% {
-        transform: scale(1) rotate(-9deg)
+    #subtitle {
+        left: 9px;
     }
 }
