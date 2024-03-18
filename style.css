@@ -634,6 +634,19 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
 }
 
 .mes {
+    .mes_block {
+        transform: none !important;
+
+        .timestamp {
+            order: 1;
+        }
+
+        .icon-svg.timestamp-icon {
+            height: 1rem;
+            align-self: center;
+        }
+    }
+
     body.bubblechat & {
         background-color: transparent;
 
@@ -731,19 +744,6 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
             .timestamp {
                 align-self: end;
             }
-        }
-    }
-
-    .mes_block {
-        transform: none !important;
-
-        .timestamp {
-            order: 1;
-        }
-
-        .icon-svg.timestamp-icon {
-            height: 1rem;
-            align-self: center;
         }
     }
 
@@ -948,6 +948,16 @@ body img.thumbnail {
 }
 
 /* Spash text */
+@keyframes subtitle {
+    0% {
+        transform: scale(0.875) rotate(-9deg)
+    }
+
+    100% {
+        transform: scale(1) rotate(-9deg)
+    }
+}
+
 #subtitle {
     text-align: center;
     color: #FFFF00;
@@ -959,17 +969,6 @@ body img.thumbnail {
     bottom: 9px;
     animation: subtitle .27s alternate infinite;
 }
-
-@keyframes subtitle {
-    0% {
-        transform: scale(0.875) rotate(-9deg)
-    }
-
-    100% {
-        transform: scale(1) rotate(-9deg)
-    }
-}
-
 
 /* Mobile layout CSS */
 @media screen and (max-width: 1000px) {
