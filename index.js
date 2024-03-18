@@ -2,14 +2,17 @@ import {
     eventSource,
     getRequestHeaders,
     getUserAvatar,
-    name1
+    name1,
+    saveSettingsDebounced,
 } from '../../../../script.js';
-import { getContext } from '../../../extensions.js';
+import { extension_settings, getContext, loadExtensionSettings } from '../../../extensions.js';
 import { explore } from './explore.js';
 import { history } from './history.js';
 
-const extensionName = 'tavernGPT';
+export const extensionName = 'tavernGPT';
 export const extensionFolderPath = `scripts/extensions/third-party/${extensionName}`;
+const extensionSettings = extension_settings[extensionName];
+const defaultSettings = {};
 
 async function persona() {
     eventSource.on('settings_updated', async () => {
@@ -69,6 +72,15 @@ async function settings() {
     const settingsHTML = await $.get(`${extensionFolderPath}/settings.html`);
     $('#extensions_settings2').append(settingsHTML);
 
+    async function loadSettings() {
+        extension_settings[extensionName] = extension_settings[extensionName] || {};
+        if (Object.keys(extension_settings[extensionName]).length === 0) {
+            Object.assign(extension_settings[extensionName], defaultSettings);
+        }
+
+        $("#rename_chats").prop("checked", extension_settings[extensionName].rename_chats).trigger("input");
+    }
+
     $('#notificationSettings').on('click', function() {
         console.log('Requesting notification permit...');
         Notification.requestPermission().then((permission) => {
@@ -100,6 +112,14 @@ async function settings() {
             }
         });
     });
+
+    $("#rename_chats").on("click", function() {
+        const value = Boolean($(event.target).prop("checked"));
+        extension_settings[extensionName].rename_chats = value;
+        saveSettingsDebounced();
+    });
+
+    loadSettings();
 }
 
 function splashText() {

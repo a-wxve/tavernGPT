@@ -9,7 +9,7 @@ import {
     getThumbnailUrl,
     this_chid
 } from '../../../../script.js';
-import { getContext } from '../../../extensions.js';
+import { extension_settings, getContext } from '../../../extensions.js';
 import {
     getGroupAvatar,
     getGroupPastChats,
@@ -17,7 +17,7 @@ import {
     selected_group
 } from '../../../group-chats.js';
 import { debounce, delay, onlyUnique, sortMoments, timestampToMoment } from '../../../utils.js';
-import { extensionFolderPath } from './index.js';
+import { extensionFolderPath, extensionName } from './index.js';
 
 async function displayPastChats() {
     function getCurrentChatDetails() {
@@ -283,6 +283,8 @@ export async function history() {
 
     eventSource.on('chatLoaded', async () => {
         await displayPastChats();
-        await renameChat();
+        if (extension_settings[extensionName].rename_chats) {
+            await renameChat();
+        }
     });
 }
