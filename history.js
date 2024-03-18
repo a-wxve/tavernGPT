@@ -70,9 +70,8 @@ async function displayPastChats() {
         }
     }
 
-
     function getCategoryHeader(category) {
-        const header = $('<h3 class=chat-category></h3>');
+        const header = $('<h4 class=chat-category></h4>');
         header.text(category);
         return header;
     }
@@ -184,11 +183,17 @@ async function displayPastChats() {
             });
     }
 
-    displayChats('');
+    displayChats('');;
+    $('.select_chat_block_filename.select_chat_block_filename_item').each(function() {
+        var originalText = $(this).text();
+
+        var strippedText = originalText.split('.')[0];
+
+        $(this).text(strippedText);
+    });
 
     const debouncedDisplay = debounce((searchQuery) => { displayChats(searchQuery); }, 300);
 
-    // Define the search input listener
     $('#select_chat_search').on('input', function() {
         const searchQuery = $(this).val();
         debouncedDisplay(searchQuery);

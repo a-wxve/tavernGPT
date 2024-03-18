@@ -467,10 +467,25 @@ body.big-avatars {
 #select_chat_div {
     order: 12;
     overflow-y: scroll;
-    margin-bottom: 4.05em;
+    margin-bottom: 3.6em;
+
+    .select_chat_block_wrapper:not(:hover) .fa-solid {
+        display: none;
+    }
+
+    h4 {
+        margin: 0.54rem 0.27rem;
+    }
+
+    h4+.select_chat_block_wrapper {
+        .select_chat_block {
+            margin-top: 0;
+        }
+    }
 
     .select_chat_block_filename.select_chat_block_filename_item {
         opacity: 100%;
+        font-size: inherit;
     }
 
     #select_chat_name_wrapper {
@@ -591,6 +606,11 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
     margin-right: var(--outsideMargin);
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+
+    #subtitle {
+        top: 9px;
+        left: 63px;
+    }
 }
 
 .closeSidebar {
