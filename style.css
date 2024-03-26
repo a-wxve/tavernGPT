@@ -470,7 +470,7 @@ body.big-avatars {
     margin-bottom: 3.6em;
 
     .select_chat_block_wrapper:not(:hover) .fa-solid {
-        display: none;
+        visibility: hidden;
     }
 
     h4 {
@@ -840,7 +840,7 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
 
 .zoomed_avatar,
 .zoomed_avatar img {
-    left: var(--barSize)
+    z-index: 10000;
 }
 
 
@@ -970,7 +970,7 @@ body img.thumbnail {
 /* Spash text */
 @keyframes subtitle {
     0% {
-        transform: scale(0.875) rotate(-9deg)
+        transform: scale(0.9) rotate(-9deg)
     }
 
     100% {
