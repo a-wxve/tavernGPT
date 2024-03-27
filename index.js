@@ -138,7 +138,9 @@ jQuery(async () => {
     $(sidebarToggle);
     $(splashText);
     $('.expression-holder').appendTo('#sheld');
-    $(document).keydown(function(e) {
+
+    $('#sheld').attr('tabindex', '0');
+    $('#sheld').keydown(function(e) {
         switch (e.which) {
             case 37:
                 $(".last_mes .swipe_left").click();
