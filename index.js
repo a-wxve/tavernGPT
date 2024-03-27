@@ -149,7 +149,7 @@ jQuery(async () => {
                 }
             case 39:
                 if (!$('#curEditTextarea').is(':focus')) {
-                    $(".last_mes .swipe_left").click();
+                    $(".last_mes .swipe_right").click();
                     break;
                 }
             default: return;
