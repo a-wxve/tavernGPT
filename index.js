@@ -143,12 +143,12 @@ jQuery(async () => {
     $('#sheld').keydown(function(e) {
         switch (e.which) {
             case 37:
-                if (!$('#curEditTextarea').is(':focus')) {
+                if (!$('textarea').is(':focus')) {
                     $(".last_mes .swipe_left").click();
                     break;
                 }
             case 39:
-                if (!$('#curEditTextarea').is(':focus')) {
+                if (!$('textarea').is(':focus')) {
                     $(".last_mes .swipe_right").click();
                     break;
                 }
