@@ -665,6 +665,10 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
             height: 1rem;
             align-self: center;
         }
+
+        .mes_edit_buttons {
+            height: 0;
+        }
     }
 
     body.bubblechat & {
@@ -688,6 +692,17 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
             h4,
             a:not(.fa-solid) {
                 margin-left: 10px;
+            }
+
+            #curEditTextarea {
+                padding: 0;
+                margin: 10px;
+                resize: none;
+                background-color: transparent;
+                font-family: inherit;
+                font-weight: inherit;
+                line-height: inherit;
+                border: none;
             }
         }
 
