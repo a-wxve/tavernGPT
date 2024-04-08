@@ -667,7 +667,22 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
         }
 
         .mes_edit_buttons {
-            height: 0;
+            .menu_button {
+                height: calc(var(--mainFontSize) + 0.18rem);
+                aspect-ratio: 3/1;
+            }
+
+            padding: 0;
+        }
+
+        #curEditTextarea {
+            padding: 0;
+            resize: none;
+            background-color: transparent;
+            font-family: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+            border: none;
         }
     }
 
@@ -695,14 +710,7 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
             }
 
             #curEditTextarea {
-                padding: 0;
                 margin: 10px;
-                resize: none;
-                background-color: transparent;
-                font-family: inherit;
-                font-weight: inherit;
-                line-height: inherit;
-                border: none;
             }
         }
 
@@ -720,12 +728,12 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
             }
 
             .mes_block {
-                padding-left: 63px;
+                padding-left: 60.3px;
                 padding-right: 10px;
                 overflow-y: hidden;
 
                 .mes_text {
-                    float: right;
+                    margin-left: auto;
                     border-top-left-radius: 27px;
                     border-top-right-radius: 3px;
                     background-color: var(--SmartThemeUserMesBlurTintColor);
