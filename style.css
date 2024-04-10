@@ -559,13 +559,37 @@ body.big-avatars {
 
     #form_sheld {
 
+        /* Nudges */
+        .nudge-container {
+            display: none;
+            grid-auto-flow: column;
+            gap: 0.45rem;
+            margin: 0.27rem 0;
+
+            .nudge-container-2 {
+                gap: 0.45rem;
+                max-width: calc(calc(var(--sheldWidth) / 2) - 0.63rem - 0.45rem)
+            }
+
+            .nudge_button {
+                border-radius: 0.9rem;
+                background-color: var(--color1);
+                padding: 0.72rem;
+                margin: 0;
+
+                span {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+            }
+        }
+
         #send_form {
             border-radius: 0;
             background-color: transparent !important;
 
             #nonQRFormItems {
                 border-radius: 0.9rem;
-                border: 1px var(--color2) solid;
                 background-color: var(--color1);
 
                 #extensionsMenuButton.fa-magic-wand-sparkles::before {
@@ -710,6 +734,7 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
             }
 
             #curEditTextarea {
+                width: -webkit-fill-available;
                 margin: 10px;
             }
         }

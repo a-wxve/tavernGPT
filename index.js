@@ -1,9 +1,11 @@
 import {
     eventSource,
+    generateQuietPrompt,
     getRequestHeaders,
     getUserAvatar,
     name1,
     saveSettingsDebounced,
+    sendMessageAsUser,
 } from '../../../../script.js';
 import { extension_settings, getContext, loadExtensionSettings } from '../../../extensions.js';
 import { explore } from './explore.js';
@@ -81,41 +83,15 @@ async function settings() {
         $("#rename_chats").prop("checked", extension_settings[extensionName].rename_chats).trigger("input");
     }
 
-    $('#notificationSettings').on('click', function() {
-        console.log('Requesting notification permit...');
-        Notification.requestPermission().then((permission) => {
-            if (permission === 'granted') {
-                eventSource.on('message_received', (messageId) => {
-                    // if (document.hasFocus()) return;
-
-                    const context = getContext();
-                    const message = context.chat[messageId];
-
-                    if (!message || message.mes === '' || message.mes === '...' || message.is_user) return;
-
-                    const avatar = message.force_avatar ?? `/thumbnail?type=avatar&file=${encodeURIComponent(context.characters[context.characterId]?.avatar)}`;
-
-                    console.log('Sending notifications...')
-                    const notification = new Notification(message.name, {
-                        body: message.mes,
-                        icon: location.origin + avatar,
-                    });
-
-                    notification.onclick = () => {
-                        window.focus();
-                    };
-
-                    setTimeout(notification.close.bind(notification), 10000);
-                });
-            } else {
-                console.warn('Notifications not allowed.');
-            }
-        });
-    });
-
     $("#rename_chats").on("click", function() {
         const value = Boolean($(event.target).prop("checked"));
         extension_settings[extensionName].rename_chats = value;
+        saveSettingsDebounced();
+    });
+
+    $("#enable_nudges").on("click", function() {
+        const value = Boolean($(event.target).prop("checked"));
+        extension_settings[extensionName].enable_nudges = value;
         saveSettingsDebounced();
     });
 
@@ -130,6 +106,39 @@ function splashText() {
     $('#subtitle').html(splashText);
 }
 
+async function nudges() {
+    if (extension_settings[extensionName].enable_nudges) {
+        const nudgeHTML = await $.get(`${extensionFolderPath}/nudges.html`);
+        $('#form_sheld').prepend(nudgeHTML);
+
+        eventSource.on('generation_ended', async () => {
+            eventSource.on('message_received', async () => {
+                const prompt = 'Generate 4 one line replies from {{user}}\'s point of view using the chat history so far as a guideline for {{user}}\'s writing style in JSON format with the keys "prompt1", "prompt2", "prompt3", and "prompt4". Be sure to "quote" dialogue. Output only the JSON without any additional commentary.';
+                let nudgesString = await generateQuietPrompt(prompt, false, false);
+                console.log(nudgesString);
+                var nudges = JSON.parse(nudgesString);
+
+                $('.nudge_button').each(function(index) {
+                    if (nudges['prompt' + (index + 1)]) {
+                        var promptText = nudges['prompt' + (index + 1)];
+                        $(this).append('<span>' + promptText + '</span>');
+                    }
+                });
+
+                $('.nudge-container').css('display', 'grid');
+            })
+        });
+
+        $('.nudge_button').on('click', async () => {
+            let prompt = $(this).find('span').val();
+            console.log(prompt)
+            //await sendMessageAsUser(prompt, "");
+
+            $('.nudge-container').css('display', 'none');
+        })
+    }
+}
+
 jQuery(async () => {
     $(settings);
     $(history);
@@ -137,6 +146,7 @@ jQuery(async () => {
     $(explore);
     $(sidebarToggle);
     $(splashText);
+    $(nudges)
     $('.expression-holder').appendTo('#sheld');
 
     $('#sheld').attr('tabindex', '0');
