@@ -5,15 +5,13 @@ import {
     getUserAvatar,
     name1,
     saveSettingsDebounced,
-    sendMessageAsUser,
 } from '../../../../script.js';
-import { extension_settings, getContext, loadExtensionSettings } from '../../../extensions.js';
+import { extension_settings } from '../../../extensions.js';
 import { explore } from './explore.js';
 import { history } from './history.js';
 
 export const extensionName = 'tavernGPT';
 export const extensionFolderPath = `scripts/extensions/third-party/${extensionName}`;
-const extensionSettings = extension_settings[extensionName];
 const defaultSettings = {};
 
 async function persona() {
