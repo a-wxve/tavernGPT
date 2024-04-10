@@ -156,12 +156,14 @@ export async function explore() {
                 const rect = image.getBoundingClientRect();
 
                 clone = image.cloneNode(true);
-                clone.style.position = 'absolute';
-                clone.style.top = `${rect.top + window.scrollY}px`;
-                clone.style.left = `${rect.left + window.scrollX}px`;
-                clone.style.transform = 'scale(4)';
-                clone.style.zIndex = 99999;
-                clone.style.objectFit = 'contain';
+                if (clone instanceof HTMLElement) {
+                    clone.style.position = 'absolute';
+                    clone.style.top = `${rect.top + window.scrollY}px`;
+                    clone.style.left = `${rect.left + window.scrollX}px`;
+                    clone.style.transform = 'scale(4)';
+                    clone.style.zIndex = '99999';
+                    clone.style.objectFit = 'contain';
+                }
 
                 document.body.appendChild(clone);
 

@@ -13,10 +13,11 @@ import { extension_settings, getContext } from '../../../extensions.js';
 import {
     getGroupAvatar,
     getGroupPastChats,
+    groups,
     renameGroupChat,
     selected_group
 } from '../../../group-chats.js';
-import { debounce, delay, onlyUnique, sortMoments, timestampToMoment } from '../../../utils.js';
+import { debounce, delay, onlyUnique, timestampToMoment } from '../../../utils.js';
 import { extensionFolderPath, extensionName } from './index.js';
 
 async function displayPastChats() {
