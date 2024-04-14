@@ -114,7 +114,7 @@ export async function explore() {
         characters = await searchCharacters(options).catch();
 
         if (characters && characters.length > 0) {
-            console.log('Updating character list....');
+            console.log('Updating character list...');
             updateCharacterListInView(characters);
         } else {
             console.log('No characters found.');
@@ -167,7 +167,6 @@ export async function explore() {
 
                 document.body.appendChild(clone);
 
-                // Prevent this click event from reaching the document's click listener
                 event.stopPropagation();
             }
         });

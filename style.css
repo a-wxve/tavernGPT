@@ -631,7 +631,7 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 
-    #subtitle {
+    #splash {
         top: 9px;
         left: 63px;
     }
@@ -1016,7 +1016,7 @@ body img.thumbnail {
 }
 
 /* Spash text */
-@keyframes subtitle {
+@keyframes splash {
     0% {
         transform: scale(0.9) rotate(-9deg)
     }
@@ -1026,8 +1026,9 @@ body img.thumbnail {
     }
 }
 
-#subtitle {
+#splash {
     text-align: center;
+    font-style: normal;
     color: #FFFF00;
     text-shadow: 1px 1px 0px #000;
     position: relative;
@@ -1035,7 +1036,7 @@ body img.thumbnail {
     height: 0;
     left: 180px;
     bottom: 9px;
-    animation: subtitle .27s alternate infinite;
+    animation: splash .27s alternate infinite;
 }
 
 /* Mobile layout CSS */
@@ -1112,7 +1113,7 @@ body img.thumbnail {
         flex-flow: column;
     }
 
-    #subtitle {
+    #splash {
         left: 9px;
     }
 }
