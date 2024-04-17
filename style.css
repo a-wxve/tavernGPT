@@ -1087,6 +1087,7 @@ body img.thumbnail {
         max-width: calc(100dvw - 3.06rem) !important;
         min-width: calc(100dvw - 3.06rem) !important;
         border-radius: 0;
+        z-index: 3000;
     }
 
     #sys-settings-button,
@@ -1114,6 +1115,7 @@ body img.thumbnail {
     }
 
     #splash {
-        left: 9px;
+        top: 9px;
+        left: 45px;
     }
 }
