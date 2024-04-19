@@ -142,7 +142,7 @@ body.big-avatars {
 .mes_text br,
 .mes_create_bookmark,
 #summaryExtensionPopoutButton {
-    display: none;
+    display: none !important;
 }
 
 #sys-settings-button,
@@ -522,15 +522,12 @@ body.big-avatars {
     position: fixed;
     top: 0;
     max-height: 100dvh !important;
-    height: calc(100dvh - 27px);
-    width: calc(var(--panelSize) - 1.8rem);
+    height: 100dvh;
+    width: var(--panelSize);
     right: inherit;
     left: var(--barSize);
-    margin: var(--outsideMargin) 0 var(--outsideMargin) var(--outsideMargin);
     padding: 0.63rem;
-    border-radius: 0.9rem;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+    border-radius: 0;
     background-color: var(--SmartThemeChatTintColor);
     box-shadow: none;
 }
@@ -539,12 +536,11 @@ body.big-avatars {
     left: var(--barSize);
     max-width: calc(100dvw - var(--barSize)) !important;
     max-height: 100dvh;
-    height: calc(100dvh - 27px);
+    height: 100dvh;
     top: 0;
     background-color: var(--SmartThemeChatTintColor);
-    border-radius: 0.9rem;
-    margin: var(--outsideMargin) auto;
     padding: 0.63rem;
+    -webkit-backdrop-filter: blur(calc(var(--SmartThemeBlurStrength)));
 
     &.collapsed {
         left: 0;
@@ -627,9 +623,6 @@ body.big-avatars {
 body:has(#character_popup[style*="display: flex"])>#sheld {
     left: initial;
     width: calc(100dvw - var(--barSize) - var(--panelSize));
-    margin-right: var(--outsideMargin);
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
 
     #splash {
         top: 9px;
@@ -711,6 +704,7 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
     }
 
     body.bubblechat & {
+        border-radius: 0px;
         background-color: transparent;
 
         .mes_text {
@@ -901,9 +895,7 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
     }
 
     & .drawer-content {
-        width: calc(100dvw - var(--barSize) - calc(var(--outsideMargin) * 2));
-        margin: var(--outsideMargin);
-        border-radius: 0.9rem;
+        width: calc(100dvw - var(--barSize));
     }
 }
 
