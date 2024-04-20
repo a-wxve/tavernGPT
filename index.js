@@ -78,17 +78,18 @@ async function settings() {
             Object.assign(extension_settings[extensionName], defaultSettings);
         }
 
-        $("#rename_chats").prop("checked", extension_settings[extensionName].rename_chats).trigger("input");
+        $('#rename_chats').prop('checked', extension_settings[extensionName].rename_chats).trigger('input');
+        $('#enable_nudges').prop('checked', extension_settings[extensionName].enable_nudges).trigger('input');
     }
 
-    $("#rename_chats").on("click", function() {
-        const value = Boolean($(event.target).prop("checked"));
+    $('#rename_chats').on('click', function(e) {
+        const value = Boolean($(e.target).prop('checked'));
         extension_settings[extensionName].rename_chats = value;
         saveSettingsDebounced();
     });
 
-    $("#enable_nudges").on("click", function() {
-        const value = Boolean($(event.target).prop("checked"));
+    $('#enable_nudges').on('click', function(e) {
+        const value = Boolean($(e.target).prop('checked'));
         extension_settings[extensionName].enable_nudges = value;
         saveSettingsDebounced();
     });
@@ -101,9 +102,11 @@ function splashText() {
 
     function checkAndSet() {
         if ($('#version_display_welcome').length) {
-            $("#version_display_welcome").after('<p id="splash">Loading...</p>');
-            let splash = splashes[Math.floor(Math.random() * splashes.length)];
-            $('#splash').html(splash);
+            $('#version_display_welcome').after('<p id="splash">Loading...</p>');
+            $('#splash').html(splashes[Math.floor(Math.random() * splashes.length)]);
+            $('#splash').on('click', function() {
+                $('#splash').html(splashes[Math.floor(Math.random() * splashes.length)]);
+            });
         } else {
             setTimeout(checkAndSet, 50);
         }
@@ -126,8 +129,8 @@ async function nudges() {
 
                 $('.nudge_button').each(function(index) {
                     if (nudges['prompt' + (index + 1)]) {
-                        var promptText = nudges['prompt' + (index + 1)];
-                        $(this).append('<span>' + promptText + '</span>');
+                        let prompt = nudges['prompt' + (index + 1)];
+                        $(this).append('<span id="nudge_prompt">' + prompt + '</span>');
                     }
                 });
 
@@ -135,11 +138,11 @@ async function nudges() {
             })
         });
 
-        $('.nudge_button').on('click', async () => {
-            let prompt = $(this).find('span').val();
+        $('#nudge_prompt').on('click', async (e) => {
+            e.preventDefault();
+            var prompt = $(e.target).text();
             console.log(prompt)
-            //await sendMessageAsUser(prompt, "");
-
+            $('#send_textarea').val(prompt);
             $('.nudge-container').css('display', 'none');
         })
     }
@@ -156,20 +159,20 @@ jQuery(async () => {
     $('.expression-holder').appendTo('#sheld');
 
     $('#sheld').attr('tabindex', '0');
-    $('#sheld').keydown(function(e) {
+    $('#sheld').on('keydown', function(e) {
+        e.preventDefault();
         switch (e.which) {
             case 37:
                 if (!$('textarea').is(':focus')) {
-                    $(".last_mes .swipe_left").click();
+                    $('.last_mes .swipe_left').trigger('click');
                     break;
                 }
             case 39:
                 if (!$('textarea').is(':focus')) {
-                    $(".last_mes .swipe_right").click();
+                    $('.last_mes .swipe_right').trigger('click');
                     break;
                 }
             default: return;
         }
-        e.preventDefault();
     });
 });

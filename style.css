@@ -554,13 +554,14 @@ body.big-avatars {
     }
 
     #form_sheld {
+        margin-bottom: 0;
 
         /* Nudges */
         .nudge-container {
-            display: none;
+            display: grid;
             grid-auto-flow: column;
             gap: 0.45rem;
-            margin: 0.27rem 0;
+            margin: 0.45rem 0;
 
             .nudge-container-2 {
                 gap: 0.45rem;
@@ -570,10 +571,11 @@ body.big-avatars {
             .nudge_button {
                 border-radius: 0.9rem;
                 background-color: var(--color1);
-                padding: 0.72rem;
                 margin: 0;
 
-                span {
+                #nudge_prompt {
+                    width: 100%;
+                    padding: 0.45rem;
                     overflow: hidden;
                     text-overflow: ellipsis;
                 }
