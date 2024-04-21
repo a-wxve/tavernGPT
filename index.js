@@ -160,7 +160,6 @@ jQuery(async () => {
 
     $('#sheld').attr('tabindex', '0');
     $('#sheld').on('keydown', function(e) {
-        e.preventDefault();
         switch (e.which) {
             case 37:
                 if (!$('textarea').is(':focus')) {
