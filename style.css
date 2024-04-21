@@ -422,6 +422,11 @@ body.big-avatars {
 
         #CharListButtonAndHotSwaps {
             flex-wrap: wrap;
+
+            .hotswap.avatars_inline.flex-container.expander {
+                overflow-y: scroll;
+                max-height: calc(var(--avatar-base-height) * var(--big-avatar-height-factor) + 2 * var(--avatar-base-border-radius) - 10px);
+            }
         }
 
         #form_character_search_form {
@@ -1024,12 +1029,12 @@ body img.thumbnail {
     text-align: center;
     font-style: normal;
     color: #FFFF00;
-    text-shadow: 1px 1px 0px #000;
+    text-shadow: 2px 2px 0px #3F3F00 !important;
     position: relative;
     margin: 0;
     height: 0;
-    left: 180px;
-    bottom: 9px;
+    left: 153px;
+    bottom: 3px;
     animation: splash .27s alternate infinite;
 }
 
@@ -1040,6 +1045,17 @@ body img.thumbnail {
         height: 100dvh;
         max-width: 100dvw !important;
         border-radius: 0;
+
+        #form_sheld {
+            #send_form {
+                border: none;
+
+                #leftSendForm,
+                #rightSendForm {
+                    align-self: center;
+                }
+            }
+        }
     }
 
     #top-settings-holder {
@@ -1094,11 +1110,6 @@ body img.thumbnail {
         display: flex !important;
     }
 
-    #leftSendForm,
-    #rightSendForm {
-        align-self: center;
-    }
-
     #persona-management-button {
         position: absolute;
         align-self: center;
@@ -1109,7 +1120,16 @@ body img.thumbnail {
     }
 
     #splash {
-        top: 9px;
         left: 45px;
+    }
+
+    .mes {
+        &[is_user="true"] {
+            body.bubblechat & {
+                & .mes_block {
+                    padding-left: 0;
+                }
+            }
+        }
     }
 }
