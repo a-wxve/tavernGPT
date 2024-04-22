@@ -231,6 +231,10 @@ body.big-avatars {
     &:has(~#user-settings-button .openIcon) {
         display: flex !important;
     }
+
+    .drawer-content>.flex-container {
+        flex-direction: column;
+    }
 }
 
 #WI-SP-button {
@@ -274,6 +278,10 @@ body.big-avatars {
     &:has(~#extensions-settings-button .openIcon),
     &:has(~#logo_block .openIcon) {
         display: flex !important;
+    }
+
+    #user-settings-block-content {
+        flex-direction: column;
     }
 }
 
@@ -754,7 +762,6 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
             }
 
             .mes_block {
-                padding-left: 60.3px;
                 padding-right: 10px;
                 overflow-y: hidden;
 
@@ -1121,15 +1128,5 @@ body img.thumbnail {
 
     #splash {
         left: 45px;
-    }
-
-    .mes {
-        &[is_user="true"] {
-            body.bubblechat & {
-                & .mes_block {
-                    padding-left: 0;
-                }
-            }
-        }
     }
 }
