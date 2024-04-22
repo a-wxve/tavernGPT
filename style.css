@@ -1033,7 +1033,7 @@ body img.thumbnail {
     position: relative;
     margin: 0;
     height: 0;
-    left: 162px;
+    left: 180px;
     bottom: 3px;
     animation: splash .27s alternate infinite;
 }
