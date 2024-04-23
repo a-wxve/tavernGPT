@@ -1,12 +1,22 @@
 import {
+    characters,
     eventSource,
     generateQuietPrompt,
     getRequestHeaders,
     getUserAvatar,
+    getThumbnailUrl,
     name1,
     saveSettingsDebounced,
+    this_chid,
 } from '../../../../script.js';
 import { extension_settings } from '../../../extensions.js';
+import {
+    getGroupAvatar,
+    getGroupPastChats,
+    groups,
+    renameGroupChat,
+    selected_group
+} from '../../../group-chats.js';
 import { explore } from './explore.js';
 import { history } from './history.js';
 
@@ -148,6 +158,21 @@ async function nudges() {
     }
 }
 
+async function mobileUI() {
+    $('#sheld').prepend(`<div class="flex-container" id="chat_header"></div>`);
+
+    eventSource.on('chatLoaded' || 'message_received', async () => {
+        var avatarImg = $('.last_mes').find('.avatar').clone();
+        var charName = $('.last_mes').find('.ch_name').clone();
+        //var mesID = $('.last_mes').find('.mesIDDisplay').clone();
+        //var mesTimer = $('.last_mes').find('.mes_timer').clone();
+        //var tokenCount = $('.last_mes').find('.tokenCounterDisplay').clone();
+
+        $('#chat_header').append(avatarImg, charName);
+        //$('#chat_header .ch_name').append(mesID, mesTimer, tokenCount);
+    });
+}
+
 jQuery(async () => {
     $(settings);
     $(history);
@@ -156,6 +181,11 @@ jQuery(async () => {
     $(sidebarToggle);
     $(nudges);
     $(splashText);
+
+    if (window.matchMedia('only screen and ((max-width: 768px))').matches) {
+        $(mobileUI);
+    }
+
     $('.expression-holder').appendTo('#sheld');
 
     $('#sheld').attr('tabindex', '0');
@@ -173,5 +203,17 @@ jQuery(async () => {
                 }
             default: return;
         }
+    });
+
+    eventSource.on('chatLoaded' || 'message_received', async () => {
+        var swipeCounter = $('.last_mes').find('.swipes-counter').clone();
+        $('.last_mes .mes_buttons').prepend('<div class="mes_swipe_left fa-solid fa-chevron-left"></div>', swipeCounter, '<div class="mes_swipe_right fa-solid fa-chevron-right"></div>');
+
+        $('.mes_swipe_left').on('click', function() {
+            $('.last_mes .swipe_left').trigger('click');
+        });
+        $('.mes_swipe_right').on('click', function() {
+            $('.last_mes .swipe_right').trigger('click');
+        });
     });
 });

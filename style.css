@@ -552,7 +552,7 @@ body.big-avatars {
     height: 100dvh;
     top: 0;
     background-color: var(--SmartThemeChatTintColor);
-    padding: 0.63rem;
+    padding: 0 0.45rem 0.45rem;
     -webkit-backdrop-filter: blur(calc(var(--SmartThemeBlurStrength)));
 
     &.collapsed {
@@ -686,6 +686,18 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
 }
 
 .mes {
+
+    &.last_mes {
+        .mes_text {
+            padding-right: 0;
+        }
+
+        .swipe_left,
+        .swipe_right {
+            display: none !important;
+        }
+    }
+
     .mes_block {
         transform: none !important;
 
@@ -696,6 +708,22 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
         .icon-svg.timestamp-icon {
             height: 1rem;
             align-self: center;
+        }
+
+        .mes_swipe_left,
+        .mes_swipe_right {
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+            filter: drop-shadow(0px 0px 2px black);
+            opacity: 0.3;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+
+        .swipes-counter {
+            margin: 0;
         }
 
         .mes_edit_buttons {
@@ -719,8 +747,10 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
     }
 
     body.bubblechat & {
+        border: none;
         border-radius: 0px;
         background-color: transparent;
+        margin-bottom: 0;
 
         .mes_text {
             width: fit-content;
@@ -1046,12 +1076,51 @@ body img.thumbnail {
 }
 
 /* Mobile layout CSS */
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 768px) {
     #sheld {
         margin: 0;
         height: 100dvh;
         max-width: 100dvw !important;
         border-radius: 0;
+
+        #chat_header {
+            position: fixed;
+            top: 0;
+            padding: 0.63rem;
+            width: 100%;
+            background-color: var(--SmartThemeChatTintColor);
+            z-index: 100;
+            justify-content: center;
+            margin-left: -3px;
+
+            .avatar {
+                flex: 0;
+                align-self: center;
+            }
+
+            .ch_name {
+                flex-direction: column;
+                align-items: baseline;
+
+                .mes_buttons {
+                    display: none;
+                }
+            }
+
+            .mes_timer,
+            .mesIDDisplay,
+            .tokenCounterDisplay {
+                cursor: default;
+                opacity: 0.7;
+                font-size: calc(var(--mainFontSize) * 0.9);
+                font-weight: 600;
+                text-align: center;
+            }
+        }
+
+        #chat {
+            padding-top: 6rem;
+        }
 
         #form_sheld {
             #send_form {
@@ -1060,6 +1129,47 @@ body img.thumbnail {
                 #leftSendForm,
                 #rightSendForm {
                     align-self: center;
+                }
+            }
+        }
+    }
+
+    .mes {
+        padding-top: 0px !important;
+        margin-bottom: 0px !important;
+
+        .mesAvatarWrapper {
+            display: none;
+        }
+
+        .mes_block {
+            .ch_name.flex-container.justifySpaceBetween {
+                justify-content: end;
+            }
+        }
+
+        body.bubblechat & {
+            .mes_block {
+                .flex-container.flex1.alignitemscenter {
+                    display: none;
+                }
+
+                .mes_text {
+                    border-top-left-radius: 27px;
+                    border-bottom-left-radius: 3px;
+                }
+            }
+        }
+
+        &[is_user="true"] {
+            body.bubblechat & {
+                .mes_block {
+                    padding-right: 0;
+
+                    .mes_text {
+                        border-radius: 27px;
+                        border-bottom-right-radius: 3px;
+                    }
                 }
             }
         }
