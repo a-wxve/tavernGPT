@@ -1,30 +1,19 @@
 import {
-    characters,
     eventSource,
     generateQuietPrompt,
-    getRequestHeaders,
-    getUserAvatar,
-    getThumbnailUrl,
+    getRequestHeaders, getUserAvatar,
     name1,
-    saveSettingsDebounced,
-    this_chid,
+    saveSettingsDebounced
 } from '../../../../script.js';
 import { extension_settings } from '../../../extensions.js';
-import {
-    getGroupAvatar,
-    getGroupPastChats,
-    groups,
-    renameGroupChat,
-    selected_group
-} from '../../../group-chats.js';
-import { explore } from './explore.js';
-import { history } from './history.js';
+import { initExplorePanel } from './explore.js';
+import { loadChatHistory } from './history.js';
 
 export const extensionName = 'tavernGPT';
 export const extensionFolderPath = `scripts/extensions/third-party/${extensionName}`;
 const defaultSettings = {};
 
-async function persona() {
+async function getPersona() {
     eventSource.on('settings_updated', async () => {
         const response = await fetch('/api/settings/get', {
             method: 'POST',
@@ -62,7 +51,7 @@ async function persona() {
     );
 }
 
-function sidebarToggle() {
+function toggleSidebar() {
     const closeHTML = `<button class='closeSidebar'>
                               <div class='arrow1'></div>
                               <div class='arrow2'></div>
@@ -78,7 +67,7 @@ function sidebarToggle() {
     });
 }
 
-async function settings() {
+async function initSettings() {
     const settingsHTML = await $.get(`${extensionFolderPath}/settings.html`);
     $('#extensions_settings2').append(settingsHTML);
 
@@ -107,7 +96,7 @@ async function settings() {
     loadSettings();
 }
 
-function splashText() {
+function loadSplashText() {
     var splashes = ['desu~', 'desu~!', 'DESU~!', 'Jimmy Apples!', 'Sam Altman!', 'ChatGPT is better!', 'Splash Text!', 'The Singularity!', 'AGI!', 'Shocking!', 'Shocking the industry!', 'e/acc!', 'Acceleration!', 'AGI achieved internally!', 'Q*!', 'GPT-7!', 'Chinchilla scaling!', 'Low perplexity!', 'AUPATE!', 'Ethnnically Anbigious!', 'eethnically amboruaius!', 'Laver huling nnuctiol!', 'Costco Wholeslale!', 'CFTF?', 'Foxbots doko?', 'OpenAI BTFO!', 'Anthropic BTFO!', '1 billion token context!', 'Summer Dragon!', 'ahh ahh mistress!', 'My model has 24 parameters!', 'NVIDIA, fuck you!', 'TPUs!', 'ClosedAI!', '175 Beaks!', '1.7 Toucans!', 'Will Smith eating spaghetti!', 'SOVL!', 'SOVLLESS!', 'Rugpulled!', 'Fiz love!', '$7 Trillion!', 'Feel the AGI!', 'Reddit\\nSpacing!', 'Also try NovelAI!', 'Also try AetherRoom!', 'AIIIEEEEEEEE!', 'We\'re back!', 'We\'re so back!', 'It\'s over!', 'It\'s so over!', 'Can generate hands!', 'Slight twist on the upstroke!', '(´• ω •`) ', '(´- ω -`) ', '(\`・ω・\´) ', 'Big if true!', 'Meta BTFO!', 'Groq!', 'Grok?', '0.99 p(doom)!', 'Anchor!', 'No meanies allowed!', 'The Rock eating rocks!', 'Malfoy\'s last name!', 'Todd Howard!', 'DeepMind BTFO!', 'sillylittleguy.org!', 'I kneel!', 'Where bake?', 'Focksposting!', 'struggling to conceptualize the thickness of her bush...', 'Anti love!', 'GPT-2 was very bad!', 'GPT-3 was pretty bad!', 'GPT-4 is bad!', 'GPT-4 kind of sucks!', 'GPT-5 is okay!', 'Count Grey!', 'Google Colab!', 'Also try AI Dungeon!'];
 
     function checkAndSet() {
@@ -125,7 +114,7 @@ function splashText() {
     checkAndSet();
 }
 
-async function nudges() {
+async function initNudgeUI() {
     if (extension_settings[extensionName].enable_nudges) {
         const nudgeHTML = await $.get(`${extensionFolderPath}/nudges.html`);
         $('#form_sheld').prepend(nudgeHTML);
@@ -158,7 +147,7 @@ async function nudges() {
     }
 }
 
-async function mobileUI() {
+async function setMobileUI() {
     $('#sheld').prepend(`<div class="flex-container" id="chat_header"></div>`);
 
     eventSource.on('chatLoaded' || 'message_received' || 'message_deleted', async () => {
@@ -175,16 +164,16 @@ async function mobileUI() {
 }
 
 jQuery(async () => {
-    $(settings);
-    $(history);
-    $(persona);
-    $(explore);
-    $(sidebarToggle);
-    $(nudges);
-    $(splashText);
+    $(initSettings);
+    $(loadChatHistory);
+    $(getPersona);
+    $(initExplorePanel);
+    $(toggleSidebar);
+    $(initNudgeUI);
+    $(loadSplashText);
 
     if (window.matchMedia('only screen and ((max-width: 768px))').matches) {
-        $(mobileUI);
+        $(setMobileUI);
     }
 
     $('.expression-holder').appendTo('#sheld');

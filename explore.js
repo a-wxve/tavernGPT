@@ -2,7 +2,7 @@ import { getRequestHeaders, processDroppedFiles } from '../../../../script.js';
 import { debounce, delay } from '../../../utils.js';
 import { extensionFolderPath } from './index.js';
 
-export async function explore() {
+export async function initExplorePanel() {
     const exploreHTML = await $.get(`${extensionFolderPath}/explore.html`);
     $('#top-settings-holder').append(exploreHTML);
 

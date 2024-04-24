@@ -114,7 +114,7 @@ async function displayPastChats() {
     $('#ChatHistoryCharName').text(`${displayName}'s `);
 
     const displayChats = (searchQuery) => {
-        $('#select_chat_div').empty();  // Clear the current chats before appending filtered chats
+        $('#select_chat_div').empty();
 
         Object.entries(chatsByCategory)
             .filter(([cat, chats]) => chats.length > 0)
@@ -211,7 +211,7 @@ async function renameChat() {
     }
 
     if (matchesTimePattern(old_filename) && context.chat.length > 2) {
-        const prompt = 'Generate a name for this chat in as few words as possible. Avoid including special characters, words like "chat", or the user\'s name.';
+        const prompt = 'Generate a name for this chat in as few words as possible. Avoid including special characters, words like "chat", or the user\'s name. Only output the chat name, and nothing else.';
         let newName = await generateQuietPrompt(prompt, false, false);
         newName = newName.toString().replace(/^'((?:\\'|[^'])*)'$/, '$1');
 
@@ -266,7 +266,7 @@ async function renameChat() {
     }
 }
 
-export async function history() {
+export async function loadChatHistory() {
     const historyHTML = await $.get(`${extensionFolderPath}/history.html`);
     $('#top-settings-holder').append(historyHTML);
 
