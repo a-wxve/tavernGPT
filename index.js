@@ -161,7 +161,7 @@ async function nudges() {
 async function mobileUI() {
     $('#sheld').prepend(`<div class="flex-container" id="chat_header"></div>`);
 
-    eventSource.on('chatLoaded' || 'message_received', async () => {
+    eventSource.on('chatLoaded' || 'message_received' || 'message_deleted', async () => {
         $('#chat_header').empty();
         var avatarImg = $('.last_mes').find('.avatar').clone();
         var charName = $('.last_mes').find('.ch_name').clone();
@@ -206,7 +206,7 @@ jQuery(async () => {
         }
     });
 
-    eventSource.on('chatLoaded' || 'message_received', async () => {
+    eventSource.on('chatLoaded' || 'message_received' || 'message_deleted', async () => {
         var swipeCounter = $('.last_mes').find('.swipes-counter').clone();
         $('.last_mes .mes_buttons').prepend('<div class="mes_swipe_left fa-solid fa-chevron-left"></div>', swipeCounter, '<div class="mes_swipe_right fa-solid fa-chevron-right"></div>');
 
