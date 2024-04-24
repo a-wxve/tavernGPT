@@ -184,7 +184,7 @@ async function displayPastChats() {
             });
     }
 
-    displayChats('');;
+    displayChats('');
     $('.select_chat_block_filename.select_chat_block_filename_item').each(function() {
         var originalText = $(this).text();
 
@@ -255,6 +255,7 @@ async function renameChat() {
             await delay(250);
             $('#option_select_chat').trigger('click');
             $('#options').hide();
+            await displayPastChats();
         } catch {
             await delay(500);
             await callPopup(
