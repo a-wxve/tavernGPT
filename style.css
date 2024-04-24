@@ -353,7 +353,11 @@ body.big-avatars {
     }
 
     .drawer-icon.closedIcon {
-        opacity: 72% !important;
+        opacity: 0.72 !important;
+
+        &:hover {
+            opacity: 1 !important;
+        }
     }
 
     .persona_avatar {
@@ -466,6 +470,11 @@ body.big-avatars {
 
     .historyButton {
         background-color: var(--color1);
+        opacity: 0.72;
+
+        &:hover {
+            opacity: 1;
+        }
 
         >span {
             padding: 3px 5px 3px 0;
@@ -497,7 +506,7 @@ body.big-avatars {
     }
 
     .select_chat_block_filename.select_chat_block_filename_item {
-        opacity: 100%;
+        opacity: 1;
         font-size: inherit;
     }
 
@@ -855,13 +864,8 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
 
     &:not(:hover) {
 
-        .mes_buttons,
-        .swipe_left {
-            opacity: 0%;
-        }
-
-        .swipe_right {
-            opacity: 0% !important;
+        .mes_buttons {
+            opacity: 0;
         }
 
         .mesAvatarWrapper {
@@ -869,7 +873,7 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
             .mesIDDisplay,
             .mes_timer,
             .tokenCounterDisplay {
-                opacity: 0%;
+                opacity: 0;
             }
         }
     }
@@ -1070,7 +1074,7 @@ body img.thumbnail {
     position: relative;
     margin: 0;
     height: 0;
-    left: 180px;
+    left: 207px;
     bottom: 3px;
     animation: splash .27s alternate infinite;
 }
