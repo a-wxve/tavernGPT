@@ -162,6 +162,7 @@ async function mobileUI() {
     $('#sheld').prepend(`<div class="flex-container" id="chat_header"></div>`);
 
     eventSource.on('chatLoaded' || 'message_received', async () => {
+        $('#chat_header').empty();
         var avatarImg = $('.last_mes').find('.avatar').clone();
         var charName = $('.last_mes').find('.ch_name').clone();
         //var mesID = $('.last_mes').find('.mesIDDisplay').clone();
