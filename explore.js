@@ -41,9 +41,13 @@ export async function explore() {
         }
     }
 
-    function updateCharacterListInView(characters) {
-        $('.character-list').html(characters.map(generateCharacterListItem).join(''));
-        $('.character-list').scrollTop(0);
+    function updateCharacterListInView(characters, reset = true) {
+        if (reset) {
+            $('.character-list').html(characters.map(generateCharacterListItem).join(''));
+            $('.character-list').scrollTop(0)
+        } else {
+            $('.character-list').append(characters.map(generateCharacterListItem).join(''));
+        }
     }
 
     async function fetchCharactersBySearch({ searchTerm, includeTags, excludeTags, nsfw, sort, findCount, page = 1 }) {
@@ -109,13 +113,13 @@ export async function explore() {
         return characters;
     }
 
-    async function executeCharacterSearch(options) {
+    async function executeCharacterSearch(options, reset) {
         let characters = [];
         characters = await searchCharacters(options).catch();
 
         if (characters && characters.length > 0) {
             console.log('Updating character list...');
-            updateCharacterListInView(characters);
+            updateCharacterListInView(characters, reset);
         } else {
             console.log('No characters found.');
             $('.character-list').html('<div class="no-characters-found">No characters found.</div>');
@@ -140,12 +144,12 @@ export async function explore() {
         `;
     }
 
-    async function displayCharactersInListViewPopup() {
+    function displayCharactersInListViewPopup() {
         let clone = null;
 
-        $('.character-list').off().on('click', function(event) {
-            if (event.target.tagName === 'IMG') {
-                const image = event.target;
+        $('.character-list').off().on('click', function(e) {
+            if (e.target.tagName === 'IMG') {
+                const image = e.target;
 
                 if (clone) {
                     document.body.removeChild(clone);
@@ -167,7 +171,7 @@ export async function explore() {
 
                 document.body.appendChild(clone);
 
-                event.stopPropagation();
+                e.stopPropagation();
             }
         });
 
@@ -178,15 +182,23 @@ export async function explore() {
             }
         });
 
-        $('.character-list').off().on('click', async function(event) {
-            if (event.target.classList.contains('download-btn')) {
-                downloadCharacter(event.target.getAttribute('data-path'));
+        $('.character-list').off().on('click', function(e) {
+            if (e.target.classList.contains('download-btn')) {
+                downloadCharacter(e.target.getAttribute('data-path'));
             }
         });
 
-        const executeCharacterSearchDebounced = debounce((options) => executeCharacterSearch(options), 750);
+        const infiniteScroll = debounce(function(e) {
+            if ($('.character-list').scrollTop() + $('.character-list').innerHeight() >= $('.character-list')[0].scrollHeight - 25) {
+                $('#pageNumber').val(Math.max(1, parseInt($('#pageNumber').val().toString()) + 1));
+                handleSearch(e, false);
+            }
+        }, 1000);
+        $('.character-list').on('scroll', infiniteScroll);
 
-        const handleSearch = async function(e) {
+        const executeCharacterSearchDebounced = debounce((options, reset) => executeCharacterSearch(options, reset), 750);
+
+        const handleSearch = function(e, reset) {
             console.log('handleSearch', e);
             if (e.type === 'keydown' && e.key !== 'Enter' && e.target.id !== 'includeTags' && e.target.id !== 'excludeTags') {
                 return;
@@ -218,10 +230,13 @@ export async function explore() {
                 findCount,
                 sort,
                 page
-            });
+            }, reset);
         };
 
-        $('#characterSearchInput').off().on('change', handleSearch);
+        $('#characterSearchInput').off().on('change', function(e) {
+            $('#pageNumber').val(1);
+            handleSearch(e);
+        });
         $('#characterSearchButton').off().on('click', handleSearch);
 
         $('#includeTags').off().on('keyup', function(e) {
@@ -234,9 +249,14 @@ export async function explore() {
         });
 
         $('#findCount').off().on('change', handleSearch);
-        $('#sortOrder').off().on('change', handleSearch);
-        $('#nsfwCheckbox').off().on('change', handleSearch);
-        $('#pageNumber').off().on('change', handleSearch);
+        $('#sortOrder').off().on('change', function(e) {
+            $('#pageNumber').val(1);
+            handleSearch(e);
+        });
+        $('#nsfwCheckbox').off().on('change', function(e) {
+            $('#pageNumber').val(1);
+            handleSearch(e);
+        });
 
         $('#pageUpButton').off().on('click', function(e) {
             $('#pageNumber').val(Math.max(1, parseInt($('#pageNumber').val().toString()) + 1));
