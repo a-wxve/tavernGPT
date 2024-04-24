@@ -189,7 +189,7 @@ export async function explore() {
         });
 
         const infiniteScroll = debounce(function(e) {
-            if ($('.character-list').scrollTop() + $('.character-list').innerHeight() >= $('.character-list')[0].scrollHeight - 25) {
+            if ($('.character-list').scrollTop() + $('.character-list').innerHeight() >= $('.character-list')[0].scrollHeight - 100) {
                 $('#pageNumber').val(Math.max(1, parseInt($('#pageNumber').val().toString()) + 1));
                 handleSearch(e, false);
             }
