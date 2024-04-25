@@ -150,7 +150,7 @@ async function initNudgeUI() {
 async function setMobileUI() {
     $('#sheld').prepend(`<div class="flex-container" id="chat_header"></div>`);
 
-    eventSource.on('chatLoaded' || 'message_received' || 'message_deleted', async () => {
+    function addChatHeader() {
         $('#chat_header').empty();
         var avatarImg = $('.last_mes').find('.avatar').clone();
         var charName = $('.last_mes').find('.ch_name').clone();
@@ -160,7 +160,11 @@ async function setMobileUI() {
 
         $('#chat_header').append(avatarImg, charName);
         //$('#chat_header .ch_name').append(mesID, mesTimer, tokenCount);
-    });
+    }
+
+    eventSource.on('chatLoaded', addChatHeader);
+    eventSource.on('message_received', addChatHeader);
+    eventSource.on('message_deleted', addChatHeader);
 }
 
 jQuery(async () => {
@@ -195,7 +199,7 @@ jQuery(async () => {
         }
     });
 
-    eventSource.on('chatLoaded' || 'message_received' || 'message_deleted', async () => {
+    function addSwipeButtons() {
         var swipeCounter = $('.last_mes').find('.swipes-counter').clone();
         $('.last_mes .mes_buttons').prepend('<div class="mes_swipe_left fa-solid fa-chevron-left"></div>', swipeCounter, '<div class="mes_swipe_right fa-solid fa-chevron-right"></div>');
 
@@ -205,5 +209,10 @@ jQuery(async () => {
         $('.mes_swipe_right').on('click', function() {
             $('.last_mes .swipe_right').trigger('click');
         });
-    });
+    }
+
+    eventSource.on('chatLoaded', addSwipeButtons);
+    eventSource.on('message_received', addSwipeButtons);
+    eventSource.on('message_deleted', addSwipeButtons);
+    eventSource.on('message_swiped', addSwipeButtons);
 });
