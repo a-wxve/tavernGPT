@@ -147,7 +147,7 @@ async function initNudgeUI() {
     }
 }
 
-async function setMobileUI() {
+function setMobileUI() {
     $('#sheld').prepend(`<div class="flex-container" id="chat_header"></div>`);
 
     function addChatHeader() {
@@ -167,6 +167,19 @@ async function setMobileUI() {
     eventSource.on('message_deleted', addChatHeader);
 }
 
+function addSwipeButtons() {
+    $('#message_template .mes_buttons').prepend('<div class="mes_swipe_left fa-solid fa-chevron-left"></div>', '<div class="swipes-counter">1/1</div>', '<div class="mes_swipe_right fa-solid fa-chevron-right"></div>');
+
+    eventSource.on('chatLoaded', function() {
+        $('.mes_swipe_left').on('click', function() {
+            $('.last_mes .swipe_left').trigger('click');
+        });
+        $('.mes_swipe_right').on('click', function() {
+            $('.last_mes .swipe_right').trigger('click');
+        });
+    })
+}
+
 jQuery(async () => {
     $(initSettings);
     $(loadChatHistory);
@@ -175,6 +188,7 @@ jQuery(async () => {
     $(toggleSidebar);
     $(initNudgeUI);
     $(loadSplashText);
+    $(addSwipeButtons);
 
     if (window.matchMedia('only screen and ((max-width: 768px))').matches) {
         $(setMobileUI);
@@ -198,21 +212,4 @@ jQuery(async () => {
             default: return;
         }
     });
-
-    function addSwipeButtons() {
-        var swipeCounter = $('.last_mes').find('.swipes-counter').clone();
-        $('.last_mes .mes_buttons').prepend('<div class="mes_swipe_left fa-solid fa-chevron-left"></div>', swipeCounter, '<div class="mes_swipe_right fa-solid fa-chevron-right"></div>');
-
-        $('.mes_swipe_left').on('click', function() {
-            $('.last_mes .swipe_left').trigger('click');
-        });
-        $('.mes_swipe_right').on('click', function() {
-            $('.last_mes .swipe_right').trigger('click');
-        });
-    }
-
-    eventSource.on('chatLoaded', addSwipeButtons);
-    eventSource.on('message_received', addSwipeButtons);
-    eventSource.on('message_deleted', addSwipeButtons);
-    eventSource.on('message_swiped', addSwipeButtons);
 });

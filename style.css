@@ -701,9 +701,19 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
             padding-right: 0;
         }
 
-        .swipe_left,
-        .swipe_right {
-            display: none !important;
+        >.swipe_left,
+        >.swipe_right {
+            visibility: hidden;
+        }
+    }
+
+    &:not(.last_mes),
+    &[is_user="true"] {
+
+        .swipes-counter,
+        .mes_swipe_left,
+        .mes_swipe_right {
+            display: none;
         }
     }
 
@@ -719,29 +729,28 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
             align-self: center;
         }
 
-        .mes_swipe_left,
-        .mes_swipe_right {
-            cursor: pointer;
-            transition: 0.3s ease-in-out;
-            filter: drop-shadow(0px 0px 2px black);
-            opacity: 0.3;
+        .mes_buttons {
 
-            &:hover {
-                opacity: 1;
-            }
-        }
+            .mes_swipe_left,
+            .mes_swipe_right {
+                cursor: pointer;
+                transition: 0.3s ease-in-out;
+                filter: drop-shadow(0px 0px 2px black);
+                opacity: 0.3;
 
-        .swipes-counter {
-            margin: 0;
-        }
-
-        .mes_edit_buttons {
-            .menu_button {
-                height: calc(var(--mainFontSize) + 0.18rem);
-                aspect-ratio: 3/1;
+                &:hover {
+                    opacity: 1;
+                }
             }
 
-            padding: 0;
+            .mes_edit_buttons {
+                .menu_button {
+                    height: calc(var(--mainFontSize) + 0.18rem);
+                    aspect-ratio: 3/1;
+                }
+
+                padding: 0;
+            }
         }
 
         #curEditTextarea {
@@ -884,20 +893,6 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
     .mes_timer,
     .tokenCounterDisplay {
         transition: 0.18s all ease-in-out;
-    }
-
-    .swipe_left {
-        left: 0.18em;
-    }
-
-    .swipe_right {
-        left: 0.81em;
-    }
-
-    .swipes-counter {
-        margin-bottom: -12px;
-        margin-left: -1.8em;
-        pointer-events: none;
     }
 
     .mes_img_controls {
@@ -1219,6 +1214,7 @@ body img.thumbnail {
         min-width: calc(100dvw - 3.06rem) !important;
         border-radius: 0;
         z-index: 3000;
+        overflow-x: hidden;
     }
 
     #sys-settings-button,
