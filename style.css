@@ -743,13 +743,15 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
                 }
             }
 
-            .mes_edit_buttons {
-                .menu_button {
-                    height: calc(var(--mainFontSize) + 0.18rem);
-                    aspect-ratio: 3/1;
-                }
+            padding: 0;
+        }
 
-                padding: 0;
+        .mes_edit_buttons {
+            padding-bottom: 0;
+
+            .menu_button {
+                height: 18px;
+                aspect-ratio: 3/1;
             }
         }
 
@@ -759,7 +761,6 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
             background-color: transparent;
             font-family: inherit;
             font-weight: inherit;
-            line-height: inherit;
             border: none;
         }
     }
@@ -973,6 +974,15 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
     padding: 0 0.9rem;
     overflow-y: auto;
 
+    #loading {
+        height: 81dvh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
     .character-list-item {
         display: inline-flex;
         align-items: flex-start;
@@ -1136,10 +1146,6 @@ body img.thumbnail {
     .mes {
         padding-top: 0px !important;
         margin-bottom: 0px !important;
-
-        .mesAvatarWrapper {
-            display: none;
-        }
 
         .mes_block {
             .ch_name.flex-container.justifySpaceBetween {
