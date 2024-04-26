@@ -41,12 +41,13 @@ export async function initExplorePanel() {
         }
     }
 
-    function updateCharacterListInView(characters, reset = true) {
+    function updateCharacterListInView(characters, reset) {
+        const characterList = $('.character-list');
+
         if (reset) {
-            $('.character-list').html(characters.map(generateCharacterListItem).join(''));
-            $('.character-list').scrollTop(0)
+            characterList.html(characters.map(generateCharacterListItem).join('')).scrollTop(0);
         } else {
-            $('.character-list').append(characters.map(generateCharacterListItem).join(''));
+            characterList.append(characters.map(generateCharacterListItem).join(''));
         }
     }
 
@@ -64,15 +65,11 @@ export async function initExplorePanel() {
 
         includeTags = includeTags.filter(tag => tag.length > 0);
         if (includeTags && includeTags.length > 0) {
-            //includeTags = makeTagPermutations(includeTags);
-            includeTags = includeTags.join(',').slice(0, 100);
-            url += `&tags=${encodeURIComponent(includeTags)}`;
+            url += `&tags=${encodeURIComponent(includeTags.join(',').slice(0, 100))}`;
         }
         excludeTags = excludeTags.filter(tag => tag.length > 0);
         if (excludeTags && excludeTags.length > 0) {
-            //excludeTags = makeTagPermutations(excludeTags);
-            excludeTags = excludeTags.join(',').slice(0, 100);
-            url += `&exclude_tags=${encodeURIComponent(excludeTags)}`;
+            url += `&exclude_tags=${encodeURIComponent(excludeTags.join(',').slice(0, 100))}`;
         }
 
         let searchResponse = await fetch(url);
@@ -103,27 +100,16 @@ export async function initExplorePanel() {
     }
 
     async function searchCharacters(options) {
-        $('.character-list').addClass('searching');
+        const characterList = $('.character-list');
+
+        characterList.addClass('searching');
 
         console.log('Searching for characters...', options);
         const characters = await fetchCharactersBySearch(options);
 
-        $('.character-list').removeClass('searching');
+        characterList.removeClass('searching');
 
         return characters;
-    }
-
-    async function executeCharacterSearch(options, reset) {
-        let characters = [];
-        characters = await searchCharacters(options).catch();
-
-        if (characters && characters.length > 0) {
-            console.log('Updating character list...');
-            updateCharacterListInView(characters, reset);
-        } else {
-            console.log('No characters found.');
-            $('.character-list').html('<div class="no-characters-found">No characters found.</div>');
-        }
     }
 
     function generateCharacterListItem(character, index) {
@@ -145,74 +131,68 @@ export async function initExplorePanel() {
     }
 
     function displayCharactersInListViewPopup() {
-        let clone = null;
+        const characterList = $('.character-list');
+        const pageNumber = $('#pageNumber');
 
-        $('.character-list').off().on('click', function(e) {
-            if (e.target.tagName === 'IMG') {
-                const image = e.target;
+        characterList.scrollTop(0)
+        pageNumber.val(1);
 
-                if (clone) {
-                    document.body.removeChild(clone);
-                    clone = null;
+        let popupImage = null;
+
+        characterList.off().on('click', (event) => {
+            if (event.target.tagName === 'IMG') {
+                const image = event.target;
+
+                if (popupImage) {
+                    document.body.removeChild(popupImage);
+                    popupImage = null;
                     return;
                 }
 
                 const rect = image.getBoundingClientRect();
 
-                clone = image.cloneNode(true);
-                if (clone instanceof HTMLElement) {
-                    clone.style.position = 'absolute';
-                    clone.style.top = `${rect.top + window.scrollY}px`;
-                    clone.style.left = `${rect.left + window.scrollX}px`;
-                    clone.style.transform = 'scale(4)';
-                    clone.style.zIndex = '99999';
-                    clone.style.objectFit = 'contain';
+                popupImage = image.cloneNode(true);
+                if (popupImage instanceof HTMLElement) {
+                    popupImage.style.position = 'absolute';
+                    popupImage.style.top = `${rect.top + window.scrollY}px`;
+                    popupImage.style.left = `${rect.left + window.scrollX}px`;
+                    popupImage.style.transform = 'scale(4)';
+                    popupImage.style.zIndex = '99999';
+                    popupImage.style.objectFit = 'contain';
                 }
 
-                document.body.appendChild(clone);
+                document.body.appendChild(popupImage);
 
-                e.stopPropagation();
+                event.stopPropagation();
             }
         });
 
-        $(document).on('click', function handler() {
-            if (clone) {
-                document.body.removeChild(clone);
-                clone = null;
+        $(document).on('click', () => {
+            if (popupImage) {
+                document.body.removeChild(popupImage);
+                popupImage = null;
             }
         });
 
-        $('.character-list').off().on('click', function(e) {
-            if (e.target.classList.contains('download-btn')) {
-                downloadCharacter(e.target.getAttribute('data-path'));
+        characterList.off().on('click', (event) => {
+            if (event.target.classList.contains('download-btn')) {
+                downloadCharacter(event.target.getAttribute('data-path'));
             }
         });
 
-        const infiniteScroll = debounce(function(e) {
-            if ($('.character-list').scrollTop() + $('.character-list').innerHeight() >= $('.character-list')[0].scrollHeight - 100) {
-                $('#pageNumber').val(Math.max(1, parseInt($('#pageNumber').val().toString()) + 1));
-                handleSearch(e, false);
-            }
-        }, 1000);
-        $('.character-list').on('scroll', infiniteScroll);
-
-        const executeCharacterSearchDebounced = debounce((options, reset) => executeCharacterSearch(options, reset), 750);
-
-        const handleSearch = function(e, reset) {
-            console.log('handleSearch', e);
-            if (e.type === 'keydown' && e.key !== 'Enter' && e.target.id !== 'includeTags' && e.target.id !== 'excludeTags') {
+        const handleSearch = (event, reset) => {
+            console.log('handleSearch', event);
+            if (event.type === 'keydown' && event.key !== 'Enter' && event.target.id !== 'includeTags' && event.target.id !== 'excludeTags') {
                 return;
             }
 
             const splitAndTrim = (str) => {
-                str = str.trim(); // Trim the entire string first
+                str = str.trim();
                 if (!str.includes(',')) {
                     return [str];
                 }
                 return str.split(',').map(tag => tag.trim());
             };
-
-            console.log($('#includeTags').val());
 
             const searchTerm = $('#characterSearchInput').val();
             const includeTags = splitAndTrim($('#includeTags').val());
@@ -222,7 +202,7 @@ export async function initExplorePanel() {
             const sort = $('#sortOrder').val();
             let page = $('#pageNumber').val();
 
-            executeCharacterSearchDebounced({
+            debounce(searchCharacters({
                 searchTerm,
                 includeTags,
                 excludeTags,
@@ -230,44 +210,44 @@ export async function initExplorePanel() {
                 findCount,
                 sort,
                 page
-            }, reset);
-        };
-
-        $('#characterSearchInput').off().on('change', function(e) {
-            $('#pageNumber').val(1);
-            handleSearch(e);
-        });
-        $('#characterSearchButton').off().on('click', handleSearch);
-
-        $('#includeTags').off().on('keyup', function(e) {
-            $('#pageNumber').val(1);
-            handleSearch(e);
-        });
-        $('#excludeTags').off().on('keyup', function(e) {
-            $('#pageNumber').val(1);
-            handleSearch(e);
-        });
-
-        $('#findCount').off().on('change', handleSearch);
-        $('#sortOrder').off().on('change', function(e) {
-            $('#pageNumber').val(1);
-            handleSearch(e);
-        });
-        $('#nsfwCheckbox').off().on('change', function(e) {
-            $('#pageNumber').val(1);
-            handleSearch(e);
-        });
-
-        $('#pageUpButton').off().on('click', function(e) {
-            $('#pageNumber').val(Math.max(1, parseInt($('#pageNumber').val().toString()) + 1));
-            handleSearch(e);
+            }).then((characters) => {
+                if (characters && characters.length > 0) {
+                    updateCharacterListInView(characters, reset);
+                } else {
+                    characterList.html('<div class="no-characters-found">No characters found.</div>');
+                }
+            }).catch((error) => {
+                console.error('Error searching characters:', error);
+            }), 750);
         }
-        );
-        $('#pageDownButton').off().on('click', function(e) {
-            $('#pageNumber').val(Math.max(1, parseInt($('#pageNumber').val().toString()) - 1));
-            handleSearch(e);
-        }
-        );
+
+        const infiniteScroll = debounce((event) => {
+            if (characterList.scrollTop() + characterList.innerHeight() >= characterList[0].scrollHeight - 100) {
+                toastr.info('Loading more characters...')
+                pageNumber.val(Math.max(1, parseInt(pageNumber.val().toString()) + 1));
+                handleSearch(event, false);
+            }
+        }, 1000);
+        characterList.on('scroll', infiniteScroll);
+
+        $('#characterSearchButton').on('click', (event) => {
+            handleSearch(event, true);
+        });
+
+        $('#characterSearchInput, #includeTags, #excludeTags, #findCount, #sortOrder, #nsfwCheckbox').on('change', (event) => {
+            pageNumber.val(1);
+            handleSearch(event, true);
+        });
+
+        $('#pageUpButton').on('click', (event) => {
+            pageNumber.val(Math.max(1, parseInt(pageNumber.val().toString()) + 1));
+            handleSearch(event, true);
+        });
+
+        $('#pageDownButton').on('click', (event) => {
+            pageNumber.val(Math.max(1, parseInt(pageNumber.val().toString()) - 1));
+            handleSearch(event, true);
+        });
     }
 
     async function getCharacter(fullPath) {
@@ -302,14 +282,16 @@ export async function initExplorePanel() {
         return data;
     }
 
-    $('#explore-button .drawer-toggle').on('click', async function() {
+    $('#explore-button .drawer-toggle').on('click', function() {
         var icon = $(this).find('.drawer-icon');
         var drawer = $(this).parent().find('.drawer-content');
-        if (drawer.hasClass('resizing')) { return; }
+        if (drawer.hasClass('resizing')) {
+            return;
+        }
         var drawerOpen = $(this).parent().find('.drawer-content').hasClass('openDrawer');
 
         if (!drawerOpen) {
-            await displayCharactersInListViewPopup();
+            displayCharactersInListViewPopup();
 
             $('.openDrawer').not('.pinnedOpen').addClass('resizing').slideToggle(200, 'swing', async function() {
                 await delay(50);
@@ -332,7 +314,8 @@ export async function initExplorePanel() {
             icon.toggleClass('closedIcon openIcon');
 
             $('.openDrawer').not('.pinnedOpen').addClass('resizing').slideToggle(200, 'swing', async function() {
-                await delay(50); $(this).closest('.drawer-content').removeClass('resizing');
+                await delay(50);
+                $(this).closest('.drawer-content').removeClass('resizing');
             });
 
             drawer.toggleClass('closedDrawer openDrawer');

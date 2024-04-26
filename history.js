@@ -276,10 +276,10 @@ export async function loadChatHistory() {
         '.options-content #option_select_chat, .options-content #option_start_new_chat, .options-content #option_close_chat'
     ).css('display', 'none');
 
-    $('#new_chat').on('click', function() {
+    $('#new_chat').on('click', () => {
         $('.options-content #option_start_new_chat').trigger('click');
     });
-    $('#close_chat').on('click', function() {
+    $('#close_chat').on('click', () => {
         $('.options-content #option_close_chat').trigger('click');
     });
 
