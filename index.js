@@ -145,12 +145,12 @@ function setMobileUI() {
         chat_header.empty();
         let avatarImg = last_mes.find('.avatar').clone();
         let charName = last_mes.find('.ch_name').clone();
-        //var mesID = $('.last_mes').find('.mesIDDisplay').clone();
-        //var mesTimer = $('.last_mes').find('.mes_timer').clone();
-        //var tokenCount = $('.last_mes').find('.tokenCounterDisplay').clone();
+        let mesID = last_mes.find('.mesIDDisplay').clone();
+        let mesTimer = last_mes.find('.mes_timer').clone();
+        let tokenCount = last_mes.find('.tokenCounterDisplay').clone();
 
         chat_header.append(avatarImg, charName);
-        //$('#chat_header .ch_name').append(mesID, mesTimer, tokenCount);
+        $('#chat_header .ch_name').append(mesID, mesTimer, tokenCount);
     }
 
     eventSource.on('chatLoaded', addChatHeader);

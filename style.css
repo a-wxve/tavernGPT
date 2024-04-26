@@ -765,6 +765,12 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
         }
     }
 
+    body.hideChatAvatars & {
+        .mesAvatarWrapper {
+            display: none;
+        }
+    }
+
     body.bubblechat & {
         border: none;
         border-radius: 0px;
