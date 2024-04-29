@@ -167,11 +167,9 @@ function addSwipeButtons() {
     $('#message_template .mes_buttons').prepend(swipeButtonsHTML);
 
     function registerSwipeButtons() {
-        $('.mes_swipe_left').on('click', () => {
-            $('.last_mes .swipe_left').trigger('click');
-        });
-        $('.mes_swipe_right').on('click', () => {
-            $('.last_mes .swipe_right').trigger('click');
+        $('.mes_buttons').off().on('click', '.mes_swipe_left, .mes_swipe_right', function() {
+            const swipeDirection = $(this).hasClass('mes_swipe_left') ? 'swipe_left' : 'swipe_right';
+            $(`.last_mes .${swipeDirection}`).trigger('click');
         });
     }
 
