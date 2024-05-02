@@ -1,7 +1,10 @@
 :root {
-    --barSize: calc(var(--topBarBlockSize) + 14.4rem);
-    --panelSize: 45dvw;
+    --mainFontSize: calc(var(--fontScale) * 16px);
+    --lineHeight: calc(var(--mainFontSize) * 1.35);
+    --barSize: 20%;
+    --panelSize: 45%;
     --outsideMargin: 0.9rem;
+    --insidePadding: 10px;
     --borderRadius: 0.9rem;
     --color1: rgb(45, 45, 45);
     --color2: rgb(63, 63, 63);
@@ -10,17 +13,26 @@
 html,
 body {
     font-family:
-        system-ui,
         -apple-system,
+        system-ui,
         BlinkMacSystemFont,
         "Segoe UI",
         Roboto,
         Oxygen,
         Ubuntu,
-        Cantarell,
-        "Open Sans",
-        "Helvetica Neue",
         sans-serif;
+}
+
+#top-bar,
+#persona-management-button .drawer-icon::before,
+.select_chat_info.flex-container,
+.select_chat_block_mes,
+#ReverseProxyWarningMessage,
+#quickReplyPopoutButton,
+.mes_text br,
+.mes_create_bookmark,
+#summaryExtensionPopoutButton {
+    display: none !important;
 }
 
 hr {
@@ -45,7 +57,7 @@ body.big-avatars {
     height: 100dvh;
     width: var(--barSize);
     gap: 3px;
-    padding: 0.63rem;
+    padding: var(--insidePadding);
     transition: 0.18s all ease-in-out;
 
     &.collapsed {
@@ -68,7 +80,7 @@ body.big-avatars {
             display: none;
         }
 
-        .closeSidebar {
+        #closeSidebar {
             left: 0.45rem;
 
             .arrow1 {
@@ -131,18 +143,6 @@ body.big-avatars {
     &:hover {
         background-color: var(--color1);
     }
-}
-
-#top-bar,
-#persona-management-button .drawer-icon::before,
-.select_chat_info.flex-container,
-.select_chat_block_mes,
-#ReverseProxyWarningMessage,
-#quickReplyPopoutButton,
-.mes_text br,
-.mes_create_bookmark,
-#summaryExtensionPopoutButton {
-    display: none !important;
 }
 
 #sys-settings-button,
@@ -542,26 +542,28 @@ body.big-avatars {
 #right-nav-panel,
 #character_popup {
     position: fixed;
-    top: 0;
     max-height: 100dvh !important;
-    height: 100dvh;
     width: var(--panelSize);
+    height: 100dvh;
+    top: 0;
     right: inherit;
     left: var(--barSize);
-    padding: 0.63rem;
+    padding: var(--insidePadding);
+    border: 0;
     border-radius: 0;
     background-color: var(--SmartThemeChatTintColor);
     box-shadow: none;
 }
 
 #sheld {
-    left: var(--barSize);
-    max-width: calc(100dvw - var(--barSize)) !important;
+    max-width: calc(100% - var(--barSize)) !important;
     max-height: 100dvh;
     height: 100dvh;
     top: 0;
+    left: var(--barSize);
+    padding: var(--insidePadding);
+    padding-top: 0;
     background-color: var(--SmartThemeChatTintColor);
-    padding: 0 0.45rem 0.45rem;
     -webkit-backdrop-filter: blur(calc(var(--SmartThemeBlurStrength)));
 
     &.collapsed {
@@ -571,21 +573,21 @@ body.big-avatars {
 
     #chat {
         max-height: 100dvh;
-        margin-bottom: -2px;
+        margin-right: -10px;
         background-color: transparent;
     }
 
     #form_sheld {
-        margin-bottom: 0;
+        margin: 0;
 
         /* Nudges */
-        .nudge-container {
+        #nudges {
             display: grid;
             grid-auto-flow: column;
             gap: 0.45rem;
             margin: 0.45rem 0;
 
-            .nudge-container-2 {
+            .nudge-container {
                 gap: 0.45rem;
                 max-width: calc(calc(var(--sheldWidth) / 2) - 0.63rem - 0.45rem)
             }
@@ -646,7 +648,7 @@ body.big-avatars {
 #top-settings-holder:has(.drawer-content.pinnedOpen)~#sheld,
 body:has(#character_popup[style*="display: flex"])>#sheld {
     left: initial;
-    width: calc(100dvw - var(--barSize) - var(--panelSize));
+    width: calc(100% - var(--barSize) - var(--panelSize));
 
     #splash {
         top: 9px;
@@ -654,9 +656,9 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
     }
 }
 
-.closeSidebar {
+#closeSidebar {
     position: absolute;
-    left: calc(17.1rem);
+    left: 103%;
     top: 45%;
     background-color: transparent;
     border: none;
@@ -695,6 +697,7 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
 }
 
 .mes {
+    padding: 10px;
 
     &.last_mes {
         .mes_text {
@@ -730,6 +733,7 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
         }
 
         .mes_buttons {
+            padding: 0;
 
             .mes_swipe_left,
             .mes_swipe_right {
@@ -742,8 +746,6 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
                     opacity: 1;
                 }
             }
-
-            padding: 0;
         }
 
         .mes_edit_buttons {
@@ -755,13 +757,43 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
             }
         }
 
-        #curEditTextarea {
-            padding: 0;
-            resize: none;
-            background-color: transparent;
-            font-family: inherit;
-            font-weight: inherit;
-            border: none;
+        .mes_text {
+            line-height: var(--lineHeight);
+            max-width: 81ch;
+
+            &>:last-child {
+                margin-bottom: 0;
+            }
+
+            p {
+                margin-bottom: var(--lineHeight);
+            }
+
+            h1,
+            h2,
+            h3,
+            h4,
+            a:not(.fa-solid) {
+                margin-top: 0px;
+                margin-left: 0px;
+            }
+
+            ol,
+            ul {
+                margin-block-start: 10px;
+                margin-block-end: 10px;
+                padding-inline-start: 30px;
+            }
+
+            #curEditTextarea {
+                padding: 0;
+                resize: none;
+                background-color: transparent;
+                font-family: inherit;
+                font-weight: inherit;
+                line-height: var(--lineHeight);
+                border: none;
+            }
         }
     }
 
@@ -779,27 +811,14 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
 
         .mes_text {
             width: fit-content;
-            padding: 0.27rem 0.54rem;
+            padding: 1rem;
             margin-top: 10px;
             border-radius: 27px;
             border-top-left-radius: 3px;
             background-color: var(--SmartThemeBotMesBlurTintColor);
 
-            p {
-                margin: 10px;
-            }
-
-            h1,
-            h2,
-            h3,
-            h4,
-            a:not(.fa-solid) {
-                margin-left: 10px;
-            }
-
             #curEditTextarea {
                 width: -webkit-fill-available;
-                margin: 10px;
             }
         }
 
@@ -1118,7 +1137,7 @@ body img.thumbnail {
                 align-items: baseline;
 
                 .mes_buttons {
-                    display: none;
+                    display: none !important;
                 }
             }
 
@@ -1127,7 +1146,7 @@ body img.thumbnail {
             .tokenCounterDisplay {
                 cursor: default;
                 opacity: 0.7;
-                font-size: calc(var(--mainFontSize) * 0.9);
+                font-size: calc(var(--mainFontSize) * 0.69);
                 font-weight: 600;
                 text-align: center;
             }

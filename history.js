@@ -77,8 +77,11 @@ async function displayPastChats() {
         return header;
     }
 
-    $('#select_chat_div').empty();
-    $('#select_chat_search').val('').off('input');
+    const $select_chat = $('#select_chat_div');
+    const $select_chat_search = $('#select_chat_search');
+
+    $select_chat.empty();
+    $select_chat_search.val('').off('input');
 
     const data = await (selected_group ? getGroupPastChats(selected_group) : getPastCharacterChats());
 
@@ -110,11 +113,12 @@ async function displayPastChats() {
         }
         chatsByCategory[category].push(chat);
     });
+
     $('#load_select_chat_div').css('display', 'none');
     $('#ChatHistoryCharName').text(`${displayName}'s `);
 
     const displayChats = (searchQuery) => {
-        $('#select_chat_div').empty();
+        $select_chat.empty();
 
         Object.entries(chatsByCategory)
             .filter(([cat, chats]) => chats.length > 0)
@@ -125,7 +129,7 @@ async function displayPastChats() {
                 return sortByTimeCategory(a, b);
             })
             .forEach(([category, chats]) => {
-                $('#select_chat_div').append(getCategoryHeader(category));
+                $select_chat.append(getCategoryHeader(category));
 
                 const filteredData = chats.filter(chat => {
                     const fileName = chat['file_name'];
@@ -160,7 +164,7 @@ async function displayPastChats() {
                         const fileName = value['file_name'];
                         const chatItems = rawChats[fileName].length;
                         const timestamp = timestampToMoment(value['last_mes']).format('lll');
-                        const template = $('#past_chat_template .select_chat_block_wrapper').clone();
+                        const template = $('.select_chat_block_wrapper', '#past_chat_template').clone();
                         template.find('.select_chat_block').attr('file_name', fileName);
                         template.find('.avatar img').attr('src', avatarImg);
                         template.find('.select_chat_block_filename').text(fileName);
@@ -174,10 +178,10 @@ async function displayPastChats() {
                             template.find('.avatar img').replaceWith(getGroupAvatar(group));
                         }
 
-                        $('#select_chat_div').append(template);
+                        $select_chat.append(template);
 
                         if (currentChat === fileName.toString().replace('.jsonl', '')) {
-                            $('#select_chat_div').find('.select_chat_block:last').attr('highlight', true);
+                            $select_chat.find('.select_chat_block:last').attr('highlight', true);
                         }
                     };
                 }
@@ -185,17 +189,14 @@ async function displayPastChats() {
     }
 
     displayChats('');
-    $('.select_chat_block_filename.select_chat_block_filename_item').each(function() {
-        var originalText = $(this).text();
-
-        var strippedText = originalText.split('.')[0];
-
+    $('.select_chat_block_filename.select_chat_block_filename_item', $select_chat).each(function() {
+        var strippedText = $(this).text().split('.')[0];
         $(this).text(strippedText);
     });
 
     const debouncedDisplay = debounce((searchQuery) => { displayChats(searchQuery); }, 300);
 
-    $('#select_chat_search').on('input', function() {
+    $select_chat_search.on('input', function() {
         const searchQuery = $(this).val();
         debouncedDisplay(searchQuery);
     });
@@ -253,8 +254,6 @@ async function renameChat() {
             }
 
             await delay(250);
-            $('#option_select_chat').trigger('click');
-            $('#options').hide();
             await displayPastChats();
         } catch {
             await delay(500);
@@ -268,19 +267,15 @@ async function renameChat() {
 
 export async function loadChatHistory() {
     const historyHTML = await $.get(`${extensionFolderPath}/history.html`);
-    $('#top-settings-holder').append(historyHTML);
+    const $settings_holder = $('#top-settings-holder').append(historyHTML);
 
     $('#shadow_select_chat_popup').remove();
 
-    $(
-        '.options-content #option_select_chat, .options-content #option_start_new_chat, .options-content #option_close_chat'
-    ).css('display', 'none');
+    $('#option_select_chat, #option_start_new_chat, #option_close_chat').css('display', 'none');
 
-    $('#new_chat').on('click', () => {
-        $('.options-content #option_start_new_chat').trigger('click');
-    });
-    $('#close_chat').on('click', () => {
-        $('.options-content #option_close_chat').trigger('click');
+    $settings_holder.on('click', '#new_chat, #close_chat', function() {
+        const buttonToClick = $(this).is('#new_chat') ? '#option_start_new_chat' : '#option_close_chat';
+        $(buttonToClick).trigger('click');
     });
 
     eventSource.on('chatLoaded', async () => {

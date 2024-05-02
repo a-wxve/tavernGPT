@@ -42,12 +42,12 @@ export async function initExplorePanel() {
     }
 
     function updateCharacterListInView(characters, reset) {
-        const characterList = $('.character-list');
+        const $characterList = $('.character-list', '#list-and-search-wrapper');
 
         if (reset) {
-            characterList.html(characters.map(generateCharacterListItem).join('')).scrollTop(0);
+            $characterList.html(characters.map(generateCharacterListItem).join('')).scrollTop(0);
         } else {
-            characterList.append(characters.map(generateCharacterListItem).join(''));
+            $characterList.append(characters.map(generateCharacterListItem).join(''));
         }
     }
 
@@ -100,14 +100,14 @@ export async function initExplorePanel() {
     }
 
     async function searchCharacters(options) {
-        const characterList = $('.character-list');
+        const $characterList = $('.character-list', '#list-and-search-wrapper');
 
-        characterList.addClass('searching');
+        $characterList.addClass('searching');
 
         console.log('Searching for characters...', options);
         const characters = await fetchCharactersBySearch(options);
 
-        characterList.removeClass('searching');
+        $characterList.removeClass('searching');
 
         return characters;
     }
@@ -131,15 +131,15 @@ export async function initExplorePanel() {
     }
 
     function displayCharactersInListViewPopup() {
-        const characterList = $('.character-list');
-        const pageNumber = $('#pageNumber');
+        const $characterList = $('.character-list', '#list-and-search-wrapper');
+        const $pageNumber = $('#pageNumber');
 
-        characterList.scrollTop(0)
-        pageNumber.val(1);
+        $characterList.scrollTop(0)
+        $pageNumber.val(1);
 
         let popupImage = null;
 
-        characterList.off().on('click', (event) => {
+        $characterList.off().on('click', (event) => {
             if (event.target.tagName === 'IMG') {
                 const image = event.target;
 
@@ -174,7 +174,7 @@ export async function initExplorePanel() {
             }
         });
 
-        characterList.off().on('click', (event) => {
+        $characterList.off().on('click', (event) => {
             if (event.target.classList.contains('download-btn')) {
                 downloadCharacter(event.target.getAttribute('data-path'));
             }
@@ -200,7 +200,7 @@ export async function initExplorePanel() {
             const nsfw = $('#nsfwCheckbox').val();
             const findCount = $('#findCount').val();
             const sort = $('#sortOrder').val();
-            let page = $('#pageNumber').val();
+            let page = $pageNumber.val();
 
             debounce(searchCharacters({
                 searchTerm,
@@ -214,7 +214,7 @@ export async function initExplorePanel() {
                 if (characters && characters.length > 0) {
                     updateCharacterListInView(characters, reset);
                 } else {
-                    characterList.html('<div class="no-characters-found">No characters found.</div>');
+                    $characterList.html('<div class="no-characters-found">No characters found.</div>');
                 }
             }).catch((error) => {
                 console.error('Error searching characters:', error);
@@ -222,30 +222,30 @@ export async function initExplorePanel() {
         }
 
         const infiniteScroll = debounce((event) => {
-            if (characterList.scrollTop() + characterList.innerHeight() >= characterList[0].scrollHeight - 100) {
+            if ($characterList.scrollTop() + $characterList.innerHeight() >= $characterList[0].scrollHeight - 100) {
                 toastr.info('Loading more characters...')
-                pageNumber.val(Math.max(1, parseInt(pageNumber.val().toString()) + 1));
+                $pageNumber.val(Math.max(1, parseInt($pageNumber.val().toString()) + 1));
                 handleSearch(event, false);
             }
         }, 1000);
-        characterList.on('scroll', infiniteScroll);
+        $characterList.on('scroll', infiniteScroll);
 
         $('#characterSearchButton').on('click', (event) => {
             handleSearch(event, true);
         });
 
         $('#characterSearchInput, #includeTags, #excludeTags, #findCount, #sortOrder, #nsfwCheckbox').on('change', (event) => {
-            pageNumber.val(1);
+            $pageNumber.val(1);
             handleSearch(event, true);
         });
 
         $('#pageUpButton').on('click', (event) => {
-            pageNumber.val(Math.max(1, parseInt(pageNumber.val().toString()) + 1));
+            $pageNumber.val(Math.max(1, parseInt($pageNumber.val().toString()) + 1));
             handleSearch(event, true);
         });
 
         $('#pageDownButton').on('click', (event) => {
-            pageNumber.val(Math.max(1, parseInt(pageNumber.val().toString()) - 1));
+            $pageNumber.val(Math.max(1, parseInt($pageNumber.val().toString()) - 1));
             handleSearch(event, true);
         });
     }
@@ -282,7 +282,7 @@ export async function initExplorePanel() {
         return data;
     }
 
-    $('#explore-button .drawer-toggle').on('click', function() {
+    $('.drawer-toggle', '#explore-button').on('click', function() {
         var icon = $(this).find('.drawer-icon');
         var drawer = $(this).parent().find('.drawer-content');
         if (drawer.hasClass('resizing')) {
@@ -293,12 +293,12 @@ export async function initExplorePanel() {
         if (!drawerOpen) {
             displayCharactersInListViewPopup();
 
-            $('.openDrawer').not('.pinnedOpen').addClass('resizing').slideToggle(200, 'swing', async function() {
+            $('.openDrawer', '#explore-button').not('.pinnedOpen').addClass('resizing').slideToggle(200, 'swing', async function() {
                 await delay(50);
                 $(this).closest('.drawer-content').removeClass('resizing');
             });
-            $('.openIcon').toggleClass('closedIcon openIcon');
-            $('.openDrawer').not('.pinnedOpen').toggleClass('closedDrawer openDrawer');
+            $('.openIcon', '#explore-button').toggleClass('closedIcon openIcon');
+            $('.openDrawer', '#explore-button').not('.pinnedOpen').toggleClass('closedDrawer openDrawer');
 
             icon.toggleClass('openIcon closedIcon');
             drawer.toggleClass('openDrawer closedDrawer');
@@ -313,7 +313,7 @@ export async function initExplorePanel() {
         } else if (drawerOpen) {
             icon.toggleClass('closedIcon openIcon');
 
-            $('.openDrawer').not('.pinnedOpen').addClass('resizing').slideToggle(200, 'swing', async function() {
+            $('.openDrawer', '#explore-button').not('.pinnedOpen').addClass('resizing').slideToggle(200, 'swing', async function() {
                 await delay(50);
                 $(this).closest('.drawer-content').removeClass('resizing');
             });
