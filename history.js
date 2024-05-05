@@ -17,22 +17,10 @@ import {
     renameGroupChat,
     selected_group
 } from '../../../group-chats.js';
-import { debounce, delay, onlyUnique, timestampToMoment } from '../../../utils.js';
+import { debounce, onlyUnique, timestampToMoment } from '../../../utils.js';
 import { extensionFolderPath, extensionName } from './index.js';
 
 async function displayPastChats() {
-    function getCurrentChatDetails() {
-        if (!characters[this_chid] && !selected_group) {
-            return { sessionName: '', group: null, characterName: '', avatarImgURL: '' };
-        }
-
-        const group = selected_group ? groups.find(x => x.id === selected_group) : null;
-        const currentChat = selected_group ? group?.chat_id : characters[this_chid]['chat'];
-        const displayName = selected_group ? group?.name : characters[this_chid].name;
-        const avatarImg = selected_group ? group?.avatar_url : getThumbnailUrl('avatar', characters[this_chid]['avatar']);
-        return { sessionName: currentChat, group: group, characterName: displayName, avatarImgURL: avatarImg };
-    }
-
     function getRelativeTimeCategory(date) {
         const today = moment().startOf('day');
         const yesterday = moment().subtract(1, 'days').startOf('day');
@@ -40,18 +28,19 @@ async function displayPastChats() {
         const thisMonth = moment().startOf('month');
         const thisYear = moment().startOf('year');
 
-        if (date.isSame(today, 'day')) {
-            return 'Today';
-        } else if (date.isSame(yesterday, 'day')) {
-            return 'Yesterday';
-        } else if (date.isAfter(thisWeek)) {
-            return 'This Week';
-        } else if (date.isSame(thisMonth, 'month')) {
-            return 'This Month';
-        } else if (date.isSame(thisYear, 'year')) {
-            return date.format('MMMM');
-        } else {
-            return date.format('MMMM YYYY');
+        switch (true) {
+            case date.isSame(today, 'day'):
+                return 'Today';
+            case date.isSame(yesterday, 'day'):
+                return 'Yesterday';
+            case date.isAfter(thisWeek):
+                return 'This Week';
+            case date.isSame(thisMonth, 'month'):
+                return 'This Month';
+            case date.isSame(thisYear, 'year'):
+                return date.format('MMMM');
+            default:
+                return date.format('MMMM YYYY');
         }
     }
 
@@ -60,28 +49,24 @@ async function displayPastChats() {
         const aCat = getRelativeTimeCategory(timestampToMoment(a.last_mes));
         const bCat = getRelativeTimeCategory(timestampToMoment(b.last_mes));
 
-        if (categories.includes(aCat) && categories.includes(bCat)) {
-            return categories.indexOf(aCat) - categories.indexOf(bCat);
-        } else if (categories.includes(aCat)) {
-            return -1;
-        } else if (categories.includes(bCat)) {
-            return 1;
-        } else {
-            return moment(aCat, 'MMMM YYYY').isAfter(moment(bCat, 'MMMM YYYY')) ? -1 : 1;
+        switch (true) {
+            case (categories.includes(aCat) && categories.includes(bCat)):
+                return categories.indexOf(aCat) - categories.indexOf(bCat);
+            case categories.includes(aCat):
+                return -1;
+            case categories.includes(bCat):
+                return 1;
+            default:
+                return moment(aCat, 'MMMM YYYY').isAfter(moment(bCat, 'MMMM YYYY')) ? -1 : 1;
         }
     }
 
-    function getCategoryHeader(category) {
-        const header = $('<h4 class=chat-category></h4>');
-        header.text(category);
-        return header;
-    }
+    const $select_chat = document.querySelector('#select_chat_div');
+    const $select_chat_search = document.querySelector('#select_chat_search');
 
-    const $select_chat = $('#select_chat_div');
-    const $select_chat_search = $('#select_chat_search');
-
-    $select_chat.empty();
-    $select_chat_search.val('').off('input');
+    $select_chat.replaceChildren();
+    $select_chat_search.value = '';
+    $select_chat_search.removeEventListener('input', () => { });
 
     const data = await (selected_group ? getGroupPastChats(selected_group) : getPastCharacterChats());
 
@@ -89,12 +74,6 @@ async function displayPastChats() {
         toastr.error('Could not load chat data. Try reloading the page.');
         return;
     }
-
-    const chatDetails = getCurrentChatDetails();
-    const group = chatDetails.group;
-    const currentChat = chatDetails.sessionName;
-    const displayName = chatDetails.characterName;
-    const avatarImg = chatDetails.avatarImgURL;
 
     const rawChats = await getChatsFromFiles(data, selected_group);
 
@@ -114,12 +93,9 @@ async function displayPastChats() {
         chatsByCategory[category].push(chat);
     });
 
-    $('#load_select_chat_div').css('display', 'none');
-    $('#ChatHistoryCharName').text(`${displayName}'s `);
+    document.querySelector('#load_select_chat_div').style.display = 'none';
 
     const displayChats = (searchQuery) => {
-        $select_chat.empty();
-
         Object.entries(chatsByCategory)
             .filter(([cat, chats]) => chats.length > 0)
             .sort(([aCat, aChats], [bCat, bChats]) => {
@@ -129,23 +105,23 @@ async function displayPastChats() {
                 return sortByTimeCategory(a, b);
             })
             .forEach(([category, chats]) => {
-                $select_chat.append(getCategoryHeader(category));
+                $select_chat.insertAdjacentHTML('beforeend', `<h4 class=chat-category>${category}</h4>`);
 
                 const filteredData = chats.filter(chat => {
-                    const fileName = chat['file_name'];
-                    const chatContent = rawChats[fileName];
+                    const chatContent = rawChats[chat['file_name']];
 
                     function makeQueryFragments(query) {
-                        let fragments = query.trim().split(/\s+/).map(str => str.trim().toLowerCase()).filter(onlyUnique);
-                        return fragments;
+                        return query.trim().split(/\s+/).map(str => str.trim().toLowerCase()).filter(onlyUnique);;
                     }
 
                     function matchFragments(fragments, text) {
                         if (!text) {
                             return false;
                         }
+
                         return fragments.every(item => text.includes(item));
                     }
+
                     const fragments = makeQueryFragments(searchQuery);
 
                     return chatContent && Object.values(chatContent).some(message => matchFragments(fragments, message?.mes?.toLowerCase()));
@@ -160,28 +136,18 @@ async function displayPastChats() {
                         if (mes.length > strlen) {
                             mes = '...' + mes.substring(mes.length - strlen);
                         }
-                        const fileSize = value['file_size'];
                         const fileName = value['file_name'];
-                        const chatItems = rawChats[fileName].length;
-                        const timestamp = timestampToMoment(value['last_mes']).format('lll');
-                        const template = $('.select_chat_block_wrapper', '#past_chat_template').clone();
-                        template.find('.select_chat_block').attr('file_name', fileName);
-                        template.find('.avatar img').attr('src', avatarImg);
-                        template.find('.select_chat_block_filename').text(fileName);
-                        template.find('.chat_file_size').text(`(${fileSize},`);
-                        template.find('.chat_messages_num').text(`${chatItems}💬)`);
-                        template.find('.select_chat_block_mes').text(mes);
-                        template.find('.PastChat_cross').attr('file_name', fileName);
-                        template.find('.chat_messages_date').text(timestamp);
-
-                        if (selected_group) {
-                            template.find('.avatar img').replaceWith(getGroupAvatar(group));
-                        }
+                        const template = document.querySelector('#past_chat_template .select_chat_block_wrapper').cloneNode(true);
+                        template.removeChild('.select_chat_info');
+                        template.removeChild('.select_chat_block_mes');
+                        template.querySelector('.select_chat_block').setAttribute('file_name', fileName);
+                        template.querySelector('.select_chat_block_filename').textContent = fileName;
+                        template.querySelector('.PastChat_cross').setAttribute('file_name', fileName);
 
                         $select_chat.append(template);
 
                         if (currentChat === fileName.toString().replace('.jsonl', '')) {
-                            $select_chat.find('.select_chat_block:last').attr('highlight', true);
+                            $select_chat.querySelector('.select_chat_block:last-child').setAttribute('highlight', true);
                         }
                     };
                 }
@@ -189,16 +155,15 @@ async function displayPastChats() {
     }
 
     displayChats('');
-    $('.select_chat_block_filename.select_chat_block_filename_item', $select_chat).each(function() {
-        var strippedText = $(this).text().split('.')[0];
-        $(this).text(strippedText);
+
+    $select_chat.querySelectorAll('.select_chat_block_filename.select_chat_block_filename_item').forEach((filename) => {
+        filename.textContent = filename.textContent.replace('.jsonl', '');
     });
 
     const debouncedDisplay = debounce((searchQuery) => { displayChats(searchQuery); }, 300);
 
-    $select_chat_search.on('input', function() {
-        const searchQuery = $(this).val();
-        debouncedDisplay(searchQuery);
+    $select_chat_search.addEventListener('input', () => {
+        debouncedDisplay($select_chat_search.value);
     });
 }
 
@@ -212,70 +177,60 @@ async function renameChat() {
     }
 
     if (matchesTimePattern(old_filename) && context.chat.length > 2) {
-        const prompt = 'Generate a name for this chat in as few words as possible. Avoid including special characters, words like "chat", or the user\'s name. Only output the chat name, and nothing else.';
-        let newName = await generateQuietPrompt(prompt, false, false);
-        newName = newName.toString().replace(/^'((?:\\'|[^'])*)'$/, '$1');
+        const prompt = 'Generate a name for this chat in as few words as possible. Avoid including special characters, words like "chat", or the user\'s name. Only output the chat name.';
+        var new_filename = await generateQuietPrompt(prompt, false, false);
+        new_filename = new_filename.toString().replace(/^'((?:\\'|[^'])*)'$/, '$1');
 
         const body = {
             is_group: !!selected_group,
             avatar_url: characters[this_chid]?.avatar,
             original_file: `${old_filename}.jsonl`,
-            renamed_file: `${newName}.jsonl`,
+            renamed_file: `${new_filename}.jsonl`,
         };
 
         try {
-            const response = await fetch('/api/chats/rename', {
+            await fetch('/api/chats/rename', {
                 method: 'POST',
                 body: JSON.stringify(body),
                 headers: getRequestHeaders(),
+            }).catch(() => {
+                throw new Error('Unsuccessful request.')
             });
 
-            if (!response.ok) {
-                throw new Error('Unsuccessful request.');
-            }
-
-            const data = await response.json();
-
-            if (data.error) {
-                throw new Error('Server returned an error.');
-            }
-
             if (selected_group) {
-                await renameGroupChat(
-                    selected_group,
-                    old_filename,
-                    newName
-                );
+                await renameGroupChat(selected_group, old_filename, new_filename);
             } else {
                 if (characters[this_chid].chat == old_filename) {
-                    characters[this_chid].chat = newName;
+                    characters[this_chid].chat = new_filename;
                 }
-                $('#selected_chat_pole').val(characters[this_chid].chat);
+                document.querySelector('#selected_chat_pole').value = characters[this_chid].chat;
             }
 
-            await delay(250);
             await displayPastChats();
         } catch {
-            await delay(500);
-            await callPopup(
-                'An error has occurred. Chat was not renamed.',
-                'text'
-            );
+            await callPopup('An error has occurred. Chat was not renamed.', 'text');
         }
     }
 }
 
 export async function loadChatHistory() {
-    const historyHTML = await $.get(`${extensionFolderPath}/history.html`);
-    const $settings_holder = $('#top-settings-holder').append(historyHTML);
+    const $settings_holder = document.querySelector('#top-settings-holder')
+    await fetch(`${extensionFolderPath}/html/history.html`).then(data => data.text()).then(data => {
+        $settings_holder.insertAdjacentHTML('beforeend', data);
+    });
 
-    $('#shadow_select_chat_popup').remove();
+    document.querySelector('#shadow_select_chat_popup').parentNode.removeChild(shadow_select_chat_popup);
 
-    $('#option_select_chat, #option_start_new_chat, #option_close_chat').css('display', 'none');
+    document.querySelectorAll('#option_select_chat, #option_start_new_chat, #option_close_chat').forEach(element => {
+        element.style.display = 'none'
+    });
 
-    $settings_holder.on('click', '#new_chat, #close_chat', function() {
-        const buttonToClick = $(this).is('#new_chat') ? '#option_start_new_chat' : '#option_close_chat';
-        $(buttonToClick).trigger('click');
+    $settings_holder.querySelector('#new_chat').addEventListener('click', () => {
+        document.querySelector('#option_start_new_chat').dispatchEvent(new MouseEvent('click'));
+    });
+
+    $settings_holder.querySelector('#close_chat').addEventListener('click', () => {
+        document.querySelector('#option_close_chat').dispatchEvent(new MouseEvent('click'));
     });
 
     eventSource.on('chatLoaded', async () => {
