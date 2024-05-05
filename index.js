@@ -37,7 +37,7 @@ function getPersona() {
     });
 
     $persona_button.addEventListener('click', () => {
-        $persona_button.classList.closest('.drawer-content').toggle('closedDrawer openDrawer');
+        $persona_button.closest('.drawer-content').classList.toggle('closedDrawer openDrawer');
     });
 }
 
