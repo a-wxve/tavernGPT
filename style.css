@@ -27,8 +27,6 @@ body {
 #persona-management-button .drawer-icon::before,
 #ReverseProxyWarningMessage,
 #quickReplyPopoutButton,
-.mes_text br,
-.mes_create_bookmark,
 #summaryExtensionPopoutButton {
     display: none !important;
 }
@@ -445,7 +443,8 @@ body.big-avatars {
             flex-wrap: wrap;
 
             .hotswap.avatars_inline.flex-container.expander {
-                overflow-y: scroll;
+                overflow-x: auto;
+                flex-wrap: nowrap;
                 max-height: calc(var(--avatar-base-height) * var(--big-avatar-height-factor) + 2 * var(--avatar-base-border-radius) - 10px);
             }
         }
