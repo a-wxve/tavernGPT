@@ -14,7 +14,7 @@ export const extensionFolderPath = `scripts/extensions/third-party/${extensionNa
 const defaultSettings = {};
 
 function getPersona() {
-    const $persona_button = $('#persona-management-button');
+    const $persona_button = document.querySelector('#persona-management-button .drawer-icon.fa-solid.fa-face-smile');
 
     eventSource.on('settings_updated', async () => {
         const response = await fetch('/api/settings/get', {
@@ -29,81 +29,81 @@ function getPersona() {
             throw new Error('Error getting settings.');
         }
 
-        const data = await response.json();
-        let settings = JSON.parse(data.settings);
-
+        let settings = await response.json().then(data => JSON.parse(data.settings));
         let avatar_img = getUserAvatar(settings.user_avatar);
-        $('.drawer-icon.fa-solid.fa-face-smile', $persona_button).html(
-            `<img class='persona_avatar' src='${avatar_img}'/>`).append(`<span> ${name1}</span>`
-            );
+
+        $persona_button.innerHTML = `<img class='persona_avatar' src='${avatar_img}'/>`;
+        $persona_button.insertAdjacentHTML('beforeend', `<span> ${name1}</span>`);
     });
 
-    $('.drawer-icon.fa-solid.fa-face-smile', $persona_button).on('click', function() {
-        $(this).closest('.drawer').find('.drawer-content').toggleClass('closedDrawer openDrawer');
+    $persona_button.addEventListener('click', () => {
+        $persona_button.classList.closest('.drawer-content').toggle('closedDrawer openDrawer');
     });
 }
 
 function toggleSidebar() {
-    const $settings_holder = $('#top-settings-holder');
-    const closeHTML = `
+    const $settings_holder = document.querySelector('#top-settings-holder');
+    $settings_holder.insertAdjacentHTML('beforeend', `
         <button id='closeSidebar'>
             <div class='arrow1'></div><div class='arrow2'></div>
         </button>
-    `;
-    $settings_holder.append(closeHTML);
+    `);
 
-    $('#closeSidebar').on('click', () => {
-        $settings_holder.toggleClass('collapsed');
+    $settings_holder.addEventListener('click', (event) => {
+        if (event.target.matches('#closeSidebar')) {
+            $settings_holder.toggleClass('collapsed');
+        }
     });
 }
 
 async function initSettings() {
-    const settingsHTML = await $.get(`${extensionFolderPath}/settings.html`);
-    $('#extensions_settings2').append(settingsHTML);
-    const $rename_chats = $('#rename_chats');
-    const $enable_nudges = $('#enable_nudges');
+    const $settings = document.querySelector('#extensions_settings2');
+    await fetch(`${extensionFolderPath}/html/settings.html`).then(data => data.text()).then(data => {
+        $settings.insertAdjacentHTML('beforeend', data);
+    });
+    const $rename_chats = document.querySelector('#rename_chats');
+    const $enable_nudges = document.querySelector('#enable_nudges');
 
-    function loadSettings() {
-        extension_settings[extensionName] = extension_settings[extensionName] || {};
-        if (Object.keys(extension_settings[extensionName]).length === 0) {
-            Object.assign(extension_settings[extensionName], defaultSettings);
+    $settings.addEventListener('click', (event) => {
+        switch (true) {
+            case event.target.matches($rename_chats):
+                extension_settings[extensionName].rename_chats = $rename_chats.checked;
+            case event.target.matches($enable_nudges):
+                extension_settings[extensionName].enable_nudges = $enable_nudges.checked;
+            default: break;
         }
+        saveSettingsDebounced();
+    });
 
-        $rename_chats.prop('checked', extension_settings[extensionName].rename_chats).trigger('input');
-        $enable_nudges.prop('checked', extension_settings[extensionName].enable_nudges).trigger('input');
+    extension_settings[extensionName] = extension_settings[extensionName] || {};
+    if (Object.keys(extension_settings[extensionName]).length === 0) {
+        Object.assign(extension_settings[extensionName], defaultSettings);
     }
 
-    $rename_chats.on('click', (event) => {
-        const value = Boolean($(event.target).prop('checked'));
-        extension_settings[extensionName].rename_chats = value;
-        saveSettingsDebounced();
-    });
-
-    $enable_nudges.on('click', (event) => {
-        const value = Boolean($(event.target).prop('checked'));
-        extension_settings[extensionName].enable_nudges = value;
-        saveSettingsDebounced();
-    });
-
-    loadSettings();
+    switch (true) {
+        case $rename_chats.checked:
+            $rename_chats.dispatchEvent(new MouseEvent('click'));
+        case $enable_nudges.checked:
+            $enable_nudges.dispatchEvent(new MouseEvent('click'));
+        default: return;
+    }
 }
 
 function loadSplashText() {
     const splashes = ['desu~', 'desu~!', 'DESU~!', 'Jimmy Apples!', 'Sam Altman!', 'ChatGPT is better!', 'Splash Text!', 'The Singularity!', 'AGI!', 'Shocking!', 'Shocking the industry!', 'e/acc!', 'Acceleration!', 'AGI achieved internally!', 'Q*!', 'GPT-7!', 'Chinchilla scaling!', 'Low perplexity!', 'AUPATE!', 'Ethnnically Anbigious!', 'eethnically amboruaius!', 'Laver huling nnuctiol!', 'Costco Wholeslale!', 'CFTF?', 'Foxbots doko?', 'OpenAI BTFO!', 'Anthropic BTFO!', '1 billion token context!', 'Summer Dragon!', 'ahh ahh mistress!', 'My model has 24 parameters!', 'NVIDIA, fuck you!', 'TPUs!', 'ClosedAI!', '175 Beaks!', '1.7 Toucans!', 'Will Smith eating spaghetti!', 'SOVL!', 'SOVLLESS!', 'Rugpulled!', 'Fiz love!', '$7 Trillion!', 'Feel the AGI!', 'Reddit\\nSpacing!', 'Also try NovelAI!', 'Also try AetherRoom!', 'AIIIEEEEEEEE!', 'We\'re back!', 'We\'re so back!', 'It\'s over!', 'It\'s so over!', 'Can generate hands!', 'Slight twist on the upstroke!', '(´• ω •`) ', '(´- ω -`) ', '(\`・ω・\´) ', 'Big if true!', 'Meta BTFO!', 'Groq!', 'Grok?', '0.99 p(doom)!', 'Anchor!', 'No meanies allowed!', 'The Rock eating rocks!', 'Malfoy\'s last name!', 'Todd Howard!', 'DeepMind BTFO!', 'sillylittleguy.org!', 'I kneel!', 'Where bake?', 'Focksposting!', 'struggling to conceptualize the thickness of her bush...', 'Anti love!', 'GPT-2 was very bad!', 'GPT-3 was pretty bad!', 'GPT-4 is bad!', 'GPT-4 kind of sucks!', 'GPT-5 is okay!', 'Count Grey!', 'Google Colab!', 'Also try AI Dungeon!'];
 
     function setSplashText() {
-        const $version_display = $('#version_display_welcome');
+        if (!!document.querySelector('#version_display_welcome')) {
+            document.querySelector('#version_display_welcome').insertAdjacentHTML('afterend', `<p id="splash">Loading...</p>`);
 
-        if ($version_display.length) {
-            $version_display.after('<p id="splash">Loading...</p>');
-
-            const $splash = $('#splash').html(splashes[Math.floor(Math.random() * splashes.length)]);
-
-            $splash.on('click', function() {
-                $splash.html(splashes[Math.floor(Math.random() * splashes.length)]);
+            const $splash = document.querySelector('#splash')
+            $splash.innerHTML = splashes[Math.floor(Math.random() * splashes.length)];
+            $splash.addEventListener('click', () => {
+                $splash.innerHTML = splashes[Math.floor(Math.random() * splashes.length)];
             });
+
         } else {
-            setTimeout(checkAndSet, 540);
+            setTimeout(setSplashText, 540);
         }
     }
 
@@ -112,54 +112,53 @@ function loadSplashText() {
 
 async function initNudgeUI() {
     if (extension_settings[extensionName].enable_nudges) {
-        const nudgeHTML = await $.get(`${extensionFolderPath}/nudges.html`);
-        $('#form_sheld').prepend(nudgeHTML);
-        const $nudges = $('#nudges');
+        await fetch(`${extensionFolderPath}/html/nudges.html`).then(data => data.text()).then(data => {
+            document.querySelector('#form_sheld').insertAdjacentHTML('afterbegin', data);
+        });
+        const $nudges = document.querySelector('#nudges');
 
-        eventSource.on('generation_ended', async () => {
+        eventSource.on('generation_ended', () => {
             eventSource.on('message_received', async () => {
                 const prompt = 'Generate 4 one line replies from {{user}}\'s point of view using the chat history so far as a guideline for {{user}}\'s writing style in JSON format with the keys "prompt1", "prompt2", "prompt3", and "prompt4". Be sure to "quote" dialogue. Output only the JSON without any additional commentary.';
-                let nudgesString = await generateQuietPrompt(prompt, false, false);
-                console.log(nudgesString);
-                let nudges = JSON.parse(nudgesString);
+                let nudges = await generateQuietPrompt(prompt, false, false).then(data => JSON.parse(data));
 
-                $('.nudge_button', nudges).each(function(index) {
+                $nudges.querySelectorAll('.nudge_button').forEach((button, index) => {
                     if (nudges[`prompt${index + 1}`]) {
                         let prompt = nudges[`prompt${index + 1}`];
-                        $(this).append(`<span id="nudge_prompt">${prompt}</span>`);
+                        button.insertAdjacentHTML('beforeend', `<span id="nudge_prompt">${prompt}</span>`);
                     }
-                });
+                })
 
-                $nudges.css('display', 'grid');
+                $nudges.style.display = 'grid';
             })
         });
 
-        $('#nudge_prompt').on('click', (event) => {
-            let prompt = $(event.target).text();
-            console.log(prompt)
-            $('#send_textarea').val(prompt);
-            $nudges.css('display', 'none');
+        $nudges.querySelector('#nudge_prompt').addEventListener('click', (event) => {
             event.preventDefault();
+            let prompt = event.target.textContent;
+            document.querySelector('#send_textarea').value = prompt;
+            $nudges.style.display = 'none';
         })
     }
 }
 
 function setMobileUI() {
-    $('#sheld').prepend(`<div class="flex-container" id="chat_header"></div>`);
+    const $sheld = document.querySelector('#sheld')
+    $sheld.insertAdjacentHTML('afterbegin', `<div class="flex-container" id="chat_header"></div>`);
 
     function addChatHeader() {
-        const $chat_header = $('#chat_header');
-        const $last_mes = $('.last_mes', '#chat');
+        const $chat_header = $sheld.querySelector('#chat_header');
+        const $last_mes = $sheld.querySelector('.last_mes');
 
-        $chat_header.empty();
-        let avatarImg = $last_mes.find('.avatar').clone();
-        let charName = $last_mes.find('.ch_name').clone();
-        let mesID = $last_mes.find('.mesIDDisplay').clone();
-        let mesTimer = $last_mes.find('.mes_timer').clone();
-        let tokenCount = $last_mes.find('.tokenCounterDisplay').clone();
+        $chat_header.replaceChildren();
+        let avatarImg = $last_mes.querySelector('.avatar').cloneNode();
+        let charName = $last_mes.querySelector('.ch_name').cloneNode();
+        let mesID = $last_mes.querySelector('.mesIDDisplay').cloneNode();
+        let mesTimer = $last_mes.querySelector('.mes_timer').cloneNode();
+        let tokenCount = $last_mes.querySelector('.tokenCounterDisplay').cloneNode();
 
         $chat_header.append(avatarImg, charName);
-        $('.ch_name', $chat_header).append(mesID, mesTimer, tokenCount);
+        $chat_header.querySelector('.ch_name').append(mesID, mesTimer, tokenCount);
     }
 
     eventSource.on('chatLoaded', addChatHeader);
@@ -168,19 +167,18 @@ function setMobileUI() {
 }
 
 function addSwipeButtons() {
-    const swipeButtonsHTML = `
+    document.querySelector('#message_template .mes_buttons').insertAdjacentHTML('afterbegin', `
         <div class="mes_swipe_left fa-solid fa-chevron-left"></div>
         <div class="swipes-counter">1/1</div>
         <div class="mes_swipe_right fa-solid fa-chevron-right"></div>
-        `;
-    $('.mes_buttons', '#message_template').prepend(swipeButtonsHTML);
-
-    const $last_mes = $('.last_mes', '#chat')
+    `);
 
     function registerSwipeButtons() {
-        $('.mes_buttons', $last_mes).off().on('click', '.mes_swipe_left, .mes_swipe_right', function() {
-            const swipeDirection = $(this).hasClass('mes_swipe_left') ? '.swipe_left' : '.swipe_right';
-            $(swipeDirection, $last_mes).trigger('click');
+        const $last_mes = document.querySelector('#chat').querySelector('.last_mes')
+        $last_mes.querySelector('.mes_buttons').removeEventListener('click', () => { })
+        $last_mes.querySelector('.mes_buttons').addEventListener('click', (event) => {
+            const swipeDirection = event.target.hasClass('mes_swipe_left') ? '.swipe_left' : '.swipe_right';
+            $last_mes.querySelector(swipeDirection).dispatchEvent(new MouseEvent('click'));
         });
     }
 
@@ -189,37 +187,41 @@ function addSwipeButtons() {
     eventSource.on('message_deleted', registerSwipeButtons);
 }
 
-jQuery(() => {
-    $(initSettings);
-    $(loadChatHistory);
-    $(getPersona);
-    $(initExplorePanel);
-    $(toggleSidebar);
-    $(initNudgeUI);
-    $(loadSplashText);
-    $(addSwipeButtons);
+function main() {
+    initSettings();
+    loadChatHistory();
+    getPersona();
+    initExplorePanel();
+    toggleSidebar();
+    initNudgeUI();
+    loadSplashText();
+    addSwipeButtons();
 
     if (window.matchMedia('only screen and ((max-width: 768px))').matches) {
-        $(setMobileUI);
+        setMobileUI();
     }
 
 
-    const $sheld = $('#sheld');
-    $('.expression-holder', '#expression-wrapper').appendTo(sheld);
-    $sheld.attr('tabindex', '0');
-    $sheld.on('keydown', (event) => {
+    const $sheld = document.querySelector('#sheld');
+    $sheld.append(document.querySelector('#expression-wrapper .expression-holder'));
+    $sheld.setAttribute('tabindex', '0');
+    $sheld.addEventListener('keydown', (event) => {
         switch (event.which) {
             case 37:
-                if (!$('textarea', $sheld).is(':focus')) {
-                    $('.last_mes .swipe_left', $sheld).trigger('click');
-                    break;
+                if (!$sheld.querySelector('textarea').matches(':focus')) {
+                    $sheld.querySelector('.last_mes .swipe_left').dispatchEvent(new MouseEvent('click'));
                 }
             case 39:
-                if (!$('textarea', $sheld).is(':focus')) {
-                    $('.last_mes .swipe_right', $sheld).trigger('click');
-                    break;
+                if (!$sheld.querySelector('textarea').matches(':focus')) {
+                    $sheld.querySelector('.last_mes .swipe_right').dispatchEvent(new MouseEvent('click'));
                 }
             default: return;
         }
     });
-});
+}
+
+if (document.readyState !== 'loading') {
+    main();
+} else {
+    document.addEventListener('DOMContentLoaded', main);
+}
