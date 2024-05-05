@@ -3,8 +3,9 @@ import { debounce, delay } from '../../../utils.js';
 import { extensionFolderPath } from './index.js';
 
 export async function initExplorePanel() {
-    const exploreHTML = await $.get(`${extensionFolderPath}/explore.html`);
-    $('#top-settings-holder').append(exploreHTML);
+    await fetch(`${extensionFolderPath}/html/explore.html`).then(data => data.text()).then(data => {
+        document.querySelector('#top-settings-holder').insertAdjacentHTML('beforeend', data);
+    });
 
     let chubCharacters = [];
 
@@ -42,10 +43,11 @@ export async function initExplorePanel() {
     }
 
     function updateCharacterListInView(characters, reset) {
-        const $characterList = $('.character-list', '#list-and-search-wrapper');
+        const $characterList = document.querySelector('#list-and-search-wrapper .character-list');
 
         if (reset) {
-            $characterList.html(characters.map(generateCharacterListItem).join('')).scrollTop(0);
+            $characterList.innerHTML = characters.map(generateCharacterListItem).join('');
+            $characterList.scrollTop = 0;
         } else {
             $characterList.append(characters.map(generateCharacterListItem).join(''));
         }
@@ -72,9 +74,7 @@ export async function initExplorePanel() {
             url += `&exclude_tags=${encodeURIComponent(excludeTags.join(',').slice(0, 100))}`;
         }
 
-        let searchResponse = await fetch(url);
-
-        let searchData = await searchResponse.json();
+        let searchData = await fetch(url).then(data => data.json());
 
         chubCharacters = [];
 
@@ -100,14 +100,14 @@ export async function initExplorePanel() {
     }
 
     async function searchCharacters(options) {
-        const $characterList = $('.character-list', '#list-and-search-wrapper');
+        const $characterList = document.querySelector('#list-and-search-wrapper .character-list');
 
-        $characterList.addClass('searching');
+        $characterList.classList.add('searching');
 
         console.log('Searching for characters...', options);
         const characters = await fetchCharactersBySearch(options);
 
-        $characterList.removeClass('searching');
+        $characterList.classList.remove('searching');
 
         return characters;
     }
@@ -131,15 +131,16 @@ export async function initExplorePanel() {
     }
 
     function displayCharactersInListViewPopup() {
-        const $characterList = $('.character-list', '#list-and-search-wrapper');
-        const $pageNumber = $('#pageNumber');
+        const $characterList = document.querySelector('#list-and-search-wrapper .character-list');
+        const $pageNumber = document.querySelector('#pageNumber');
 
-        $characterList.scrollTop(0)
-        $pageNumber.val(1);
+        $characterList.scrollTop = 0;
+        $pageNumber.value = 1;
 
         let popupImage = null;
 
-        $characterList.off().on('click', (event) => {
+        $characterList.removeEventListener('click', () => { })
+        $characterList.addEventListener('click', (event) => {
             if (event.target.tagName === 'IMG') {
                 const image = event.target;
 
@@ -167,14 +168,15 @@ export async function initExplorePanel() {
             }
         });
 
-        $(document).on('click', () => {
+        document.addEventListener('click', () => {
             if (popupImage) {
                 document.body.removeChild(popupImage);
                 popupImage = null;
             }
         });
 
-        $characterList.off().on('click', (event) => {
+        $characterList.removeEventListener('click', () => { })
+        $characterList.addEventListener('click', (event) => {
             if (event.target.classList.contains('download-btn')) {
                 downloadCharacter(event.target.getAttribute('data-path'));
             }
@@ -194,13 +196,13 @@ export async function initExplorePanel() {
                 return str.split(',').map(tag => tag.trim());
             };
 
-            const searchTerm = $('#characterSearchInput').val();
-            const includeTags = splitAndTrim($('#includeTags').val());
-            const excludeTags = splitAndTrim($('#excludeTags').val());
-            const nsfw = $('#nsfwCheckbox').val();
-            const findCount = $('#findCount').val();
-            const sort = $('#sortOrder').val();
-            let page = $pageNumber.val();
+            const searchTerm = document.querySelector('#characterSearchInput').value;
+            const includeTags = splitAndTrim(document.querySelector('#includeTags').value);
+            const excludeTags = splitAndTrim(document.querySelector('#excludeTags').value);
+            const nsfw = document.querySelector('#nsfwCheckbox').value;
+            const findCount = document.querySelector('#findCount').value;
+            const sort = document.querySelector('#sortOrder').value;
+            let page = $pageNumber.value;
 
             debounce(searchCharacters({
                 searchTerm,
@@ -214,7 +216,7 @@ export async function initExplorePanel() {
                 if (characters && characters.length > 0) {
                     updateCharacterListInView(characters, reset);
                 } else {
-                    $characterList.html('<div class="no-characters-found">No characters found.</div>');
+                    $characterList.innerHTML = '<div class="no-characters-found">No characters found.</div>';
                 }
             }).catch((error) => {
                 console.error('Error searching characters:', error);
@@ -222,30 +224,30 @@ export async function initExplorePanel() {
         }
 
         const infiniteScroll = debounce((event) => {
-            if ($characterList.scrollTop() + $characterList.innerHeight() >= $characterList[0].scrollHeight - 100) {
+            if ($characterList.scrollTop + $characterList.innerHeight >= $characterList[0].scrollHeight - 100) {
                 toastr.info('Loading more characters...')
-                $pageNumber.val(Math.max(1, parseInt($pageNumber.val().toString()) + 1));
+                $pageNumber.value = Math.max(1, parseInt($pageNumber.val().toString()) + 1);
                 handleSearch(event, false);
             }
         }, 1000);
-        $characterList.on('scroll', infiniteScroll);
+        $characterList.addEventListener('scroll', infiniteScroll);
 
         $('#characterSearchButton').on('click', (event) => {
             handleSearch(event, true);
         });
 
         $('#characterSearchInput, #includeTags, #excludeTags, #findCount, #sortOrder, #nsfwCheckbox').on('change', (event) => {
-            $pageNumber.val(1);
+            $pageNumber.value = 1;
             handleSearch(event, true);
         });
 
         $('#pageUpButton').on('click', (event) => {
-            $pageNumber.val(Math.max(1, parseInt($pageNumber.val().toString()) + 1));
+            $pageNumber.value = Math.max(1, parseInt($pageNumber.val().toString()) + 1);
             handleSearch(event, true);
         });
 
         $('#pageDownButton').on('click', (event) => {
-            $pageNumber.val(Math.max(1, parseInt($pageNumber.val().toString()) - 1));
+            $pageNumber.value = Math.max(1, parseInt($pageNumber.val().toString()) - 1);
             handleSearch(event, true);
         });
     }
@@ -282,43 +284,38 @@ export async function initExplorePanel() {
         return data;
     }
 
-    $('.drawer-toggle', '#explore-button').on('click', function() {
-        var icon = $(this).find('.drawer-icon');
-        var drawer = $(this).parent().find('.drawer-content');
-        if (drawer.hasClass('resizing')) {
+    const $explore_toggle = document.querySelector('#explore-button .drawer-toggle');
+    $explore_toggle.addEventListener('click', () => {
+        let icon = $explore_toggle.querySelector('.drawer-icon');
+        let drawer = $explore_toggle.parentNode.querySelector('.drawer-content');
+        let drawerOpen = drawer.classList.contains('openDrawer');
+
+        if (drawer.classList.contains('resizing')) {
             return;
         }
-        var drawerOpen = $(this).parent().find('.drawer-content').hasClass('openDrawer');
 
         if (!drawerOpen) {
             displayCharactersInListViewPopup();
 
-            $('.openDrawer', '#explore-button').not('.pinnedOpen').addClass('resizing').slideToggle(200, 'swing', async function() {
-                await delay(50);
-                $(this).closest('.drawer-content').removeClass('resizing');
-            });
-            $('.openIcon', '#explore-button').toggleClass('closedIcon openIcon');
-            $('.openDrawer', '#explore-button').not('.pinnedOpen').toggleClass('closedDrawer openDrawer');
+            icon.classList.replace('closedIcon', 'openIcon');
+            drawer.classList.replace('closedDrawer', 'openDrawer');
 
-            icon.toggleClass('openIcon closedIcon');
-            drawer.toggleClass('openDrawer closedDrawer');
-
-            $(this).closest('.drawer').find('.drawer-content').addClass('resizing').slideToggle(200, 'swing', async function() {
+            $('.drawer-toggle', '#explore-button').closest('.drawer').find('.drawer-content').addClass('resizing').slideToggle(200, 'swing', async function() {
                 await delay(50);
                 $(this).closest('.drawer-content').removeClass('resizing');
             });
 
-            $('#characterSearchButton').trigger('click');
+            drawer.querySelector('#characterSearchButton').dispatchEvent(new MouseEvent('click'));
 
         } else if (drawerOpen) {
-            icon.toggleClass('closedIcon openIcon');
+            icon.classList.replace('openIcon', 'closedIcon');
 
-            $('.openDrawer', '#explore-button').not('.pinnedOpen').addClass('resizing').slideToggle(200, 'swing', async function() {
+            $('.drawer-toggle', '#explore-button').closest('.drawer').find('.drawer-content').addClass('resizing').slideToggle(200, 'swing', async function() {
                 await delay(50);
                 $(this).closest('.drawer-content').removeClass('resizing');
             });
 
-            drawer.toggleClass('closedDrawer openDrawer');
+            drawer.classList.replace('openDrawer', 'closedDrawer');
         }
     });
 }
