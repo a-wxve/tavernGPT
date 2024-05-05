@@ -176,16 +176,16 @@ function addSwipeButtons() {
     `);
 
     function registerSwipeButtons() {
-        const $last_mes = document.querySelector('#chat .last_mes');
-        const $mes_swipe_left = $last_mes.querySelector('.mes_swipe_left');
-        const $mes_swipe_right = $last_mes.querySelector('.mes_swipe_right');
+        const $chat = document.querySelector('#chat');
+        const $mes_swipe_left = $chat.querySelector('.last_mes .mes_swipe_left');
+        const $mes_swipe_right = $chat.querySelector('.last_mes .mes_swipe_right');
 
         function leftSwipeHandler() {
-            $last_mes.querySelector('.swipe_left').click();
+            $chat.querySelector('.last_mes .swipe_left').click();
         }
 
         function rightSwipeHandler() {
-            $last_mes.querySelector('.swipe_right').click();
+            $chat.querySelector('.last_mes .swipe_right').click();
         }
 
         $mes_swipe_left.removeEventListener('click', leftSwipeHandler);
