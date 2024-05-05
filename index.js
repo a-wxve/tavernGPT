@@ -121,21 +121,19 @@ async function initNudgeUI() {
         });
         const $nudges = document.querySelector('#nudges');
 
-        eventSource.on('generation_ended', () => {
-            eventSource.on('message_received', async () => {
-                const prompt = 'Generate 4 one line replies from {{user}}\'s point of view using the chat history so far as a guideline for {{user}}\'s writing style in JSON format with the keys "prompt1", "prompt2", "prompt3", and "prompt4". Be sure to "quote" dialogue. Output only the JSON without any additional commentary.';
-                let nudges = await generateQuietPrompt(prompt, false, false).then(data => JSON.parse(data));
+        eventSource.on('character_message_rendered', async () => {
+            const prompt = 'Generate 4 one line replies from {{user}}\'s point of view using the chat history so far as a guideline for {{user}}\'s writing style in JSON format with the keys "prompt1", "prompt2", "prompt3", and "prompt4". Be sure to "quote" dialogue. Output only the JSON without any additional commentary.';
+            let nudges = await generateQuietPrompt(prompt, false, false).then(data => JSON.parse(data));
 
-                $nudges.querySelectorAll('.nudge_button').forEach((button, index) => {
-                    if (nudges[`prompt${index + 1}`]) {
-                        let prompt = nudges[`prompt${index + 1}`];
-                        button.insertAdjacentHTML('beforeend', `<span id="nudge_prompt">${prompt}</span>`);
-                    }
-                })
-
-                $nudges.style.display = 'grid';
+            $nudges.querySelectorAll('.nudge_button').forEach((button, index) => {
+                if (nudges[`prompt${index + 1}`]) {
+                    let prompt = nudges[`prompt${index + 1}`];
+                    button.insertAdjacentHTML('beforeend', `<span id="nudge_prompt">${prompt}</span>`);
+                }
             })
-        });
+
+            $nudges.style.display = 'grid';
+        })
 
         $nudges.querySelector('#nudge_prompt').addEventListener('click', (event) => {
             event.preventDefault();
