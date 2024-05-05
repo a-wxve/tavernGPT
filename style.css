@@ -25,8 +25,6 @@ body {
 
 #top-bar,
 #persona-management-button .drawer-icon::before,
-.select_chat_info.flex-container,
-.select_chat_block_mes,
 #ReverseProxyWarningMessage,
 #quickReplyPopoutButton,
 .mes_text br,
@@ -93,8 +91,19 @@ body.big-avatars {
         }
     }
 
-    &:has(.drawer-icon.openIcon) .closeSidebar {
+    &:has(.drawer-icon.openIcon) #closeSidebar {
         display: none;
+    }
+}
+
+#avatarCropWrap {
+    .cropper-face.cropper-move {
+        height: 66.666%;
+        top: 16.5%;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 3px rgb(51, 153, 255) solid;
+        border-radius: 100%;
+        opacity: 1;
     }
 }
 
