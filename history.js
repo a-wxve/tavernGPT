@@ -138,8 +138,8 @@ async function displayPastChats() {
                         }
                         const fileName = value['file_name'];
                         const template = document.querySelector('#past_chat_template .select_chat_block_wrapper').cloneNode(true);
-                        template.removeChild('.select_chat_info');
-                        template.removeChild('.select_chat_block_mes');
+                        template.removeChild(select_chat_info);
+                        template.removeChild(select_chat_block_mes);
                         template.querySelector('.select_chat_block').setAttribute('file_name', fileName);
                         template.querySelector('.select_chat_block_filename').textContent = fileName;
                         template.querySelector('.PastChat_cross').setAttribute('file_name', fileName);
