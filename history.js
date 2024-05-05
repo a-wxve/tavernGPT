@@ -6,14 +6,11 @@ import {
     getChatsFromFiles,
     getPastCharacterChats,
     getRequestHeaders,
-    getThumbnailUrl,
     this_chid
 } from '../../../../script.js';
 import { extension_settings, getContext } from '../../../extensions.js';
 import {
-    getGroupAvatar,
     getGroupPastChats,
-    groups,
     renameGroupChat,
     selected_group
 } from '../../../group-chats.js';
@@ -228,11 +225,10 @@ export async function loadChatHistory() {
     });
 
     $settings_holder.querySelector('#new_chat').addEventListener('click', () => {
-        document.querySelector('#option_start_new_chat').dispatchEvent(new MouseEvent('click'));
+        document.querySelector('#option_start_new_chat').click();
     });
-
     $settings_holder.querySelector('#close_chat').addEventListener('click', () => {
-        document.querySelector('#option_close_chat').dispatchEvent(new MouseEvent('click'));
+        document.querySelector('#option_close_chat').click();
     });
 
     eventSource.on('chatLoaded', async () => {

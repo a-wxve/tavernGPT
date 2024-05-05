@@ -83,10 +83,10 @@ async function initSettings() {
 
     switch (true) {
         case $rename_chats.checked:
-            $rename_chats.dispatchEvent(new MouseEvent('click'));
+            $rename_chats.click();
             break;
         case $enable_nudges.checked:
-            $enable_nudges.dispatchEvent(new MouseEvent('click'));
+            $enable_nudges.click();
             break;
         default:
             break;
@@ -176,20 +176,23 @@ function addSwipeButtons() {
     `);
 
     function registerSwipeButtons() {
-        const $last_mes = document.querySelector('#chat .last_mes')
-        $last_mes.querySelector('.mes_buttons').removeEventListener('click', () => { })
-        $last_mes.querySelector('.mes_buttons').addEventListener('click', (event) => {
-            switch (true) {
-                case event.target.matches('.mes_swipe_left'):
-                    $last_mes.querySelector('.swipe_left').dispatchEvent(new MouseEvent('click'));
-                    break;
-                case event.target.matches('.mes_swipe_right'):
-                    $last_mes.querySelector('.swipe_right').dispatchEvent(new MouseEvent('click'));
-                    break;
-                default:
-                    break;
-            }
-        });
+        const $last_mes = document.querySelector('#chat .last_mes');
+        const $mes_swipe_left = $last_mes.querySelector('.mes_swipe_left');
+        const $mes_swipe_right = $last_mes.querySelector('.mes_swipe_right');
+
+        function leftSwipeHandler() {
+            $last_mes.querySelector('.swipe_left').click();
+        }
+
+        function rightSwipeHandler() {
+            $last_mes.querySelector('.swipe_right').click();
+        }
+
+        $mes_swipe_left.removeEventListener('click', leftSwipeHandler);
+        $mes_swipe_right.removeEventListener('click', rightSwipeHandler);
+
+        $mes_swipe_left.addEventListener('click', leftSwipeHandler);
+        $mes_swipe_right.addEventListener('click', rightSwipeHandler);
     }
 
     eventSource.on('chatLoaded', registerSwipeButtons);
@@ -211,7 +214,6 @@ function main() {
         setMobileUI();
     }
 
-
     const $sheld = document.querySelector('#sheld');
     $sheld.append(document.querySelector('#expression-wrapper .expression-holder'));
     $sheld.setAttribute('tabindex', '0');
@@ -219,12 +221,12 @@ function main() {
         switch (event.which) {
             case 37:
                 if (!$sheld.querySelector('textarea').matches(':focus')) {
-                    $sheld.querySelector('.last_mes .swipe_left').dispatchEvent(new MouseEvent('click'));
+                    $sheld.querySelector('.last_mes .swipe_left').click();
                     break;
                 }
             case 39:
                 if (!$sheld.querySelector('textarea').matches(':focus')) {
-                    $sheld.querySelector('.last_mes .swipe_right').dispatchEvent(new MouseEvent('click'));
+                    $sheld.querySelector('.last_mes .swipe_right').click();
                     break;
                 }
             default:
