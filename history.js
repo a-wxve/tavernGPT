@@ -138,15 +138,17 @@ async function displayPastChats() {
                         }
                         const fileName = value['file_name'];
                         const template = document.querySelector('#past_chat_template .select_chat_block_wrapper').cloneNode(true);
-                        template.removeChild(select_chat_info);
-                        template.removeChild(select_chat_block_mes);
+                        const select_chat_info = template.querySelector('.select_chat_info');
+                        const select_chat_block_mes = template.querySelector('.select_chat_block_mes');
+                        select_chat_info.parentNode.removeChild(select_chat_info);
+                        select_chat_block_mes.parentNode.removeChild(select_chat_block_mes);
                         template.querySelector('.select_chat_block').setAttribute('file_name', fileName);
                         template.querySelector('.select_chat_block_filename').textContent = fileName;
                         template.querySelector('.PastChat_cross').setAttribute('file_name', fileName);
 
                         $select_chat.append(template);
 
-                        if (currentChat === fileName.toString().replace('.jsonl', '')) {
+                        if (characters[this_chid]['chat'] === fileName.toString().replace('.jsonl', '')) {
                             $select_chat.querySelector('.select_chat_block:last-child').setAttribute('highlight', true);
                         }
                     };

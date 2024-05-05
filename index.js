@@ -51,7 +51,7 @@ function toggleSidebar() {
 
     $settings_holder.addEventListener('click', (event) => {
         if (event.target.matches('#closeSidebar')) {
-            $settings_holder.toggleClass('collapsed');
+            $settings_holder.classList.toggle('collapsed');
         }
     });
 }
@@ -177,7 +177,7 @@ function addSwipeButtons() {
         const $last_mes = document.querySelector('#chat').querySelector('.last_mes')
         $last_mes.querySelector('.mes_buttons').removeEventListener('click', () => { })
         $last_mes.querySelector('.mes_buttons').addEventListener('click', (event) => {
-            const swipeDirection = event.target.hasClass('mes_swipe_left') ? '.swipe_left' : '.swipe_right';
+            const swipeDirection = event.target.classList.contains('mes_swipe_left') ? '.swipe_left' : '.swipe_right';
             $last_mes.querySelector(swipeDirection).dispatchEvent(new MouseEvent('click'));
         });
     }
