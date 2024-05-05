@@ -70,7 +70,8 @@ async function initSettings() {
                 extension_settings[extensionName].rename_chats = $rename_chats.checked;
             case event.target.matches($enable_nudges):
                 extension_settings[extensionName].enable_nudges = $enable_nudges.checked;
-            default: break;
+            default:
+                break;
         }
         saveSettingsDebounced();
     });
@@ -83,9 +84,12 @@ async function initSettings() {
     switch (true) {
         case $rename_chats.checked:
             $rename_chats.dispatchEvent(new MouseEvent('click'));
+            break;
         case $enable_nudges.checked:
             $enable_nudges.dispatchEvent(new MouseEvent('click'));
-        default: return;
+            break;
+        default:
+            break;
     }
 }
 
@@ -174,11 +178,19 @@ function addSwipeButtons() {
     `);
 
     function registerSwipeButtons() {
-        const $last_mes = document.querySelector('#chat').querySelector('.last_mes')
+        const $last_mes = document.querySelector('#chat .last_mes')
         $last_mes.querySelector('.mes_buttons').removeEventListener('click', () => { })
         $last_mes.querySelector('.mes_buttons').addEventListener('click', (event) => {
-            const swipeDirection = event.target.classList.contains('mes_swipe_left') ? '.swipe_left' : '.swipe_right';
-            $last_mes.querySelector(swipeDirection).dispatchEvent(new MouseEvent('click'));
+            switch (true) {
+                case event.target.matches('.mes_swipe_left'):
+                    $last_mes.querySelector('.swipe_left').dispatchEvent(new MouseEvent('click'));
+                    break;
+                case event.target.matches('.mes_swipe_right'):
+                    $last_mes.querySelector('.swipe_right').dispatchEvent(new MouseEvent('click'));
+                    break;
+                default:
+                    break;
+            }
         });
     }
 
@@ -210,12 +222,15 @@ function main() {
             case 37:
                 if (!$sheld.querySelector('textarea').matches(':focus')) {
                     $sheld.querySelector('.last_mes .swipe_left').dispatchEvent(new MouseEvent('click'));
+                    break;
                 }
             case 39:
                 if (!$sheld.querySelector('textarea').matches(':focus')) {
                     $sheld.querySelector('.last_mes .swipe_right').dispatchEvent(new MouseEvent('click'));
+                    break;
                 }
-            default: return;
+            default:
+                break;
         }
     });
 }
