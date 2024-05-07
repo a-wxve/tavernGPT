@@ -234,10 +234,13 @@ export async function loadChatHistory() {
         document.querySelector('#option_close_chat').click();
     });
 
-    eventSource.on('chatLoaded', async () => {
+    async function historyHandler() {
         await displayPastChats();
         if (extension_settings[extensionName].rename_chats) {
             await renameChat();
         }
-    });
+    }
+
+    eventSource.on('chatLoaded', historyHandler);
+    eventSource.on('chat_id_changed', historyHandler)
 }
