@@ -59,7 +59,7 @@ async function displayPastChats() {
     }
 
     const $select_chat = document.querySelector('#select_chat_div');
-    const $select_chat_search = document.querySelector('#select_chat_search');
+    const $select_chat_search = document.querySelector('#select_chat_search input');
 
     $select_chat.replaceChildren();
     $select_chat_search.value = '';
@@ -92,6 +92,8 @@ async function displayPastChats() {
     document.querySelector('#load_select_chat_div').style.display = 'none';
 
     const displayChats = (searchQuery) => {
+        $select_chat.replaceChildren();
+
         Object.entries(chatsByCategory)
             .filter(([cat, chats]) => chats.length > 0)
             .sort(([aCat, aChats], [bCat, bChats]) => {
@@ -101,7 +103,7 @@ async function displayPastChats() {
                 return sortByTimeCategory(a, b);
             })
             .forEach(([category, chats]) => {
-                $select_chat.insertAdjacentHTML('beforeend', `<h4 class=chat-category>${category}</h4>`);
+                $select_chat.insertAdjacentHTML('beforeend', `<h5 class=chat-category>${category}</h5>`);
 
                 const filteredData = chats.filter(chat => {
                     const chatContent = rawChats[chat['file_name']];
@@ -147,6 +149,10 @@ async function displayPastChats() {
                         if (characters[this_chid]['chat'] === fileName.toString().replace('.jsonl', '')) {
                             $select_chat.querySelector('.select_chat_block:last-child').setAttribute('highlight', true);
                         }
+
+                        $select_chat.querySelectorAll('.select_chat_block_filename.select_chat_block_filename_item').forEach((filename) => {
+                            filename.textContent = filename.textContent.replace('.jsonl', '');
+                        });
                     };
                 }
             });
@@ -154,16 +160,12 @@ async function displayPastChats() {
 
     displayChats('');
 
-    $select_chat.querySelectorAll('.select_chat_block_filename.select_chat_block_filename_item').forEach((filename) => {
-        filename.textContent = filename.textContent.replace('.jsonl', '');
-    });
-
     const debouncedDisplay = debounce((searchQuery) => { displayChats(searchQuery); }, 300);
 
     $select_chat_search.replaceWith($select_chat_search.cloneNode())
 
-    document.querySelector('#select_chat_search').addEventListener('input', (event) => {
-        debouncedDisplay(event.target.value);
+    document.querySelector('#select_chat_search input').addEventListener('input', () => {
+        debouncedDisplay(document.querySelector('#select_chat_search input').value);
     });
 }
 

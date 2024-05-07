@@ -503,11 +503,11 @@ body.big-avatars {
         visibility: hidden;
     }
 
-    h4 {
+    h5 {
         margin: 0.54rem 0.27rem;
     }
 
-    h4+.select_chat_block_wrapper {
+    h5+.select_chat_block_wrapper {
         .select_chat_block {
             margin-top: 0;
         }
@@ -523,7 +523,6 @@ body.big-avatars {
 
             .select_chat_block_filename.select_chat_block_filename_item {
                 opacity: 1;
-                font-size: inherit;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 max-width: 100%;
@@ -559,6 +558,16 @@ body.big-avatars {
 
     #select_chat_div:empty~& {
         display: none;
+    }
+
+    .fa-magnifying-glass {
+        color: darkgray;
+    }
+
+    input {
+        background-color: transparent;
+        border: none;
+        outline: none;
     }
 }
 
