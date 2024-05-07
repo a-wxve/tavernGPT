@@ -237,10 +237,12 @@ export async function initExplorePanel() {
             handleSearch(event, true);
         }, { signal: abortController.signal });
 
-        document.querySelectorAll('#characterSearchInput, #includeTags, #excludeTags, #findCount, #sortOrder, #nsfwCheckbox').addEventListener('change', (event) => {
-            $pageNumber.value = 1;
-            handleSearch(event, true);
-        }, { signal: abortController.signal });
+        document.querySelectorAll('#characterSearchInput, #includeTags, #excludeTags, #findCount, #sortOrder, #nsfwCheckbox').forEach(element => {
+            element.addEventListener('change', (event) => {
+                $pageNumber.value = 1;
+                handleSearch(event, true);
+            }, { signal: abortController.signal });
+        })
 
         document.querySelector('#pageUpButton').addEventListener('click', (event) => {
             $pageNumber.value = Math.max(1, parseInt($pageNumber.val().toString()) + 1);
