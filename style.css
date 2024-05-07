@@ -443,7 +443,7 @@ body.big-avatars {
             flex-wrap: wrap;
 
             .hotswap.avatars_inline.flex-container.expander {
-                overflow-x: auto;
+                overflow-x: scroll;
                 flex-wrap: nowrap;
                 max-height: calc(var(--avatar-base-height) * var(--big-avatar-height-factor) + 2 * var(--avatar-base-border-radius) - 10px);
             }
@@ -513,13 +513,23 @@ body.big-avatars {
         }
     }
 
-    .select_chat_block_filename.select_chat_block_filename_item {
-        opacity: 1;
-        font-size: inherit;
-    }
-
     #select_chat_name_wrapper {
         flex-wrap: nowrap;
+        text-wrap: nowrap;
+        overflow: hidden;
+
+        >div:is(:first-child) {
+            max-width: 100%;
+
+            .select_chat_block_filename.select_chat_block_filename_item {
+                opacity: 1;
+                font-size: inherit;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
+                display: inline-block;
+            }
+        }
 
         >.flex-container.gap10px>.flex-container.gap10px {
             flex-wrap: nowrap;
@@ -528,6 +538,12 @@ body.big-avatars {
             .exportRawChatButton.fa-solid.fa-file-export::before {
                 content: "\f1c9";
             }
+        }
+    }
+
+    .select_chat_block:hover {
+        #select_chat_name_wrapper>div:is(:first-child) {
+            max-width: 70%;
         }
     }
 
@@ -844,6 +860,7 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
             }
 
             .mes_block {
+                padding-left: 0;
                 padding-right: 10px;
                 overflow-y: hidden;
 
@@ -1112,8 +1129,7 @@ body img.thumbnail {
     position: relative;
     margin: 0;
     height: 0;
-    left: 207px;
-    bottom: 3px;
+    left: 50%;
     animation: splash .27s alternate infinite;
 }
 
