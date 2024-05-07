@@ -49,10 +49,9 @@ function toggleSidebar() {
         </button>
     `);
 
-    $settings_holder.addEventListener('click', (event) => {
-        if (event.target.matches('#closeSidebar')) {
-            $settings_holder.classList.toggle('collapsed');
-        }
+    document.querySelector('#closeSidebar').addEventListener('click', (event) => {
+        $settings_holder.classList.toggle('collapsed');
+        document.querySelector('#sheld').classList.toggle('collapsed');
     });
 }
 
@@ -61,6 +60,7 @@ async function initSettings() {
     await fetch(`${extensionFolderPath}/html/settings.html`).then(data => data.text()).then(data => {
         $settings.insertAdjacentHTML('beforeend', data);
     });
+
     const $rename_chats = document.querySelector('#rename_chats');
     const $enable_nudges = document.querySelector('#enable_nudges');
 
@@ -70,6 +70,7 @@ async function initSettings() {
                 extension_settings[extensionName].rename_chats = $rename_chats.checked;
             case event.target.matches($enable_nudges):
                 extension_settings[extensionName].enable_nudges = $enable_nudges.checked;
+                if ($enable_nudges.checked) { initNudgeUI(); };
             default:
                 break;
         }
@@ -81,16 +82,8 @@ async function initSettings() {
         Object.assign(extension_settings[extensionName], defaultSettings);
     }
 
-    switch (true) {
-        case $rename_chats.checked:
-            $rename_chats.click();
-            break;
-        case $enable_nudges.checked:
-            $enable_nudges.click();
-            break;
-        default:
-            break;
-    }
+    if ($rename_chats.checked) { $rename_chats.click() };
+    if ($enable_nudges.checked) { $enable_nudges.click() };
 }
 
 function loadSplashText() {
@@ -115,33 +108,29 @@ function loadSplashText() {
 }
 
 async function initNudgeUI() {
-    if (extension_settings[extensionName].enable_nudges) {
-        await fetch(`${extensionFolderPath}/html/nudges.html`).then(data => data.text()).then(data => {
-            document.querySelector('#form_sheld').insertAdjacentHTML('afterbegin', data);
-        });
-        const $nudges = document.querySelector('#nudges');
+    await fetch(`${extensionFolderPath}/html/nudges.html`).then(data => data.text()).then(data => {
+        document.querySelector('#form_sheld').insertAdjacentHTML('afterbegin', data);
+    });
+    const $nudges = document.querySelector('#nudges');
 
-        eventSource.on('character_message_rendered', async () => {
-            const prompt = 'Generate 4 one line replies from {{user}}\'s point of view using the chat history so far as a guideline for {{user}}\'s writing style in JSON format with the keys "prompt1", "prompt2", "prompt3", and "prompt4". Be sure to "quote" dialogue. Output only the JSON without any additional commentary.';
-            let nudges = await generateQuietPrompt(prompt, false, false).then(data => JSON.parse(data));
+    eventSource.on('character_message_rendered', async () => {
+        const prompt = 'Generate 4 one line replies from {{user}}\'s point of view using the chat history so far as a guideline for {{user}}\'s writing style in JSON format with the keys "prompt1", "prompt2", "prompt3", and "prompt4". Be sure to "quote" dialogue. Output only the JSON without any additional commentary.';
+        let nudges = await generateQuietPrompt(prompt, false, false).then(data => JSON.parse(data));
 
-            $nudges.querySelectorAll('.nudge_button').forEach((button, index) => {
-                if (nudges[`prompt${index + 1}`]) {
-                    let prompt = nudges[`prompt${index + 1}`];
-                    button.insertAdjacentHTML('beforeend', `<span id="nudge_prompt">${prompt}</span>`);
-                }
-            })
-
-            $nudges.style.display = 'grid';
+        $nudges.querySelectorAll('.nudge_button').forEach((button, index) => {
+            if (nudges[`prompt${index + 1}`]) {
+                let prompt = nudges[`prompt${index + 1}`];
+                button.insertAdjacentHTML('beforeend', `<span id="nudge_prompt">${prompt}</span>`);
+            }
         })
 
-        $nudges.querySelector('#nudge_prompt').addEventListener('click', (event) => {
-            event.preventDefault();
-            let prompt = event.target.textContent;
-            document.querySelector('#send_textarea').value = prompt;
-            $nudges.style.display = 'none';
-        })
-    }
+        $nudges.style.display = 'grid';
+    })
+
+    $nudges.querySelector('#nudge_prompt').addEventListener('click', (event) => {
+        document.querySelector('#send_textarea').value = event.target.textContent;
+        $nudges.style.display = 'none';
+    })
 }
 
 function setMobileUI() {
@@ -180,19 +169,15 @@ function addSwipeButtons() {
         const $mes_swipe_left = $chat.querySelector('.last_mes .mes_swipe_left');
         const $mes_swipe_right = $chat.querySelector('.last_mes .mes_swipe_right');
 
-        function leftSwipeHandler() {
+        $mes_swipe_left.replaceWith($mes_swipe_left.cloneNode())
+        $mes_swipe_right.replaceWith($mes_swipe_right.cloneNode())
+
+        $chat.querySelector('.last_mes .mes_swipe_left').addEventListener('click', () => {
             $chat.querySelector('.last_mes .swipe_left').click();
-        }
-
-        function rightSwipeHandler() {
+        });
+        $chat.querySelector('.last_mes .mes_swipe_right').addEventListener('click', () => {
             $chat.querySelector('.last_mes .swipe_right').click();
-        }
-
-        $mes_swipe_left.removeEventListener('click', leftSwipeHandler);
-        $mes_swipe_right.removeEventListener('click', rightSwipeHandler);
-
-        $mes_swipe_left.addEventListener('click', leftSwipeHandler);
-        $mes_swipe_right.addEventListener('click', rightSwipeHandler);
+        });
     }
 
     eventSource.on('chatLoaded', registerSwipeButtons);
@@ -206,9 +191,12 @@ function main() {
     getPersona();
     initExplorePanel();
     toggleSidebar();
-    initNudgeUI();
     loadSplashText();
     addSwipeButtons();
+
+    if (extension_settings[extensionName].enable_nudges) {
+        initNudgeUI();
+    }
 
     if (window.matchMedia('only screen and ((max-width: 768px))').matches) {
         setMobileUI();
@@ -238,5 +226,5 @@ function main() {
 if (document.readyState !== 'loading') {
     main();
 } else {
-    document.addEventListener('DOMContentLoaded', main);
+    document.addEventListener('DOMContentLoaded', main, { once: true });
 }

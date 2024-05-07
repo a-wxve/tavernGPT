@@ -300,12 +300,13 @@ export async function initExplorePanel() {
             icon.classList.replace('closedIcon', 'openIcon');
             drawer.classList.replace('closedDrawer', 'openDrawer');
 
+            // entire panel breaks if we don't use this
             $('.drawer-toggle', '#explore-button').closest('.drawer').find('.drawer-content').addClass('resizing').slideToggle(200, 'swing', async function() {
                 await delay(50);
                 $(this).closest('.drawer-content').removeClass('resizing');
             });
 
-            drawer.querySelector('#characterSearchButton').dispatchEvent(new MouseEvent('click'));
+            drawer.querySelector('#characterSearchButton').click();
 
         } else if (drawerOpen) {
             icon.classList.replace('openIcon', 'closedIcon');

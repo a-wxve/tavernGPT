@@ -63,7 +63,6 @@ async function displayPastChats() {
 
     $select_chat.replaceChildren();
     $select_chat_search.value = '';
-    $select_chat_search.removeEventListener('input', () => { });
 
     const data = await (selected_group ? getGroupPastChats(selected_group) : getPastCharacterChats());
 
@@ -161,8 +160,10 @@ async function displayPastChats() {
 
     const debouncedDisplay = debounce((searchQuery) => { displayChats(searchQuery); }, 300);
 
-    $select_chat_search.addEventListener('input', () => {
-        debouncedDisplay($select_chat_search.value);
+    $select_chat_search.replaceWith($select_chat_search.cloneNode())
+
+    document.querySelector('#select_chat_search').addEventListener('input', (event) => {
+        debouncedDisplay(event.target.value);
     });
 }
 
@@ -178,7 +179,7 @@ async function renameChat() {
     if (matchesTimePattern(old_filename) && context.chat.length > 2) {
         const prompt = 'Generate a name for this chat in as few words as possible. Avoid including special characters, words like "chat", or the user\'s name. Only output the chat name.';
         var new_filename = await generateQuietPrompt(prompt, false, false);
-        new_filename = new_filename.toString().replace(/^'((?:\\'|[^'])*)'$/, '$1');
+        new_filename = new_filename.toString().replace(/^'((?:\\'|[^'])*)'$/, '$1').substring(0, 90);
 
         const body = {
             is_group: !!selected_group,
