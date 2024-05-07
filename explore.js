@@ -7,6 +7,8 @@ export async function initExplorePanel() {
         document.querySelector('#top-settings-holder').insertAdjacentHTML('beforeend', data);
     });
 
+    const abortController = new AbortController();
+
     let chubCharacters = [];
 
     async function downloadCharacter(input) {
@@ -134,12 +136,12 @@ export async function initExplorePanel() {
         const $characterList = document.querySelector('#list-and-search-wrapper .character-list');
         const $pageNumber = document.querySelector('#pageNumber');
 
+        abortController.abort()
+
         $characterList.scrollTop = 0;
         $pageNumber.value = 1;
 
         let popupImage = null;
-
-        $characterList.removeEventListener('click', () => { })
         $characterList.addEventListener('click', (event) => {
             if (event.target.tagName === 'IMG') {
                 const image = event.target;
@@ -166,21 +168,20 @@ export async function initExplorePanel() {
 
                 event.stopPropagation();
             }
-        });
+        }, { signal: abortController.signal });
 
         document.addEventListener('click', () => {
             if (popupImage) {
                 document.body.removeChild(popupImage);
                 popupImage = null;
             }
-        });
+        }, { signal: abortController.signal });
 
-        $characterList.removeEventListener('click', () => { })
         $characterList.addEventListener('click', (event) => {
             if (event.target.classList.contains('download-btn')) {
                 downloadCharacter(event.target.getAttribute('data-path'));
             }
-        });
+        }, { signal: abortController.signal });
 
         const handleSearch = (event, reset) => {
             console.log('handleSearch', event);
@@ -230,26 +231,26 @@ export async function initExplorePanel() {
                 handleSearch(event, false);
             }
         }, 1000);
-        $characterList.addEventListener('scroll', infiniteScroll);
+        $characterList.addEventListener('scroll', infiniteScroll, { signal: abortController.signal });
 
-        $('#characterSearchButton').on('click', (event) => {
+        document.querySelector('#characterSearchButton').addEventListener('click', (event) => {
             handleSearch(event, true);
-        });
+        }, { signal: abortController.signal });
 
-        $('#characterSearchInput, #includeTags, #excludeTags, #findCount, #sortOrder, #nsfwCheckbox').on('change', (event) => {
+        document.querySelectorAll('#characterSearchInput, #includeTags, #excludeTags, #findCount, #sortOrder, #nsfwCheckbox').addEventListener('change', (event) => {
             $pageNumber.value = 1;
             handleSearch(event, true);
-        });
+        }, { signal: abortController.signal });
 
-        $('#pageUpButton').on('click', (event) => {
+        document.querySelector('#pageUpButton').addEventListener('click', (event) => {
             $pageNumber.value = Math.max(1, parseInt($pageNumber.val().toString()) + 1);
             handleSearch(event, true);
-        });
+        }, { signal: abortController.signal });
 
-        $('#pageDownButton').on('click', (event) => {
+        document.querySelector('#pageDownButton').addEventListener('click', (event) => {
             $pageNumber.value = Math.max(1, parseInt($pageNumber.val().toString()) - 1);
             handleSearch(event, true);
-        });
+        }, { signal: abortController.signal });
     }
 
     async function getCharacter(fullPath) {
@@ -297,11 +298,18 @@ export async function initExplorePanel() {
         if (!drawerOpen) {
             displayCharactersInListViewPopup();
 
+            //need jQuery here for .slideToggle(), otherwise panel breaks
+            $('#explore-button').parent().find('.openDrawer').not('.pinnedOpen').addClass('resizing').slideToggle(200, 'swing', async () => {
+                $('.openIcon').toggleClass('openIcon closedIcon');
+                $(this).not('.pinnedOpen').toggleClass('openDrawer closedDrawer');
+                await delay(50);
+                $(this).removeClass('resizing');
+            });
+
             icon.classList.replace('closedIcon', 'openIcon');
             drawer.classList.replace('closedDrawer', 'openDrawer');
 
-            // entire panel breaks if we don't use this
-            $('.drawer-toggle', '#explore-button').closest('.drawer').find('.drawer-content').addClass('resizing').slideToggle(200, 'swing', async function() {
+            $(drawer).addClass('resizing').slideToggle(200, 'swing', async () => {
                 await delay(50);
                 $(this).closest('.drawer-content').removeClass('resizing');
             });
@@ -311,7 +319,7 @@ export async function initExplorePanel() {
         } else if (drawerOpen) {
             icon.classList.replace('openIcon', 'closedIcon');
 
-            $('.drawer-toggle', '#explore-button').closest('.drawer').find('.drawer-content').addClass('resizing').slideToggle(200, 'swing', async function() {
+            $(drawer).addClass('resizing').slideToggle(200, 'swing', async () => {
                 await delay(50);
                 $(this).closest('.drawer-content').removeClass('resizing');
             });

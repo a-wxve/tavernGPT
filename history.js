@@ -17,6 +17,8 @@ import {
 import { debounce, onlyUnique, timestampToMoment } from '../../../utils.js';
 import { extensionFolderPath, extensionName } from './index.js';
 
+const abortController = new AbortController()
+
 async function displayPastChats() {
     function getRelativeTimeCategory(date) {
         const today = moment().startOf('day');
@@ -162,11 +164,11 @@ async function displayPastChats() {
 
     const debouncedDisplay = debounce((searchQuery) => { displayChats(searchQuery); }, 300);
 
-    $select_chat_search.replaceWith($select_chat_search.cloneNode())
+    abortController.abort()
 
-    document.querySelector('#select_chat_search input').addEventListener('input', () => {
+    $select_chat_search.addEventListener('input', () => {
         debouncedDisplay(document.querySelector('#select_chat_search input').value);
-    });
+    }, { signal: abortController.signal });
 }
 
 async function renameChat() {

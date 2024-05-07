@@ -49,7 +49,7 @@ function toggleSidebar() {
         </button>
     `);
 
-    document.querySelector('#closeSidebar').addEventListener('click', (event) => {
+    document.querySelector('#closeSidebar').addEventListener('click', () => {
         $settings_holder.classList.toggle('collapsed');
         document.querySelector('#sheld').classList.toggle('collapsed');
     });
@@ -163,21 +163,22 @@ function addSwipeButtons() {
         <div class="swipes-counter">1/1</div>
         <div class="mes_swipe_right fa-solid fa-chevron-right"></div>
     `);
+    const abortController = new AbortController()
 
     function registerSwipeButtons() {
         const $chat = document.querySelector('#chat');
         const $mes_swipe_left = $chat.querySelector('.last_mes .mes_swipe_left');
         const $mes_swipe_right = $chat.querySelector('.last_mes .mes_swipe_right');
 
-        $mes_swipe_left.replaceWith($mes_swipe_left.cloneNode())
-        $mes_swipe_right.replaceWith($mes_swipe_right.cloneNode())
+        abortController.abort()
 
-        $chat.querySelector('.last_mes .mes_swipe_left').addEventListener('click', () => {
+        $mes_swipe_left.addEventListener('click', () => {
             $chat.querySelector('.last_mes .swipe_left').click();
-        });
-        $chat.querySelector('.last_mes .mes_swipe_right').addEventListener('click', () => {
+        }, { signal: abortController.signal });
+
+        $mes_swipe_right.addEventListener('click', () => {
             $chat.querySelector('.last_mes .swipe_right').click();
-        });
+        }, { signal: abortController.signal });
     }
 
     eventSource.on('chatLoaded', registerSwipeButtons);
