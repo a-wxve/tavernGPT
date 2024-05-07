@@ -8,6 +8,7 @@ import {
     getRequestHeaders,
     this_chid
 } from '../../../../script.js';
+import { debounce_timeout } from '../../../constants.js';
 import { extension_settings, getContext } from '../../../extensions.js';
 import {
     getGroupPastChats,
@@ -16,8 +17,6 @@ import {
 } from '../../../group-chats.js';
 import { debounce, onlyUnique, timestampToMoment } from '../../../utils.js';
 import { extensionFolderPath, extensionName } from './index.js';
-
-const abortController = new AbortController()
 
 async function displayPastChats() {
     function getRelativeTimeCategory(date) {
@@ -162,13 +161,9 @@ async function displayPastChats() {
 
     displayChats('');
 
-    const debouncedDisplay = debounce((searchQuery) => { displayChats(searchQuery); }, 300);
+    const debouncedDisplay = debounce((searchQuery) => { displayChats(searchQuery); }, debounce_timeout.standard);
 
-    abortController.abort()
-
-    $select_chat_search.addEventListener('input', () => {
-        debouncedDisplay(document.querySelector('#select_chat_search input').value);
-    }, { signal: abortController.signal });
+    $select_chat_search.addEventListener('input', debouncedDisplay($select_chat_search.value));
 }
 
 async function renameChat() {
@@ -210,7 +205,7 @@ async function renameChat() {
                 document.querySelector('#selected_chat_pole').value = characters[this_chid].chat;
             }
 
-            await displayPastChats();
+            displayPastChats();
         } catch {
             await callPopup('An error has occurred. Chat was not renamed.', 'text');
         }
@@ -236,10 +231,11 @@ export async function loadChatHistory() {
         document.querySelector('#option_close_chat').click();
     });
 
-    async function historyHandler() {
-        await displayPastChats();
+    const displayPastChatsDebounced = debounce(() => displayPastChats(), debounce_timeout.relaxed);
+    function historyHandler() {
+        displayPastChatsDebounced();
         if (extension_settings[extensionName].rename_chats) {
-            await renameChat();
+            renameChat();
         }
     }
 

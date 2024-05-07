@@ -163,22 +163,23 @@ function addSwipeButtons() {
         <div class="swipes-counter">1/1</div>
         <div class="mes_swipe_right fa-solid fa-chevron-right"></div>
     `);
-    const abortController = new AbortController()
+
+    const $chat = document.querySelector('#chat');
+
+    function leftSwipeHandler() {
+        $chat.querySelector('.last_mes .swipe_left').click();
+    }
+
+    function rightSwipeHandler() {
+        $chat.querySelector('.last_mes .swipe_right').click();
+    }
 
     function registerSwipeButtons() {
-        const $chat = document.querySelector('#chat');
         const $mes_swipe_left = $chat.querySelector('.last_mes .mes_swipe_left');
         const $mes_swipe_right = $chat.querySelector('.last_mes .mes_swipe_right');
 
-        abortController.abort()
-
-        $mes_swipe_left.addEventListener('click', () => {
-            $chat.querySelector('.last_mes .swipe_left').click();
-        }, { signal: abortController.signal });
-
-        $mes_swipe_right.addEventListener('click', () => {
-            $chat.querySelector('.last_mes .swipe_right').click();
-        }, { signal: abortController.signal });
+        $mes_swipe_left.addEventListener('click', leftSwipeHandler);
+        $mes_swipe_right.addEventListener('click', rightSwipeHandler);
     }
 
     eventSource.on('chatLoaded', registerSwipeButtons);
