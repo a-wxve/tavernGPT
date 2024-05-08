@@ -220,15 +220,12 @@ export async function loadChatHistory() {
 
     document.querySelector('#shadow_select_chat_popup').parentNode.removeChild(shadow_select_chat_popup);
 
-    document.querySelectorAll('#option_select_chat, #option_start_new_chat, #option_close_chat').forEach(element => {
+    document.querySelectorAll('#option_select_chat, #option_start_new_chat').forEach(element => {
         element.style.display = 'none'
     });
 
     $settings_holder.querySelector('#new_chat').addEventListener('click', () => {
         document.querySelector('#option_start_new_chat').click();
-    });
-    $settings_holder.querySelector('#close_chat').addEventListener('click', () => {
-        document.querySelector('#option_close_chat').click();
     });
 
     const displayPastChatsDebounced = debounce(() => displayPastChats(), debounce_timeout.relaxed);

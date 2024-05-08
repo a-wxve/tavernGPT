@@ -76,7 +76,7 @@ body.big-avatars {
             display: none;
         }
 
-        #closeSidebar {
+        #sidebarToggle {
             left: 0.45rem;
 
             .arrow1 {
@@ -89,7 +89,7 @@ body.big-avatars {
         }
     }
 
-    &:has(.drawer-icon.openIcon) #closeSidebar {
+    &:has(.drawer-icon.openIcon) #sidebarToggle {
         display: none;
     }
 }
@@ -391,7 +391,6 @@ body.big-avatars {
     }
 }
 
-
 #rightNavHolder {
     order: 8;
 
@@ -494,19 +493,42 @@ body.big-avatars {
 
     .historyButton {
         background-color: var(--color1);
-        opacity: 0.72;
+        border-radius: 0.63rem;
+        opacity: 0.54;
+        padding: 5px 0;
 
         &:hover {
             opacity: 1;
         }
 
         >span {
+            font-size: var(--mainFontSize);
             padding: 3px 5px 3px 0;
         }
 
         .fa-solid {
             padding-left: 3px;
         }
+    }
+}
+
+#select_chat_search {
+    order: 11;
+    max-height: 36px;
+    background-color: var(--color1);
+
+    #select_chat_div:empty~& {
+        display: none;
+    }
+
+    .fa-magnifying-glass {
+        color: darkgray;
+    }
+
+    input {
+        background-color: transparent;
+        border: none;
+        outline: none;
     }
 }
 
@@ -567,23 +589,43 @@ body.big-avatars {
     }
 }
 
-#select_chat_search {
+#sidebarToggle {
+    position: absolute;
+    left: 103%;
+    top: 45%;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
     order: 11;
-    max-height: 36px;
-    background-color: var(--color1);
+    visibility: visible !important;
+    transition: 0.18s all ease-in-out;
 
-    #select_chat_div:empty~& {
-        display: none;
+    .arrow1,
+    .arrow2 {
+        height: 1.08rem;
+        width: 0.36em;
+        background-color: white;
+        transition: 0.18s all ease-in-out;
     }
 
-    .fa-magnifying-glass {
-        color: darkgray;
+    .arrow1 {
+        border-top-left-radius: 0.18rem;
+        border-top-right-radius: 0.18rem;
     }
 
-    input {
-        background-color: transparent;
-        border: none;
-        outline: none;
+    .arrow2 {
+        border-bottom-left-radius: 0.18rem;
+        border-bottom-right-radius: 0.18rem;
+    }
+
+    &:hover {
+        .arrow1 {
+            transform: rotate(36deg) translateY(0.18rem);
+        }
+
+        .arrow2 {
+            transform: rotate(-36deg) translateY(-0.18rem);
+        }
     }
 }
 
@@ -702,46 +744,6 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
     #splash {
         top: 9px;
         left: 63px;
-    }
-}
-
-#closeSidebar {
-    position: absolute;
-    left: 103%;
-    top: 45%;
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    order: 11;
-    visibility: visible !important;
-    transition: 0.18s all ease-in-out;
-
-    .arrow1,
-    .arrow2 {
-        height: 1.08rem;
-        width: 0.36em;
-        background-color: white;
-        transition: 0.18s all ease-in-out;
-    }
-
-    .arrow1 {
-        border-top-left-radius: 0.18rem;
-        border-top-right-radius: 0.18rem;
-    }
-
-    .arrow2 {
-        border-bottom-left-radius: 0.18rem;
-        border-bottom-right-radius: 0.18rem;
-    }
-
-    &:hover {
-        .arrow1 {
-            transform: rotate(36deg) translateY(0.18rem);
-        }
-
-        .arrow2 {
-            transform: rotate(-36deg) translateY(-0.18rem);
-        }
     }
 }
 

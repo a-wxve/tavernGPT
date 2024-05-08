@@ -44,12 +44,12 @@ function getPersona() {
 function toggleSidebar() {
     const $settings_holder = document.querySelector('#top-settings-holder');
     $settings_holder.insertAdjacentHTML('beforeend', `
-        <button id='closeSidebar'>
+        <button id='sidebarToggle'>
             <div class='arrow1'></div><div class='arrow2'></div>
         </button>
     `);
 
-    document.querySelector('#closeSidebar').addEventListener('click', () => {
+    document.querySelector('#sidebarToggle').addEventListener('click', () => {
         $settings_holder.classList.toggle('collapsed');
         document.querySelector('#sheld').classList.toggle('collapsed');
     });
@@ -189,9 +189,9 @@ function addSwipeButtons() {
 
 function main() {
     initSettings();
-    loadChatHistory();
     getPersona();
     initExplorePanel();
+    loadChatHistory();
     toggleSidebar();
     loadSplashText();
     addSwipeButtons();
