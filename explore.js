@@ -42,6 +42,7 @@ export async function initExplorePanel() {
                 }
             );
         }
+
         let data = await response.blob();
         return data;
     }
@@ -173,10 +174,10 @@ export async function initExplorePanel() {
     }
 
     function handleSearch(event, reset) {
-        console.log('handleSearch', event);
         if (event.type === 'keydown' && event.key !== 'Enter' && event.target.id !== 'includeTags' && event.target.id !== 'excludeTags') {
             return;
         }
+        console.log('handleSearch', event);
 
         const splitAndTrim = (str) => {
             str = str.trim();
@@ -228,8 +229,8 @@ export async function initExplorePanel() {
         const $pageNumber = document.querySelector('#pageNumber');
 
         if ($characterList.scrollHeight - Math.round($characterList.scrollTop) - 100 <= $characterList.clientHeight) {
-            toastr.info('Loading more characters...')
             $pageNumber.value = Math.max(1, parseInt($pageNumber.value.toString()) + 1);
+            toastr.info(`Loading page ${$pageNumber.value}...`)
             handleSearch(event, false);
         }
     }
@@ -262,13 +263,10 @@ export async function initExplorePanel() {
         }
     }
 
-    function displayCharactersInListViewPopup() {
+    function registerEventListeners() {
         const $searchWrapper = document.querySelector('#list-and-search-wrapper')
         const $characterList = $searchWrapper.querySelector('.character-list');
         const $pageNumber = $searchWrapper.querySelector('#pageNumber');
-
-        $characterList.addEventListener('click', popupImageHandler);
-        $characterList.addEventListener('scroll', infiniteScrollDebounced);
 
         $searchWrapper.querySelectorAll('#characterSearchInput, #includeTags, #excludeTags, #findCount, #sortOrder, #nsfwCheckbox').forEach(element => {
             element.addEventListener('change', exploreSearchHandler);
@@ -277,6 +275,9 @@ export async function initExplorePanel() {
         $searchWrapper.querySelector('#characterSearchButton').addEventListener('click', exploreSearchHandler);
         $searchWrapper.querySelector('#pageUpButton').addEventListener('click', exploreSearchHandler);
         $searchWrapper.querySelector('#pageDownButton').addEventListener('click', exploreSearchHandler);
+
+        $characterList.addEventListener('scroll', infiniteScrollDebounced);
+        $characterList.addEventListener('click', popupImageHandler);
 
         $characterList.scrollTop = 0;
         $pageNumber.value = 1;
@@ -293,7 +294,7 @@ export async function initExplorePanel() {
         }
 
         if (!drawerOpen) {
-            displayCharactersInListViewPopup();
+            registerEventListeners();
 
             //need jQuery here for .slideToggle(), otherwise panel breaks
             $('#explore-button').parent().find('.openDrawer').not('.pinnedOpen').addClass('resizing').slideToggle(200, 'swing', async () => {
