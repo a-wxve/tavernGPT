@@ -204,6 +204,18 @@ function main() {
         setMobileUI();
     }
 
+    const $drawerToggle = document.querySelector('#ai-config-button');
+    $drawerToggle.insertAdjacentHTML('beforeend', '<i class="fa-solid fa-chevron-down inline-drawer-icon"></i>');
+    const $drawerIcon = document.querySelector('#ai-config-button > .inline-drawer-icon')
+    $drawerToggle.addEventListener('click', () => {
+        const down = $drawerIcon.classList.contains('fa-chevron-down')
+        if (down) {
+            $drawerIcon.classList.replace('fa-chevron-down', 'fa-chevron-up')
+        } else {
+            $drawerIcon.classList.replace('fa-chevron-up', 'fa-chevron-down')
+        }
+    })
+
     const $sheld = document.querySelector('#sheld');
     $sheld.append(document.querySelector('#expression-wrapper .expression-holder'));
     $sheld.setAttribute('tabindex', '0');

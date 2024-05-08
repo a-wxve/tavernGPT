@@ -164,6 +164,27 @@ body.big-avatars {
 #ai-config-button {
     order: 1;
 
+    &:not(:has(.openIcon)) {
+
+        ~#sys-settings-button:not(:has(.openIcon)),
+        ~#advanced-formatting-button:not(:has(.openIcon)),
+        ~#WI-SP-button:not(:has(.openIcon)),
+        ~#extensions-settings-button:not(:has(.openIcon)),
+        ~#logo_block:not(:has(.openIcon)),
+        ~#user-settings-button:not(:has(.openIcon)) {
+            display: none;
+        }
+    }
+
+    .drawer-toggle {
+        display: flex;
+        align-items: center;
+    }
+
+    .drawer-toggle:not(:hover)~.fa-chevron-down {
+        opacity: 0.3;
+    }
+
     .drawer-icon {
 
         &::before {
@@ -175,16 +196,11 @@ body.big-avatars {
         }
     }
 
-    &:not(:has(.openIcon)) {
-
-        ~#sys-settings-button:not(:has(.openIcon)),
-        ~#advanced-formatting-button:not(:has(.openIcon)),
-        ~#WI-SP-button:not(:has(.openIcon)),
-        ~#extensions-settings-button:not(:has(.openIcon)),
-        ~#logo_block:not(:has(.openIcon)),
-        ~#user-settings-button:not(:has(.openIcon)) {
-            display: none;
-        }
+    .inline-drawer-icon {
+        font-size: calc(var(--mainFontSize)*1.25);
+        position: absolute;
+        right: 9%;
+        pointer-events: none;
     }
 }
 
