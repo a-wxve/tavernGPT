@@ -1,22 +1,28 @@
 import {
     callPopup,
     characters,
+    chat_metadata,
+    clearChat,
     eventSource,
     generateQuietPrompt,
+    getChat,
     getChatsFromFiles,
     getPastCharacterChats,
     getRequestHeaders,
-    this_chid
+    this_chid,
 } from '../../../../script.js';
-import { debounce_timeout } from '../../../constants.js';
 import { extension_settings, getContext } from '../../../extensions.js';
 import {
     getGroupPastChats,
+    groups,
+    openGroupChat,
     renameGroupChat,
     selected_group
 } from '../../../group-chats.js';
 import { debounce, onlyUnique, timestampToMoment } from '../../../utils.js';
 import { extensionFolderPath, extensionName } from './index.js';
+
+const group = selected_group ? groups.find(x => x.id === selected_group) : null;
 
 async function displayPastChats() {
     function getRelativeTimeCategory(date) {
@@ -102,8 +108,7 @@ async function displayPastChats() {
                 const b = bChats[0];
                 if (!a.last_mes || !b.last_mes) return 0;
                 return sortByTimeCategory(a, b);
-            })
-            .forEach(([category, chats]) => {
+            }).forEach(([category, chats]) => {
                 $select_chat.insertAdjacentHTML('beforeend', `<h5 class=chat-category>${category}</h5>`);
 
                 const filteredData = chats.filter(chat => {
@@ -142,7 +147,7 @@ async function displayPastChats() {
                         template.querySelector('.select_chat_block_filename').textContent = fileName;
                         template.querySelector('.PastChat_cross').setAttribute('file_name', fileName);
 
-                        const selectedChatFileName = `${characters[this_chid].chat}.jsonl`;
+                        const selectedChatFileName = `${selected_group ? group?.chat_id : characters[this_chid].chat}.jsonl`;
                         if (fileName === selectedChatFileName) {
                             template.querySelector('.select_chat_block').setAttribute('highlight', true);
                         }
@@ -161,13 +166,13 @@ async function displayPastChats() {
 
     const debouncedDisplayChats = debounce((searchQuery) => {
         displayChats(searchQuery);
-    }, debounce_timeout.standard);
+    });
 
     $select_chat_search.addEventListener('input', debouncedDisplayChats($select_chat_search.value));
 }
 
 async function renameChat() {
-    const old_filename = characters[this_chid].chat;
+    const old_filename = selected_group ? group?.chat_id : characters[this_chid].chat;
     const context = getContext();
 
     function matchesTimePattern(string) {
@@ -204,8 +209,6 @@ async function renameChat() {
                 }
                 document.querySelector('#selected_chat_pole').value = characters[this_chid].chat;
             }
-
-            displayPastChats();
         } catch {
             await callPopup('An error has occurred. Chat was not renamed.', 'text');
         }
@@ -228,13 +231,29 @@ export async function loadChatHistory() {
         document.querySelector('#option_start_new_chat').click();
     });
 
-    function historyHandler() {
-        displayPastChats();
-        if (extension_settings[extensionName].rename_chats) {
-            renameChat();
-        }
-    }
+    const openChat = async (event) => {
+        const target = event.target.closest('.select_chat_block');
+        if (target && !event.target.matches('.renameChatButton, .exportRawChatButton, .exportChatButton, .PastChat_cross')) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
 
-    eventSource.on('chatLoaded', historyHandler);
-    eventSource.on('chat_id_changed', historyHandler)
+            const file_name = target.getAttribute('file_name').replace('.jsonl', '')
+            if (selected_group) {
+                await openGroupChat(selected_group, file_name);
+            } else {
+                await clearChat();
+                characters[this_chid].chat = file_name;
+                chat.length = 0;
+                await getChat();
+                document.querySelector('#selected_chat_pole').value = characters[this_chid].chat;
+            }
+        }
+    };
+
+    document.addEventListener('click', openChat, true);
+
+    eventSource.on('chat_id_changed', () => {
+        displayPastChats();
+        if (extension_settings[extensionName].rename_chats) renameChat();
+    });
 }
