@@ -96,8 +96,8 @@ async function displayPastChats() {
         $select_chat.replaceChildren();
 
         Object.entries(chatsByCategory)
-            .filter(([cat, chats]) => chats.length > 0)
-            .sort(([aCat, aChats], [bCat, bChats]) => {
+            .filter(([, chats]) => chats.length > 0)
+            .sort(([, aChats], [, bChats]) => {
                 const a = aChats[0];
                 const b = bChats[0];
                 if (!a.last_mes || !b.last_mes) return 0;
@@ -114,10 +114,7 @@ async function displayPastChats() {
                     }
 
                     function matchFragments(fragments, text) {
-                        if (!text) {
-                            return false;
-                        }
-
+                        if (!text) return false;
                         return fragments.every(item => text.includes(item));
                     }
 
@@ -145,11 +142,12 @@ async function displayPastChats() {
                         template.querySelector('.select_chat_block_filename').textContent = fileName;
                         template.querySelector('.PastChat_cross').setAttribute('file_name', fileName);
 
-                        $select_chat.append(template);
-
-                        if (characters[this_chid]['chat'] === fileName.toString().replace('.jsonl', '')) {
-                            $select_chat.querySelector('.select_chat_block:last-child').setAttribute('highlight', true);
+                        const selectedChatFileName = `${characters[this_chid].chat}.jsonl`;
+                        if (fileName === selectedChatFileName) {
+                            template.querySelector('.select_chat_block').setAttribute('highlight', true);
                         }
+
+                        $select_chat.append(template);
 
                         $select_chat.querySelectorAll('.select_chat_block_filename.select_chat_block_filename_item').forEach((filename) => {
                             filename.textContent = filename.textContent.replace('.jsonl', '');
@@ -161,9 +159,11 @@ async function displayPastChats() {
 
     displayChats('');
 
-    const debouncedDisplay = debounce((searchQuery) => { displayChats(searchQuery); }, debounce_timeout.standard);
+    const debouncedDisplayChats = debounce((searchQuery) => {
+        displayChats(searchQuery);
+    }, debounce_timeout.standard);
 
-    $select_chat_search.addEventListener('input', debouncedDisplay($select_chat_search.value));
+    $select_chat_search.addEventListener('input', debouncedDisplayChats($select_chat_search.value));
 }
 
 async function renameChat() {
@@ -228,9 +228,8 @@ export async function loadChatHistory() {
         document.querySelector('#option_start_new_chat').click();
     });
 
-    const displayPastChatsDebounced = debounce(() => displayPastChats(), debounce_timeout.relaxed);
     function historyHandler() {
-        displayPastChatsDebounced();
+        displayPastChats();
         if (extension_settings[extensionName].rename_chats) {
             renameChat();
         }
