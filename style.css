@@ -1,6 +1,7 @@
 :root {
-    --mainFontSize: calc(var(--fontScale) * 16px);
-    --lineHeight: calc(var(--mainFontSize) * 1.35);
+    --fontFamily: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mainFontSize: calc(var(--fontScale) * 17px);
+    --lineHeight: calc(var(--mainFontSize) * 1.5);
     --barSize: 20%;
     --panelSize: 45%;
     --outsideMargin: 0.9rem;
@@ -12,15 +13,7 @@
 
 html,
 body {
-    font-family:
-        -apple-system,
-        system-ui,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Oxygen,
-        Ubuntu,
-        sans-serif;
+    font-family: var(--fontFamily);
 }
 
 hr {
@@ -122,18 +115,7 @@ body.big-avatars {
         vertical-align: middle;
         font-size: 18px;
         font-weight: 720;
-        font-family:
-            system-ui,
-            -apple-system,
-            BlinkMacSystemFont,
-            "Segoe UI",
-            Roboto,
-            Oxygen,
-            Ubuntu,
-            Cantarell,
-            "Open Sans",
-            "Helvetica Neue",
-            sans-serif;
+        font-family: var(--fontFamily);
     }
 }
 
@@ -163,6 +145,12 @@ body.big-avatars {
 
 #ai-config-button {
     order: 1;
+
+    &:has(.openIcon) {
+        .inline-drawer-icon {
+            transform: rotate(180deg);
+        }
+    }
 
     &:not(:has(.openIcon)) {
 
@@ -411,18 +399,7 @@ body.big-avatars {
 
             &::after {
                 content: " All Cards";
-                font-family:
-                    system-ui,
-                    -apple-system,
-                    BlinkMacSystemFont,
-                    "Segoe UI",
-                    Roboto,
-                    Oxygen,
-                    Ubuntu,
-                    Cantarell,
-                    "Open Sans",
-                    "Helvetica Neue",
-                    sans-serif;
+                font-family: var(--fontFamily);
                 font-weight: 720;
             }
         }
@@ -433,18 +410,7 @@ body.big-avatars {
 
         &:has(#rm_ch_create_block[style*="display: block"]) #rm_button_characters::after {
             content: " Back";
-            font-family:
-                system-ui,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Roboto,
-                Oxygen,
-                Ubuntu,
-                Cantarell,
-                "Open Sans",
-                "Helvetica Neue",
-                sans-serif;
+            font-family: var(--fontFamily);
             font-weight: 720;
         }
 
@@ -815,7 +781,6 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
 
         .mes_text {
             line-height: var(--lineHeight);
-            max-width: 81ch;
 
             &>:last-child {
                 margin-bottom: 0;
@@ -1017,7 +982,7 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
     order: 9;
 
     .drawer-icon::after {
-        content: " Explore";
+        content: " Character Hub";
     }
 
     & .drawer-content {

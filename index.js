@@ -82,8 +82,8 @@ async function initSettings() {
         Object.assign(extension_settings[extensionName], defaultSettings);
     }
 
-    if ($rename_chats.checked) { $rename_chats.click() };
-    if ($enable_nudges.checked) { $enable_nudges.click() };
+    if ($rename_chats.checked) $rename_chats.click();
+    if ($enable_nudges.checked) $enable_nudges.click();
 }
 
 function loadSplashText() {
@@ -93,7 +93,7 @@ function loadSplashText() {
         if (!!document.querySelector('#version_display_welcome')) {
             document.querySelector('#version_display_welcome').insertAdjacentHTML('afterend', `<p id="splash">Loading...</p>`);
 
-            const $splash = document.querySelector('#splash')
+            const $splash = document.querySelector('#splash');
             $splash.innerHTML = splashes[Math.floor(Math.random() * splashes.length)];
             $splash.addEventListener('click', () => {
                 $splash.innerHTML = splashes[Math.floor(Math.random() * splashes.length)];
@@ -134,7 +134,7 @@ async function initNudgeUI() {
 }
 
 function setMobileUI() {
-    const $sheld = document.querySelector('#sheld')
+    const $sheld = document.querySelector('#sheld');
     $sheld.insertAdjacentHTML('afterbegin', `<div class="flex-container" id="chat_header"></div>`);
 
     function addChatHeader() {
@@ -206,18 +206,8 @@ function main() {
 
     const $drawerToggle = document.querySelector('#ai-config-button');
     $drawerToggle.insertAdjacentHTML('beforeend', '<i class="fa-solid fa-chevron-down inline-drawer-icon"></i>');
-    const $drawerIcon = document.querySelector('#ai-config-button > .inline-drawer-icon')
-    $drawerToggle.addEventListener('click', () => {
-        const down = $drawerIcon.classList.contains('fa-chevron-down')
-        if (down) {
-            $drawerIcon.classList.replace('fa-chevron-down', 'fa-chevron-up')
-        } else {
-            $drawerIcon.classList.replace('fa-chevron-up', 'fa-chevron-down')
-        }
-    })
 
     const $sheld = document.querySelector('#sheld');
-    $sheld.append(document.querySelector('#expression-wrapper .expression-holder'));
     $sheld.setAttribute('tabindex', '0');
     $sheld.addEventListener('keydown', (event) => {
         switch (event.which) {
