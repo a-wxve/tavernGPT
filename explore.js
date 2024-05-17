@@ -247,10 +247,6 @@ async function setupExplorePanel() {
         }
     }
 
-    await fetch(`${extensionFolderPath}/html/explore.html`).then(data => data.text()).then(data => {
-        document.querySelector('#top-settings-holder').insertAdjacentHTML('beforeend', data);
-    });
-
     const infiniteScrollDebounced = debounce((event) => infiniteScroll(event), debounce_timeout.relaxed);
     let popupImage = null;
 
@@ -273,7 +269,11 @@ async function setupExplorePanel() {
     $pageNumber.value = 1;
 }
 
-export function loadExplorePanel() {
+export async function loadExplorePanel() {
+    await fetch(`${extensionFolderPath}/html/explore.html`).then(data => data.text()).then(data => {
+        document.querySelector('#top-settings-holder').insertAdjacentHTML('beforeend', data);
+    });
+
     const $explore_toggle = document.querySelector('#explore-button .drawer-toggle');
     $explore_toggle.addEventListener('click', () => {
         let icon = $explore_toggle.querySelector('.drawer-icon');
