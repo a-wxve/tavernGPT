@@ -6,7 +6,8 @@
     --panelSize: 45%;
     --outsideMargin: 0.9rem;
     --insidePadding: 10px;
-    --borderRadius: 0.9rem;
+    --borderRadius: 1.5rem;
+    --borderRadiusSmol: 0.625rem;
     --color1: rgb(45, 45, 45);
     --color2: rgb(63, 63, 63);
 }
@@ -25,7 +26,10 @@ hr {
 #persona-management-button .drawer-icon::before,
 #ReverseProxyWarningMessage,
 #quickReplyPopoutButton,
-#summaryExtensionPopoutButton {
+#summaryExtensionPopoutButton,
+.mes_edit_copy,
+.mes_edit_up,
+.mes_edit_down {
     display: none !important;
 }
 
@@ -127,7 +131,7 @@ body.big-avatars {
 }
 
 .drawer-toggle {
-    border-radius: 0.63rem;
+    border-radius: var(--borderRadiusSmol);
 
     &:hover {
         background-color: var(--color1);
@@ -344,23 +348,16 @@ body.big-avatars {
     width: inherit;
     order: 13;
 
-    .drawer-icon span {
-        vertical-align: super;
-        padding-left: 0.09rem;
-        font-size: 18px;
-        font-weight: 720;
-        font-family:
-            system-ui,
-            -apple-system,
-            BlinkMacSystemFont,
-            "Segoe UI",
-            Roboto,
-            Oxygen,
-            Ubuntu,
-            Cantarell,
-            "Open Sans",
-            "Helvetica Neue",
-            sans-serif;
+    .drawer-icon {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        span {
+            font-size: 18px;
+            font-weight: 720;
+            font-family: var(--fontFamily);
+        }
     }
 
     .drawer-icon.closedIcon {
@@ -459,7 +456,7 @@ body.big-avatars {
 
     .historyButton {
         background-color: var(--color1);
-        border-radius: 0.63rem;
+        border-radius: var(--borderRadiusSmol);
         opacity: 0.54;
         padding: 5px 0;
 
@@ -469,6 +466,7 @@ body.big-avatars {
 
         >span {
             font-size: var(--mainFontSize);
+            font-weight: 600;
             padding: 3px 5px 3px 0;
         }
 
@@ -482,7 +480,7 @@ body.big-avatars {
     order: 11;
     max-height: 36px;
     background-color: var(--color1);
-    border-radius: 0.63rem;
+    border-radius: var(--borderRadiusSmol);
 
     #select_chat_div:empty~& {
         display: none;
@@ -504,6 +502,14 @@ body.big-avatars {
     overflow-y: scroll;
     margin-bottom: 3.6em;
 
+    &:not(:hover) {
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
     .select_chat_block_wrapper:not(:hover) .fa-solid {
         visibility: hidden;
     }
@@ -519,7 +525,7 @@ body.big-avatars {
     }
 
     .select_chat_block {
-        border-radius: 0.63rem;
+        border-radius: var(--borderRadiusSmol);
     }
 
     #select_chat_name_wrapper {
@@ -551,7 +557,7 @@ body.big-avatars {
 
     .select_chat_block:hover {
         #select_chat_name_wrapper>div:is(:first-child) {
-            max-width: 70%;
+            max-width: 60%;
         }
     }
 
@@ -623,8 +629,7 @@ body.big-avatars {
     height: 100dvh;
     top: 0;
     left: var(--barSize);
-    padding: var(--insidePadding);
-    padding-top: 0;
+    padding: 0 var(--insidePadding);
     background-color: var(--SmartThemeChatTintColor);
     -webkit-backdrop-filter: blur(calc(var(--SmartThemeBlurStrength)));
 
@@ -635,12 +640,60 @@ body.big-avatars {
 
     #chat {
         max-height: 100dvh;
-        margin-right: -10px;
+        padding-bottom: 4rem;
         background-color: transparent;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
     }
 
     #form_sheld {
-        margin: 0;
+        position: absolute;
+        bottom: 0px;
+        margin: 0px;
+        margin-left: -10px;
+        padding: 10px;
+        backdrop-filter: blur(0.5rem);
+        -webkit-backdrop-filter: blur(0.5rem);
+
+        #send_form {
+            border: none;
+            background-color: transparent !important;
+
+            #nonQRFormItems {
+
+                #extensionsMenuButton.fa-magic-wand-sparkles::before {
+                    content: "\f0c6";
+                }
+
+                #options_button::before {
+                    content: "\f142";
+                }
+            }
+
+            #send_textarea {
+                border-radius: var(--borderRadius);
+                border-color: transparent;
+                clip-path: none;
+                background-color: var(--color1);
+                padding: 6px 1rem;
+                resize: none;
+            }
+
+            #rightSendForm {
+                margin-right: 0.27rem;
+
+                #send_but::before {
+                    content: "\f0aa";
+                }
+
+                #mes_continue::before {
+                    content: "\f0a9";
+                }
+            }
+        }
 
         /* Nudges */
         #nudges {
@@ -655,7 +708,7 @@ body.big-avatars {
             }
 
             .nudge_button {
-                border-radius: 0.9rem;
+                border-radius: var(--borderRadiusSmol);
                 background-color: var(--color1);
                 margin: 0;
 
@@ -664,42 +717,6 @@ body.big-avatars {
                     padding: 0.45rem;
                     overflow: hidden;
                     text-overflow: ellipsis;
-                }
-            }
-        }
-
-        #send_form {
-            border-radius: 0;
-            background-color: transparent !important;
-
-            #nonQRFormItems {
-                border-radius: 0.9rem;
-                background-color: var(--color1);
-
-                #extensionsMenuButton.fa-magic-wand-sparkles::before {
-                    content: "\f0c6";
-                }
-
-                #options_button::before {
-                    content: "\f142";
-                }
-            }
-
-            #send_textarea {
-                margin: 0.36rem;
-                background-color: rgb(45, 45, 45);
-                resize: none;
-            }
-
-            #rightSendForm {
-                margin-right: 0.27rem;
-
-                #send_but::before {
-                    content: "\f0aa";
-                }
-
-                #mes_continue::before {
-                    content: "\f0a9";
                 }
             }
         }
@@ -719,11 +736,10 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
 }
 
 .mes {
-    padding: 10px;
 
     &.last_mes {
         .mes_text {
-            padding-right: 0;
+            padding-right: 0px;
         }
 
         >.swipe_left,
@@ -742,6 +758,42 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
         }
     }
 
+    &:hover {
+        .swipes {
+
+            .swipes-counter {
+                opacity: 0.7;
+            }
+
+            .mes_swipe_left,
+            .mes_swipe_right {
+                opacity: 0.3;
+            }
+        }
+    }
+
+    .swipes {
+        margin-top: 3px;
+
+        .swipes-counter {
+            font-weight: 500;
+            opacity: 0;
+            transition: 0.18s ease-in-out;
+        }
+
+        .mes_swipe_left,
+        .mes_swipe_right {
+            cursor: pointer;
+            transition: 0.18s ease-in-out;
+            filter: drop-shadow(0px 0px 2px black);
+            opacity: 0;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
+
     .mes_block {
         transform: none !important;
 
@@ -749,25 +801,8 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
             order: 1;
         }
 
-        .icon-svg.timestamp-icon {
-            height: 1rem;
-            align-self: center;
-        }
-
         .mes_buttons {
             padding: 0;
-
-            .mes_swipe_left,
-            .mes_swipe_right {
-                cursor: pointer;
-                transition: 0.3s ease-in-out;
-                filter: drop-shadow(0px 0px 2px black);
-                opacity: 0.3;
-
-                &:hover {
-                    opacity: 1;
-                }
-            }
         }
 
         .mes_edit_buttons {
@@ -832,10 +867,8 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
 
         .mes_text {
             width: fit-content;
-            padding: 1rem;
-            margin-top: 10px;
-            border-radius: 27px;
-            border-top-left-radius: 3px;
+            padding: 0.625rem 1rem;
+            border-radius: var(--borderRadius);
             background-color: var(--SmartThemeBotMesBlurTintColor);
 
             #curEditTextarea {
@@ -853,18 +886,17 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
             background-color: transparent;
 
             .mesAvatarWrapper {
-                order: 2;
+                display: none;
             }
 
             .mes_block {
-                padding-left: 0;
-                padding-right: 10px;
+                display: flex;
+                padding-left: 0px;
+                padding-right: 0px;
                 overflow-y: hidden;
+                justify-content: end;
 
                 .mes_text {
-                    margin-left: auto;
-                    border-top-left-radius: 27px;
-                    border-top-right-radius: 3px;
                     background-color: var(--SmartThemeUserMesBlurTintColor);
                 }
 
@@ -872,7 +904,7 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
                     float: right;
                     clear: both;
                     width: fit-content;
-                    border-radius: 27px;
+                    border-radius: var(--borderRadius);
                     border-top-right-radius: 3px;
                     margin-top: 10px;
                     padding: 0.81rem;
@@ -880,7 +912,9 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
                 }
 
                 .ch_name.flex-container.justifySpaceBetween {
-                    justify-content: end;
+                    flex-wrap: nowrap;
+                    align-self: center;
+                    gap: 10px;
 
                     .flex-container.flex1.alignitemscenter {
                         order: 2;
@@ -888,10 +922,16 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
                         flex: 0;
                     }
                 }
+            }
+        }
 
-                .mes_buttons {
-                    align-self: flex-end;
-                }
+        body:not(.bubblechat) & {
+            .name_text::after {
+                content: "(You)" !important;
+                text-indent: 0px;
+                visibility: visible;
+                display: block;
+                line-height: initial;
             }
         }
 
@@ -903,19 +943,17 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
                 visibility: hidden;
                 text-indent: -999px;
                 line-height: 0;
-
-                &::after {
-                    content: "(You)" !important;
-                    text-indent: 0px;
-                    visibility: visible;
-                    display: block;
-                    line-height: initial;
-                }
             }
 
             .timestamp {
                 align-self: end;
             }
+        }
+    }
+
+    &:not([is_user="true"]) {
+        .ch_name.flex-container.justifySpaceBetween {
+            margin-bottom: 0.5rem;
         }
     }
 
@@ -935,8 +973,6 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
         }
     }
 
-    .swipe_left,
-    .swipe_right,
     .mesIDDisplay,
     .mes_timer,
     .tokenCounterDisplay {
@@ -1042,7 +1078,7 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
             height: 100px;
             object-fit: cover;
             margin-right: 10px;
-            border-radius: 0.63rem;
+            border-radius: var(--borderRadiusSmol);
         }
 
         .info {
@@ -1218,8 +1254,7 @@ body img.thumbnail {
                     padding-right: 0;
 
                     .mes_text {
-                        border-radius: 27px;
-                        border-bottom-right-radius: 3px;
+                        border-radius: var(--borderRadius);
                     }
                 }
             }
