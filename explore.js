@@ -3,17 +3,7 @@ import { debounce_timeout } from '../../../constants.js';
 import { debounce, delay } from '../../../utils.js';
 import { extensionFolderPath } from './index.js';
 
-export async function initExplorePanel() {
-    await fetch(`${extensionFolderPath}/html/explore.html`).then(data => data.text()).then(data => {
-        document.querySelector('#top-settings-holder').insertAdjacentHTML('beforeend', data);
-    });
-
-    const searchCharactersDebounced = debounce((options, reset) => searchCharacters(options, reset), debounce_timeout.relaxed);
-    const infiniteScrollDebounced = debounce((event) => infiniteScroll(event), debounce_timeout.relaxed);
-
-    let chubCharacters = [];
-    let popupImage = null;
-
+async function setupExplorePanel() {
     async function getCharacter(fullPath) {
         let response = await fetch(
             'https://api.chub.ai/api/characters/download',
@@ -47,7 +37,47 @@ export async function initExplorePanel() {
         return data;
     }
 
-    async function fetchCharactersBySearch({ searchTerm, includeTags, excludeTags, nsfw, sort, findCount, page = 1 }) {
+    async function downloadCharacter(input) {
+        const url = `https://www.chub.ai/characters/${input.trim()}`;
+        console.debug('Custom content import started', url);
+
+        let request = null;
+        request = await fetch('/api/content/importURL', {
+            method: 'POST',
+            headers: getRequestHeaders(),
+            body: JSON.stringify({ url }),
+        });
+
+        if (!request.ok) {
+            toastr.info('Click to go to the character page', 'Custom content import failed', { onclick: () => window.open(url, '_blank') });
+            console.error('Custom content import failed', request.status, request.statusText);
+            return;
+        }
+
+        const data = await request.blob();
+        const customContentType = request.headers.get('X-Custom-Content-Type');
+        const fileName = request.headers.get('Content-Disposition').split('filename=')[1].replace(/"/g, '');
+        const file = new File([data], fileName, { type: data.type });
+
+        switch (customContentType) {
+            case 'character':
+                processDroppedFiles([file]);
+                break;
+            default:
+                toastr.warning('Unknown content type');
+                console.error('Unknown content type', customContentType);
+                break;
+        }
+    }
+
+    async function fetchCharacters({ searchTerm, includeTags, excludeTags, nsfw, sort, findCount, page = 1 }, reset) {
+        const $characterList = document.querySelector('#list-and-search-wrapper .character-list');
+
+        $characterList.classList.add('searching');
+
+        console.log('Search options:', options);
+        toastr.info(`Searching...`);
+
         let first = findCount;
         let asc = false;
         let include_forks = true;
@@ -69,17 +99,14 @@ export async function initExplorePanel() {
 
         let searchData = await fetch(url).then(data => data.json());
 
-        chubCharacters = [];
+        const characters = [];
 
-        if (searchData.nodes.length === 0) {
-            return chubCharacters;
-        }
-        let charactersPromises = searchData.nodes.map(node => getCharacter(node.fullPath));
-        let characterBlobs = await Promise.all(charactersPromises);
+        let characterPromises = searchData.nodes.map(node => getCharacter(node.fullPath));
+        let characterBlobs = await Promise.all(characterPromises);
 
         characterBlobs.forEach((character, i) => {
             let imageUrl = URL.createObjectURL(character);
-            chubCharacters.push({
+            characters.push({
                 url: imageUrl,
                 description: searchData.nodes[i].tagline || 'Description here...',
                 name: searchData.nodes[i].name,
@@ -88,17 +115,6 @@ export async function initExplorePanel() {
                 author: searchData.nodes[i].fullPath.split('/')[0],
             });
         });
-
-        return chubCharacters;
-    }
-
-    async function searchCharacters(options, reset) {
-        const $characterList = document.querySelector('#list-and-search-wrapper .character-list');
-
-        $characterList.classList.add('searching');
-
-        console.log('Searching for characters...', options);
-        const characters = await fetchCharactersBySearch(options);
 
         $characterList.classList.remove('searching');
 
@@ -140,44 +156,12 @@ export async function initExplorePanel() {
         `;
     }
 
-    async function downloadCharacter(input) {
-        const url = `https://www.chub.ai/characters/${input.trim()}`;
-        console.debug('Custom content import started', url);
-
-        let request = null;
-        request = await fetch('/api/content/importURL', {
-            method: 'POST',
-            headers: getRequestHeaders(),
-            body: JSON.stringify({ url }),
-        });
-
-        if (!request.ok) {
-            toastr.info('Click to go to the character page', 'Custom content import failed', { onclick: () => window.open(url, '_blank') });
-            console.error('Custom content import failed', request.status, request.statusText);
-            return;
-        }
-
-        const data = await request.blob();
-        const customContentType = request.headers.get('X-Custom-Content-Type');
-        const fileName = request.headers.get('Content-Disposition').split('filename=')[1].replace(/"/g, '');
-        const file = new File([data], fileName, { type: data.type });
-
-        switch (customContentType) {
-            case 'character':
-                processDroppedFiles([file]);
-                break;
-            default:
-                toastr.warning('Unknown content type');
-                console.error('Unknown content type', customContentType);
-                break;
-        }
-    }
-
-    function handleSearch(event, reset) {
+    function search(event, reset) {
         if (event.type === 'keydown' && event.key !== 'Enter' && event.target.id !== 'includeTags' && event.target.id !== 'excludeTags') {
             return;
         }
-        console.log('handleSearch', event);
+        const fetchCharactersDebounced = debounce((options, reset) => fetchCharacters(options, reset), debounce_timeout.relaxed);
+        console.log('Search event:', event);
 
         const splitAndTrim = (str) => {
             str = str.trim();
@@ -195,7 +179,7 @@ export async function initExplorePanel() {
         const sort = document.querySelector('#sortOrder').value;
         let page = document.querySelector('#pageNumber').value;
 
-        searchCharactersDebounced({
+        fetchCharactersDebounced({
             searchTerm,
             includeTags,
             excludeTags,
@@ -206,20 +190,20 @@ export async function initExplorePanel() {
         }, reset);
     }
 
-    function exploreSearchHandler(event) {
+    function searchHandler(event) {
         const $pageNumber = document.querySelector('#pageNumber');
         switch (true) {
             case event.target.matches('#pageUpButton'):
                 $pageNumber.value = Math.max(1, parseInt($pageNumber.value.toString()) + 1);
-                handleSearch(event, false);
+                search(event, false);
                 break;
             case event.target.matches('#pageDownButton'):
                 $pageNumber.value = Math.max(1, parseInt($pageNumber.value.toString()) - 1);
-                handleSearch(event, false);
+                search(event, false);
                 break;
             default:
                 $pageNumber.value = 1
-                handleSearch(event, true);
+                search(event, true);
                 break;
         }
     }
@@ -231,7 +215,7 @@ export async function initExplorePanel() {
         if ($characterList.scrollHeight - Math.round($characterList.scrollTop) - 100 <= $characterList.clientHeight) {
             $pageNumber.value = Math.max(1, parseInt($pageNumber.value.toString()) + 1);
             toastr.info(`Loading page ${$pageNumber.value}...`)
-            handleSearch(event, false);
+            search(event, false);
         }
     }
 
@@ -263,26 +247,33 @@ export async function initExplorePanel() {
         }
     }
 
-    function registerEventListeners() {
-        const $searchWrapper = document.querySelector('#list-and-search-wrapper')
-        const $characterList = $searchWrapper.querySelector('.character-list');
-        const $pageNumber = $searchWrapper.querySelector('#pageNumber');
+    await fetch(`${extensionFolderPath}/html/explore.html`).then(data => data.text()).then(data => {
+        document.querySelector('#top-settings-holder').insertAdjacentHTML('beforeend', data);
+    });
 
-        $searchWrapper.querySelectorAll('#characterSearchInput, #includeTags, #excludeTags, #findCount, #sortOrder, #nsfwCheckbox').forEach(element => {
-            element.addEventListener('change', exploreSearchHandler);
-        })
+    const infiniteScrollDebounced = debounce((event) => infiniteScroll(event), debounce_timeout.relaxed);
+    let popupImage = null;
 
-        $searchWrapper.querySelector('#characterSearchButton').addEventListener('click', exploreSearchHandler);
-        $searchWrapper.querySelector('#pageUpButton').addEventListener('click', exploreSearchHandler);
-        $searchWrapper.querySelector('#pageDownButton').addEventListener('click', exploreSearchHandler);
+    const $searchWrapper = document.querySelector('#list-and-search-wrapper')
+    const $characterList = $searchWrapper.querySelector('.character-list');
+    const $pageNumber = $searchWrapper.querySelector('#pageNumber');
 
-        $characterList.addEventListener('scroll', infiniteScrollDebounced);
-        $characterList.addEventListener('click', popupImageHandler);
+    $searchWrapper.querySelectorAll('#characterSearchInput, #includeTags, #excludeTags, #findCount, #sortOrder, #nsfwCheckbox').forEach(element => {
+        element.addEventListener('change', searchHandler);
+    })
 
-        $characterList.scrollTop = 0;
-        $pageNumber.value = 1;
-    }
+    $searchWrapper.querySelector('#characterSearchButton').addEventListener('click', searchHandler);
+    $searchWrapper.querySelector('#pageUpButton').addEventListener('click', searchHandler);
+    $searchWrapper.querySelector('#pageDownButton').addEventListener('click', searchHandler);
 
+    $characterList.addEventListener('scroll', infiniteScrollDebounced);
+    $characterList.addEventListener('click', popupImageHandler);
+
+    $characterList.scrollTop = 0;
+    $pageNumber.value = 1;
+}
+
+export function loadExplorePanel() {
     const $explore_toggle = document.querySelector('#explore-button .drawer-toggle');
     $explore_toggle.addEventListener('click', () => {
         let icon = $explore_toggle.querySelector('.drawer-icon');
@@ -294,7 +285,7 @@ export async function initExplorePanel() {
         }
 
         if (!drawerOpen) {
-            registerEventListeners();
+            setupExplorePanel();
 
             //need jQuery here for .slideToggle(), otherwise panel breaks
             $('#explore-button').parent().find('.openDrawer').not('.pinnedOpen').addClass('resizing').slideToggle(200, 'swing', async () => {

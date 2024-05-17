@@ -6,7 +6,7 @@ import {
     saveSettingsDebounced
 } from '../../../../script.js';
 import { extension_settings } from '../../../extensions.js';
-import { initExplorePanel } from './explore.js';
+import { loadExplorePanel } from './explore.js';
 import { loadChatHistory } from './history.js';
 
 export const extensionName = 'tavernGPT';
@@ -33,7 +33,7 @@ function getPersona() {
         let avatar_img = getUserAvatar(settings.user_avatar);
 
         $persona_button.innerHTML = `<img class='persona_avatar' src='${avatar_img}'/>`;
-        $persona_button.insertAdjacentHTML('beforeend', `<span> ${name1}</span>`);
+        $persona_button.insertAdjacentHTML('beforeend', `<span>${name1}</span>`);
     });
 
     $persona_button.addEventListener('click', () => {
@@ -64,15 +64,17 @@ async function initSettings() {
     const $rename_chats = document.querySelector('#rename_chats');
     const $enable_nudges = document.querySelector('#enable_nudges');
 
-    $settings.addEventListener('click', (event) => {
-        switch (true) {
-            case event.target.matches($rename_chats):
-                extension_settings[extensionName].rename_chats = $rename_chats.checked;
-            case event.target.matches($enable_nudges):
-                extension_settings[extensionName].enable_nudges = $enable_nudges.checked;
-                if ($enable_nudges.checked) { initNudgeUI(); };
-            default:
-                break;
+    $rename_chats.addEventListener('click', () => {
+        extension_settings[extensionName].rename_chats = $rename_chats.checked;
+        saveSettingsDebounced();
+    });
+
+    $enable_nudges.addEventListener('click', () => {
+        extension_settings[extensionName].enable_nudges = $enable_nudges.checked;
+        if (extension_settings[extensionName].enable_nudges) {
+            initNudgeUI();
+        } else {
+            document.querySelector('#nudges').style.display = 'none';
         }
         saveSettingsDebounced();
     });
@@ -82,8 +84,8 @@ async function initSettings() {
         Object.assign(extension_settings[extensionName], defaultSettings);
     }
 
-    if ($rename_chats.checked) $rename_chats.click();
-    if ($enable_nudges.checked) $enable_nudges.click();
+    if (extension_settings[extensionName].rename_chats) $rename_chats.click();
+    if (extension_settings[extensionName].enable_nudges) $enable_nudges.click();
 }
 
 function loadSplashText() {
@@ -91,7 +93,7 @@ function loadSplashText() {
 
     function setSplashText() {
         if (!!document.querySelector('#version_display_welcome')) {
-            document.querySelector('#version_display_welcome').insertAdjacentHTML('afterend', `<p id="splash">Loading...</p>`);
+            document.querySelector('#version_display_welcome').insertAdjacentHTML('afterend', `<p id="splash"></p>`);
 
             const $splash = document.querySelector('#splash');
             $splash.innerHTML = splashes[Math.floor(Math.random() * splashes.length)];
@@ -117,19 +119,18 @@ async function initNudgeUI() {
         const prompt = 'Generate 4 one line replies from {{user}}\'s point of view using the chat history so far as a guideline for {{user}}\'s writing style in JSON format with the keys "prompt1", "prompt2", "prompt3", and "prompt4". Be sure to "quote" dialogue. Output only the JSON without any additional commentary.';
         let nudges = await generateQuietPrompt(prompt, false, false).then(data => JSON.parse(data));
 
+        $nudges.style.display = 'grid';
+
         $nudges.querySelectorAll('.nudge_button').forEach((button, index) => {
             if (nudges[`prompt${index + 1}`]) {
                 let prompt = nudges[`prompt${index + 1}`];
                 button.insertAdjacentHTML('beforeend', `<span id="nudge_prompt">${prompt}</span>`);
+                button.querySelector('#nudge_prompt').addEventListener('click', (event) => {
+                    document.querySelector('#send_textarea').value = event.target.textContent;
+                    $nudges.style.display = 'none';
+                })
             }
         })
-
-        $nudges.style.display = 'grid';
-    })
-
-    $nudges.querySelector('#nudge_prompt').addEventListener('click', (event) => {
-        document.querySelector('#send_textarea').value = event.target.textContent;
-        $nudges.style.display = 'none';
     })
 }
 
@@ -158,10 +159,12 @@ function setMobileUI() {
 }
 
 function addSwipeButtons() {
-    document.querySelector('#message_template .mes_buttons').insertAdjacentHTML('afterbegin', `
-        <div class="mes_swipe_left fa-solid fa-chevron-left"></div>
-        <div class="swipes-counter">1/1</div>
-        <div class="mes_swipe_right fa-solid fa-chevron-right"></div>
+    document.querySelector('#message_template .mesAvatarWrapper').insertAdjacentHTML('beforeend', `
+        <div class="flex-container swipes">
+            <div class="mes_swipe_left fa-solid fa-chevron-left"></div>
+            <div class="swipes-counter">1/1</div>
+            <div class="mes_swipe_right fa-solid fa-chevron-right"></div>
+        </div>
     `);
 
     const $chat = document.querySelector('#chat');
@@ -190,15 +193,11 @@ function addSwipeButtons() {
 function main() {
     initSettings();
     getPersona();
-    initExplorePanel();
+    loadExplorePanel();
     loadChatHistory();
     toggleSidebar();
     loadSplashText();
     addSwipeButtons();
-
-    if (extension_settings[extensionName].enable_nudges) {
-        initNudgeUI();
-    }
 
     if (window.matchMedia('only screen and ((max-width: 768px))').matches) {
         setMobileUI();

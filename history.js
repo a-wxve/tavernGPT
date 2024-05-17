@@ -1,7 +1,6 @@
 import {
     callPopup,
     characters,
-    chat_metadata,
     clearChat,
     eventSource,
     generateQuietPrompt,
