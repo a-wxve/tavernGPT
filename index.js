@@ -224,6 +224,18 @@ function main() {
                 break;
         }
     });
+
+    function checkExpressionVisibility() {
+        const $expressionImage = document.querySelector("#expression-image");
+        if ($expressionImage.getAttribute('src') !== "") {
+            $sheld.classList.add("shifted");
+        } else {
+            $sheld.classList.remove("shifted");
+        }
+    }
+
+    eventSource.on('generation_started', checkExpressionVisibility);
+    eventSource.on('chat_id_changed', checkExpressionVisibility);
 }
 
 if (document.readyState !== 'loading') {
