@@ -1,0 +1,168 @@
+/* Mobile layout CSS */
+@media screen and (max-width: 768px) {
+    #sheld {
+        margin: 0;
+        height: 100dvh;
+        max-width: 100dvw !important;
+        border-radius: 0;
+
+        #chat_header {
+            position: fixed;
+            top: 0;
+            padding: 0.63rem;
+            width: 100%;
+            background-color: var(--SmartThemeChatTintColor);
+            z-index: 100;
+            justify-content: center;
+            margin-left: -3px;
+
+            .avatar {
+                flex: 0;
+                align-self: center;
+            }
+
+            .ch_name {
+                flex-direction: column;
+                align-items: baseline;
+
+                .mes_buttons {
+                    display: none !important;
+                }
+            }
+
+            .mes_timer,
+            .mesIDDisplay,
+            .tokenCounterDisplay {
+                cursor: default;
+                opacity: 0.7;
+                font-size: calc(var(--mainFontSize) * 0.69);
+                font-weight: 600;
+                text-align: center;
+            }
+        }
+
+        #chat {
+            padding-top: 6rem;
+        }
+
+        #form_sheld {
+            #send_form {
+                border: none;
+
+                #leftSendForm,
+                #rightSendForm {
+                    align-self: center;
+                }
+            }
+        }
+    }
+
+    .mes {
+        padding-top: 0px !important;
+        margin-bottom: 0px !important;
+
+        .mes_block {
+            .ch_name.flex-container.justifySpaceBetween {
+                justify-content: end;
+            }
+        }
+
+        body.bubblechat & {
+            .mes_block {
+                .flex-container.flex1.alignitemscenter {
+                    display: none;
+                }
+
+                .mes_text {
+                    border-top-left-radius: 27px;
+                    border-bottom-left-radius: 3px;
+                }
+            }
+        }
+
+        &[is_user="true"] {
+            body.bubblechat & {
+                .mes_block {
+                    padding-right: 0;
+
+                    .mes_text {
+                        border-radius: var(--borderRadius);
+                    }
+                }
+            }
+        }
+    }
+
+    #top-settings-holder {
+        padding: 0.62rem 0.18rem;
+
+        &:not(.collapsed)~#sheld {
+            filter: brightness(45%)
+        }
+
+        &.collapsed {
+
+            #ai-config-button,
+            #sys-settings-button,
+            #advanced-formatting-button,
+            #WI-SP-button,
+            #logo_block,
+            #extensions-settings-button,
+            #persona-management-button,
+            #user-settings-button,
+            #rightNavHolder,
+            .historyButton,
+            #select_chat_div,
+            #select_chat_search,
+            #explore-button {
+                display: none !important;
+            }
+        }
+    }
+
+    .drawer-content,
+    #explore-button .drawer-content,
+    #left-nav-panel,
+    #right-nav-panel,
+    #character_popup {
+        margin: 0;
+        top: 0 !important;
+        height: 100dvh;
+        left: 3.06rem !important;
+        max-width: calc(100dvw - 3.06rem) !important;
+        min-width: calc(100dvw - 3.06rem) !important;
+        border-radius: 0;
+        z-index: 3000;
+        overflow-x: hidden;
+    }
+
+    #sys-settings-button,
+    #advanced-formatting-button,
+    #WI-SP-button,
+    #logo_block,
+    #extensions-settings-button,
+    #user-settings-button {
+        padding-left: 0;
+        display: flex !important;
+    }
+
+    #persona-management-button {
+        position: absolute;
+        align-self: center;
+    }
+
+    .character-list-item {
+        flex-flow: column;
+    }
+
+    #splash {
+        left: 45px;
+    }
+
+    .expression-holder {
+
+        body.waifuMode & {
+            left: 0;
+        }
+    }
+}

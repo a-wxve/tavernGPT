@@ -1,0 +1,122 @@
+/* chub.ai character seach CSS. taken from the chubsearch extension */
+#explore-button {
+    order: 9;
+
+    .drawer-icon::after {
+        content: " Character Hub";
+    }
+
+    & .drawer-content {
+        width: calc(100dvw - var(--barSize));
+    }
+}
+
+.list-and-search-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .flex-container {
+        display: flex;
+        flex-flow: row wrap;
+    }
+
+    .flex-align-center {
+        align-items: center;
+    }
+
+    .flex-container label {
+        align-self: center;
+        white-space: nowrap;
+    }
+}
+
+.search-container {
+    position: sticky;
+    padding: 0 0.9rem;
+}
+
+.character-list {
+    display: flex;
+    flex-flow: wrap;
+    padding: 0 0.9rem;
+    overflow-y: auto;
+
+    #loading {
+        height: 81dvh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .character-list-item {
+        display: inline-flex;
+        align-items: flex-start;
+        margin: 10px 0;
+        padding: 0 10px;
+        width: 50%;
+
+        img.thumbnail {
+            flex: 0 0 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-right: 10px;
+            border-radius: var(--borderRadiusSmol);
+        }
+
+        .info {
+            flex: 1;
+            text-align: left;
+            overflow: hidden;
+        }
+
+        .info .name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-align: left;
+            color: var(--SmartThemeBodyColor)
+        }
+
+        .info .name a {
+            color: var(--SmartThemeBodyColor)
+        }
+
+        .menu_button.download-btn.fa-solid.fa-cloud-arrow-down.faSmallFontSquareFix {
+            display: inline-flex;
+            margin: 0;
+        }
+
+        .info .description {
+            color: var(--SmartThemeEmColor);
+            overflow: hidden;
+            text-overflow: visble;
+            text-align: left;
+        }
+
+        .info .tags {
+            margin-top: 10px;
+        }
+
+        .info .author {
+            font-size: 0.8rem;
+            color: var(--SmartThemeEmColor)
+        }
+
+    }
+}
+
+.page-buttons {
+    align-content: center;
+    align-items: center;
+    justify-content: space-between;
+
+    .flex-container:has(#sortOrder) {
+        flex-flow: row;
+    }
+}
+
+.searching {
+    filter: grayscale(100%);
+}

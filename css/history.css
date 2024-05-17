@@ -1,0 +1,115 @@
+.chat-flex {
+    justify-content: space-around;
+    order: 10;
+
+    .historyButton {
+        background-color: var(--color1);
+        border-radius: var(--borderRadiusSmol);
+        opacity: 0.54;
+        padding: 5px 0;
+
+        &:hover {
+            opacity: 1;
+        }
+
+        >span {
+            font-size: var(--mainFontSize);
+            font-weight: 600;
+            padding: 3px 5px 3px 0;
+        }
+
+        .fa-solid {
+            padding-left: 3px;
+        }
+    }
+}
+
+#select_chat_search {
+    order: 11;
+    max-height: 36px;
+    background-color: var(--color1);
+    border-radius: var(--borderRadiusSmol);
+
+    #select_chat_div:empty~& {
+        display: none;
+    }
+
+    .fa-magnifying-glass {
+        color: darkgray;
+    }
+
+    input {
+        background-color: transparent;
+        border: none;
+        outline: none;
+    }
+}
+
+#select_chat_div {
+    order: 12;
+    overflow-y: scroll;
+    margin-bottom: 3.6em;
+
+    &:not(:hover) {
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    .select_chat_block_wrapper:not(:hover) .fa-solid {
+        visibility: hidden;
+    }
+
+    h5 {
+        margin: 0.54rem 0.27rem;
+    }
+
+    h5+.select_chat_block_wrapper {
+        .select_chat_block {
+            margin-top: 0;
+        }
+    }
+
+    .select_chat_block {
+        border-radius: var(--borderRadiusSmol);
+    }
+
+    #select_chat_name_wrapper {
+        flex-wrap: nowrap;
+        text-wrap: nowrap;
+        overflow: hidden;
+
+        >div:is(:first-child) {
+            max-width: 100%;
+
+            .select_chat_block_filename.select_chat_block_filename_item {
+                opacity: 1;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
+                display: inline-block;
+            }
+        }
+
+        >.flex-container.gap10px>.flex-container.gap10px {
+            flex-wrap: nowrap;
+            gap: 5px !important;
+
+            .exportRawChatButton.fa-solid.fa-file-export::before {
+                content: "\f1c9";
+            }
+        }
+    }
+
+    .select_chat_block:hover {
+        #select_chat_name_wrapper>div:is(:first-child) {
+            max-width: 60%;
+        }
+    }
+
+    .PastChat_cross.opacity50p.hoverglow.fa-solid.fa-skull::before {
+        content: "\f1f8";
+    }
+}
