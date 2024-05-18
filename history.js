@@ -208,6 +208,8 @@ async function renameChat() {
                 }
                 document.querySelector('#selected_chat_pole').value = characters[this_chid].chat;
             }
+
+            displayPastChats();
         } catch {
             await callPopup('An error has occurred. Chat was not renamed.', 'text');
         }
