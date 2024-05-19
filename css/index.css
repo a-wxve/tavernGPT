@@ -4,7 +4,7 @@
 @import url('mobile.css');
 
 :root {
-    --fontFamily: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --fontFamily: "SF Pro", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
     --mainFontSize: calc(var(--fontScale) * 17px);
     --lineHeight: calc(var(--mainFontSize) * 1.5);
     --barSize: 20%;
@@ -530,7 +530,6 @@ body.big-avatars {
 
     &.shifted {
         left: 33%;
-        transition: 0.18s all ease-in-out;
     }
 
     #chat {

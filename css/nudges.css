@@ -2,12 +2,12 @@
 #nudges {
     display: grid;
     grid-auto-flow: column;
-    gap: 0.45rem;
-    margin: 0.45rem 0;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
 
     .nudge-container {
-        gap: 0.45rem;
-        max-width: calc(calc(var(--sheldWidth) / 2) - 0.63rem - 0.45rem)
+        gap: 0.5rem;
+        max-width: calc(calc(var(--sheldWidth) / 2) - 1rem)
     }
 
     .nudge_button {
@@ -17,7 +17,7 @@
 
         #nudge_prompt {
             width: 100%;
-            padding: 0.45rem;
+            padding: 0.5rem;
             overflow: hidden;
             text-overflow: ellipsis;
         }
