@@ -293,34 +293,35 @@ export async function loadExplorePanel() {
         document.querySelector('#top-settings-holder').insertAdjacentHTML('beforeend', data);
     });
 
+    setupExplorePanel();
+
     const $explore_toggle = document.querySelector('#explore-button .drawer-toggle');
     $explore_toggle.addEventListener('click', () => {
         let icon = $explore_toggle.querySelector('.drawer-icon');
         let drawer = $explore_toggle.parentNode.querySelector('.drawer-content');
         let drawerOpen = drawer.classList.contains('openDrawer');
 
-        if (drawer.classList.contains('resizing')) {
-            return;
-        }
+        if (drawer.classList.contains('resizing')) return;
 
         if (!drawerOpen) {
-            setupExplorePanel();
-
             //need jQuery here for .slideToggle(), otherwise panel breaks
-            $('#explore-button').parent().find('.openDrawer').not('.pinnedOpen').addClass('resizing').slideToggle(200, 'swing', async () => {
-                $('.openIcon').toggleClass('openIcon closedIcon');
-                $(this).not('.pinnedOpen').toggleClass('openDrawer closedDrawer');
+            $('.openDrawer').not('.pinnedOpen').addClass('resizing').slideToggle(200, 'swing', async () => {
                 await delay(50);
-                $(this).removeClass('resizing');
+                $('.drawer-content.resizing').removeClass('resizing');
             });
 
-            icon.classList.replace('closedIcon', 'openIcon');
-            drawer.classList.replace('closedDrawer', 'openDrawer');
+            if (document.querySelector('.drawer:has(.openIcon):has(.openDrawer)')) {
+                document.querySelector('.openIcon').classList.replace('openIcon', 'closedIcon');
+                document.querySelector('.openDrawer').classList.replace('openDrawer', 'closedDrawer');
+            }
 
             $(drawer).addClass('resizing').slideToggle(200, 'swing', async () => {
                 await delay(50);
                 $(drawer).removeClass('resizing');
             });
+
+            icon.classList.replace('closedIcon', 'openIcon');
+            drawer.classList.replace('closedDrawer', 'openDrawer');
 
             drawer.querySelector('#characterSearchButton').click();
 
