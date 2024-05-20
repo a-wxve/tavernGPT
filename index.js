@@ -1,7 +1,8 @@
 import {
     eventSource,
     generateQuietPrompt,
-    getRequestHeaders, getUserAvatar,
+    getRequestHeaders,
+    getUserAvatar,
     name1,
     saveSettingsDebounced
 } from '../../../../script.js';
@@ -63,6 +64,7 @@ async function initSettings() {
 
     const $rename_chats = document.querySelector('#rename_chats');
     const $enable_nudges = document.querySelector('#enable_nudges');
+    const $api_key_chub = document.querySelector('#api_key_chub');
 
     $rename_chats.addEventListener('click', () => {
         extension_settings[extensionName].rename_chats = $rename_chats.checked;
@@ -79,6 +81,11 @@ async function initSettings() {
         saveSettingsDebounced();
     });
 
+    $api_key_chub.addEventListener('change', () => {
+        extension_settings[extensionName].api_key_chub = $api_key_chub.value;
+        saveSettingsDebounced();
+    });
+
     extension_settings[extensionName] = extension_settings[extensionName] || {};
     if (Object.keys(extension_settings[extensionName]).length === 0) {
         Object.assign(extension_settings[extensionName], defaultSettings);
@@ -89,7 +96,7 @@ async function initSettings() {
 }
 
 function loadSplashText() {
-    const splashes = ['desu~', 'desu~!', 'DESU~!', 'Jimmy Apples!', 'Sam Altman!', 'ChatGPT is better!', 'Splash Text!', 'The Singularity!', 'AGI!', 'Shocking!', 'Shocking the industry!', 'e/acc!', 'Acceleration!', 'AGI achieved internally!', 'Q*!', 'GPT-7!', 'Chinchilla scaling!', 'Low perplexity!', 'AUPATE!', 'Ethnnically Anbigious!', 'eethnically amboruaius!', 'Laver huling nnuctiol!', 'Costco Wholeslale!', 'CFTF?', 'Foxbots doko?', 'OpenAI BTFO!', 'Anthropic BTFO!', '1 billion token context!', 'Summer Dragon!', 'ahh ahh mistress!', 'My model has 24 parameters!', 'NVIDIA, fuck you!', 'TPUs!', 'ClosedAI!', '175 Beaks!', '1.7 Toucans!', 'Will Smith eating spaghetti!', 'SOVL!', 'SOVLLESS!', 'Rugpulled!', 'Fiz love!', '$7 Trillion!', 'Feel the AGI!', 'Reddit\\nSpacing!', 'Also try NovelAI!', 'Also try AetherRoom!', 'AIIIEEEEEEEE!', 'We\'re back!', 'We\'re so back!', 'It\'s over!', 'It\'s so over!', 'Can generate hands!', 'Slight twist on the upstroke!', '(´• ω •`) ', '(´- ω -`) ', '(\`・ω・\´) ', 'Big if true!', 'Meta BTFO!', 'Groq!', 'Grok?', '0.99 p(doom)!', 'Anchor!', 'No meanies allowed!', 'The Rock eating rocks!', 'Malfoy\'s last name!', 'Todd Howard!', 'DeepMind BTFO!', 'sillylittleguy.org!', 'I kneel!', 'Where bake?', 'Focksposting!', 'struggling to conceptualize the thickness of her bush...', 'Anti love!', 'GPT-2 was very bad!', 'GPT-3 was pretty bad!', 'GPT-4 is bad!', 'GPT-4 kind of sucks!', 'GPT-5 is okay!', 'Count Grey!', 'Google Colab!', 'Also try AI Dungeon!', 'Her!', 'GPT-4o(mni)!', 'I\'m a good GPT2 chatbot!', 'I\'m also a good GPT2 chatbot!'];
+    const splashes = ['desu~', 'desu~!', 'DESU~!', 'Jimmy Apples!', 'Sam Altman!', 'ChatGPT is better!', 'Splash Text!', 'The Singularity!', 'AGI!', 'Shocking!', 'Shocking the industry!', 'e/acc!', 'Acceleration!', 'AGI achieved internally!', 'Q*!', 'GPT-7!', 'Chinchilla scaling!', 'Low perplexity!', 'AUPATE!', 'Ethnnically Anbigious!', 'eethnically amboruaius!', 'Laver huling nnuctiol!', 'Costco Wholeslale!', 'CFTF?', 'Foxbots doko?', 'OpenAI BTFO!', 'Anthropic BTFO!', '1 morbillion token context!', 'Summer Dragon!', 'ahh ahh mistress!', 'My model has 24 parameters!', 'NVIDIA, fuck you!', 'TPUs!', 'ClosedAI!', '175 Beaks!', '1.7 Toucans!', 'Will Smith eating spaghetti!', 'SOVL!', 'SOVLLESS!', 'Rugpulled!', 'Fiz love!', '$7 Trillion!', 'Feel the AGI!', 'Reddit\\nSpacing!', 'Also try NovelAI!', 'Also try AetherRoom!', 'AIIIEEEEEEEE!', 'We\'re back!', 'We\'re so back!', 'It\'s over!', 'It\'s so over!', 'Can generate hands!', 'Slight twist on the upstroke!', '(´• ω •`) ', '(´- ω -`) ', '(\`・ω・\´) ', 'Big if true!', 'Meta BTFO!', 'Groq!', 'Grok?', '0.99 p(doom)!', 'Anchor!', 'No meanies allowed!', 'The Rock eating rocks!', 'Malfoy\'s last name!', 'Todd Howard!', 'DeepMind BTFO!', 'sillylittleguy.org!', 'I kneel!', 'Where bake?', 'Focksposting!', 'struggling to conceptualize the thickness of her bush...', 'Anti love!', 'GPT-2 was very bad!', 'GPT-3 was pretty bad!', 'GPT-4 is bad!', 'GPT-4 kind of sucks!', 'GPT-5 is okay!', 'Count Grey!', 'Google Colab!', 'Also try AI Dungeon!', 'Her!', 'GPT-4o(mni)!', 'I\'m a good GPT2 chatbot!', 'I\'m also a good GPT2 chatbot!', 'Pepsi love!', 'MysteryMan!', 'Cloudy is open on the weekends!', 'R.I.P. Desu!', 'R.I.P. Scrappy!', 'Total locust death!', 'Post burners!', 'thoughbeit!', 'Slop!', 'Coomageddon!', 'Boku!', 'Desu!', 'Boku Desu!', 'Beff Jezos!'];
 
     function setSplashText() {
         if (!!document.querySelector('#version_display_welcome')) {
@@ -225,20 +232,20 @@ function main() {
         }
     });
 
-    function checkExpressionVisibility() {
-        const $expressionImage = document.querySelector("#expression-image");
-        if ($expressionImage.getAttribute('src') !== "") {
+    function checkWaifuVisibility() {
+        const $waifuImage = document.querySelector("#expression-image");
+        if ($waifuImage.getAttribute('src') !== "") {
             $sheld.classList.add("shifted");
         } else {
             $sheld.classList.remove("shifted");
         }
     }
 
-    eventSource.on('generation_started', checkExpressionVisibility);
-    eventSource.on('chat_id_changed', checkExpressionVisibility);
+    eventSource.on('generation_started', checkWaifuVisibility);
+    eventSource.on('chat_id_changed', checkWaifuVisibility);
 }
 
-if (document.readyState !== 'loading') {
+if (document.readyState === 'complete') {
     main();
 } else {
     document.addEventListener('DOMContentLoaded', main, { once: true });

@@ -1,7 +1,8 @@
 import { getRequestHeaders, processDroppedFiles } from '../../../../script.js';
 import { debounce_timeout } from '../../../constants.js';
+import { extension_settings } from '../../../extensions.js';
 import { debounce, delay } from '../../../utils.js';
-import { extensionFolderPath } from './index.js';
+import { extensionFolderPath, extensionName } from './index.js';
 
 async function setupExplorePanel() {
     async function getCharacter(fullPath) {
@@ -78,26 +79,44 @@ async function setupExplorePanel() {
         console.log('Search options:', options);
         toastr.info(`Searching...`);
 
-        let first = findCount;
-        let asc = false;
-        let include_forks = true;
-        let require_images = false;
-        let require_custom_prompt = false;
         searchTerm = searchTerm ? `search=${encodeURIComponent(searchTerm)}&` : '';
         sort = sort || 'download_count';
 
-        let url = `https://api.chub.ai/api/characters/search?${searchTerm}first=${first}&page=${page}&sort=${sort}&asc=${asc}&venus=true&include_forks=${include_forks}&nsfw=${nsfw}&require_images=${require_images}&require_custom_prompt=${require_custom_prompt}`;
+        let url = `https://api.chub.ai/api/characters/`;
+        url += `search?${searchTerm}`
+        url += `&namespace=characters`
+        url += `&first=${findCount}`
+        url += `&page=${page}`
+        url += `&sort=${sort}`
+        url += `&asc=false`
+        url += `&include_forks=true`
+        url += `&venus=true&chub=true`
+        url += `&nsfw=${nsfw}&nsfl=${nsfw}`
+        url += `&nsfw_only=false`
+        url += `&require_images=false`
+        url += `&require_example_dialogues=false`
+        url += `&require_alternate_greetings=false`
+        url += `&require_custom_prompt=false`
+        url += `&require_lore=false`
+        url += `&require_lore_embedded=false`
+        url += `&require_lore_linked=false`
 
         includeTags = includeTags.filter(tag => tag.length > 0);
         if (includeTags && includeTags.length > 0) {
-            url += `&tags=${encodeURIComponent(includeTags.join(',').slice(0, 100))}`;
+            url += `&topics=${encodeURIComponent(includeTags.join(',').slice(0, 100))}`;
         }
         excludeTags = excludeTags.filter(tag => tag.length > 0);
         if (excludeTags && excludeTags.length > 0) {
-            url += `&exclude_tags=${encodeURIComponent(excludeTags.join(',').slice(0, 100))}`;
+            url += `&excludetopics=${encodeURIComponent(excludeTags.join(',').slice(0, 100))}`;
         }
 
-        let searchData = await fetch(url).then(data => data.json());
+        let chubApiKey = extension_settings[extensionName].api_key_chub;
+        let searchData = await fetch(url, {
+            "headers": {
+                "CH-API-KEY": chubApiKey,
+                "samwise": chubApiKey,
+            },
+        }).then(data => data.json());
 
         const characters = [];
 
@@ -174,7 +193,7 @@ async function setupExplorePanel() {
         const searchTerm = document.querySelector('#characterSearchInput').value;
         const includeTags = splitAndTrim(document.querySelector('#includeTags').value);
         const excludeTags = splitAndTrim(document.querySelector('#excludeTags').value);
-        const nsfw = document.querySelector('#nsfwCheckbox').value;
+        const nsfw = document.querySelector('#nsfwCheckbox').checked;
         const findCount = document.querySelector('#findCount').value;
         const sort = document.querySelector('#sortOrder').value;
         let page = document.querySelector('#pageNumber').value;
