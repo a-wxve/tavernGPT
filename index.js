@@ -167,7 +167,7 @@ function setMobileUI() {
 }
 
 function addSwipeButtons() {
-    document.querySelector('#message_template .mesAvatarWrapper').insertAdjacentHTML('beforeend', `
+    document.querySelector('#message_template .mes_buttons').insertAdjacentHTML('afterbegin', `
         <div class="flex-container swipes">
             <div class="mes_swipe_left fa-solid fa-chevron-left"></div>
             <div class="swipes-counter">1/1</div>
@@ -213,6 +213,10 @@ function main() {
 
     const $drawerToggle = document.querySelector('#ai-config-button');
     $drawerToggle.insertAdjacentHTML('beforeend', '<i class="fa-solid fa-chevron-down inline-drawer-icon"></i>');
+
+    const $mesButtons = document.querySelector('#message_template .mes_buttons')
+    const $mesEditButtons = document.querySelector('#message_template .mes_edit_buttons')
+    document.querySelector('#message_template .mes_text').after($mesButtons, $mesEditButtons)
 
     const $sheld = document.querySelector('#sheld');
     $sheld.setAttribute('tabindex', '0');

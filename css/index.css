@@ -37,13 +37,15 @@ body.bubblechat {
             }
 
             .mes_block {
-                display: flex;
+                max-width: 90%;
+                margin-left: auto;
                 padding-left: 0px;
                 padding-right: 0px;
                 overflow-y: hidden;
                 justify-content: end;
 
                 .mes_text {
+                    margin-left: auto;
                     background-color: var(--SmartThemeUserMesBlurTintColor);
                 }
 
@@ -54,31 +56,14 @@ body.bubblechat {
                     background-color: transparent;
                 }
 
-                .ch_name.flex-container.justifySpaceBetween {
-                    flex-wrap: nowrap;
-                    align-self: center;
-                    gap: 10px;
+                .name_text {
+                    visibility: hidden;
+                    text-indent: -999px;
+                    line-height: 0;
+                }
 
-                    .flex-container.flex1.alignitemscenter {
-                        order: 2;
-                        flex-direction: row-reverse;
-                        flex: 0;
-
-                        .flex-container.alignItemsBaseline {
-                            flex-direction: row-reverse;
-                            width: max-content;
-
-                            .name_text {
-                                visibility: hidden;
-                                text-indent: -999px;
-                                line-height: 0;
-                            }
-
-                            .timestamp {
-                                align-self: end;
-                            }
-                        }
-                    }
+                .timestamp {
+                    align-self: end;
                 }
             }
         }
@@ -722,7 +707,6 @@ hr {
     }
 
     .swipes {
-        margin-top: 3px;
 
         .swipes-counter {
             font-weight: 500;
@@ -740,6 +724,14 @@ hr {
             &:hover {
                 opacity: 1;
             }
+        }
+    }
+
+    &[is_user="false"] {
+
+        .mes_buttons,
+        .mes_edit_buttons {
+            justify-content: flex-start;
         }
     }
 
@@ -764,6 +756,7 @@ hr {
         }
 
         .mes_text {
+            margin: 0.5rem 0;
             line-height: var(--lineHeight);
 
             &>:last-child {
@@ -809,12 +802,6 @@ hr {
             visibility: visible;
             display: block;
             line-height: initial;
-        }
-    }
-
-    &[is_user="false"] {
-        .ch_name.flex-container.justifySpaceBetween {
-            margin-bottom: 0.5rem;
         }
     }
 
