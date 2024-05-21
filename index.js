@@ -150,11 +150,11 @@ function setMobileUI() {
         const $last_mes = $sheld.querySelector('.last_mes');
 
         $chat_header.replaceChildren();
-        let avatarImg = $last_mes.querySelector('.avatar').cloneNode();
-        let charName = $last_mes.querySelector('.ch_name').cloneNode();
-        let mesID = $last_mes.querySelector('.mesIDDisplay').cloneNode();
-        let mesTimer = $last_mes.querySelector('.mes_timer').cloneNode();
-        let tokenCount = $last_mes.querySelector('.tokenCounterDisplay').cloneNode();
+        let avatarImg = $last_mes.querySelector('.avatar').cloneNode(true);
+        let charName = $last_mes.querySelector('.ch_name').cloneNode(true);
+        let mesID = $last_mes.querySelector('.mesIDDisplay').cloneNode(true);
+        let mesTimer = $last_mes.querySelector('.mes_timer').cloneNode(true);
+        let tokenCount = $last_mes.querySelector('.tokenCounterDisplay').cloneNode(true);
 
         $chat_header.append(avatarImg, charName);
         $chat_header.querySelector('.ch_name').append(mesID, mesTimer, tokenCount);
@@ -163,6 +163,7 @@ function setMobileUI() {
     eventSource.on('chatLoaded', addChatHeader);
     eventSource.on('character_message_rendered', addChatHeader);
     eventSource.on('message_deleted', addChatHeader);
+    eventSource.on('message_swiped', addChatHeader);
 }
 
 function addSwipeButtons() {

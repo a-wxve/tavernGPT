@@ -1,7 +1,7 @@
-@import url('history.css');
-@import url('explore.css');
-@import url('nudges.css');
-@import url('mobile.css');
+@import 'history.css';
+@import 'explore.css';
+@import 'nudges.css';
+@import 'mobile.css' screen and (max-width: 1000px);
 
 :root {
     --fontFamily: "SF Pro", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -9,17 +9,124 @@
     --lineHeight: calc(var(--mainFontSize) * 1.5);
     --barSize: 20%;
     --panelSize: 45%;
-    --outsideMargin: 0.9rem;
     --insidePadding: 10px;
     --borderRadius: 1.5rem;
     --borderRadiusSmol: 0.625rem;
     --color1: rgb(45, 45, 45);
     --color2: rgb(63, 63, 63);
+    --transition: all 200ms ease-in-out;
 }
 
 html,
 body {
     font-family: var(--fontFamily);
+}
+
+body.bubblechat {
+    .mes {
+        border: none;
+        border-radius: 0px;
+        background-color: transparent;
+        margin-bottom: 0px;
+
+        &[is_user="true"] {
+            background-color: transparent;
+
+            .mesAvatarWrapper {
+                display: none;
+            }
+
+            .mes_block {
+                display: flex;
+                padding-left: 0px;
+                padding-right: 0px;
+                overflow-y: hidden;
+                justify-content: end;
+
+                .mes_text {
+                    background-color: var(--SmartThemeUserMesBlurTintColor);
+                }
+
+                .mes_img_container.img_extra {
+                    border-radius: 0px;
+                    margin-top: 0px;
+                    padding: 0px;
+                    background-color: transparent;
+                }
+
+                .ch_name.flex-container.justifySpaceBetween {
+                    flex-wrap: nowrap;
+                    align-self: center;
+                    gap: 10px;
+
+                    .flex-container.flex1.alignitemscenter {
+                        order: 2;
+                        flex-direction: row-reverse;
+                        flex: 0;
+
+                        .flex-container.alignItemsBaseline {
+                            flex-direction: row-reverse;
+                            width: max-content;
+
+                            .name_text {
+                                visibility: hidden;
+                                text-indent: -999px;
+                                line-height: 0;
+                            }
+
+                            .timestamp {
+                                align-self: end;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        &[is_user="false"] {
+            .mes_text {
+                border-top-left-radius: var(--borderRadiusSmol);
+            }
+        }
+
+        .mes_text {
+            width: fit-content;
+            padding: 0.625rem 1rem;
+            border-radius: var(--borderRadius);
+            background-color: var(--SmartThemeBotMesBlurTintColor);
+
+            #curEditTextarea {
+                width: -webkit-fill-available;
+            }
+        }
+
+        .mes_text:has(#curEditTextarea) {
+            width: unset;
+        }
+    }
+}
+
+body.hideChatAvatars {
+    .mes {
+        .mesAvatarWrapper {
+            display: none;
+        }
+    }
+}
+
+body.big-avatars {
+
+    .avatar,
+    .avatar img {
+        width: 50px;
+        height: 75px;
+    }
+}
+
+body.waifuMode {
+    .expression-holder {
+        left: var(--barSize);
+    }
 }
 
 hr {
@@ -38,15 +145,6 @@ hr {
     display: none !important;
 }
 
-body.big-avatars {
-
-    .avatar,
-    .avatar img {
-        width: 50px;
-        height: 75px;
-    }
-}
-
 #top-settings-holder {
     background-color: var(--SmartThemeBlurTintColor);
     flex-direction: column;
@@ -56,11 +154,11 @@ body.big-avatars {
     width: var(--barSize);
     gap: 3px;
     padding: var(--insidePadding);
-    transition: 0.18s all ease-in-out;
+    transition: var(--transition);
 
     &.collapsed {
         visibility: collapse;
-        width: 0;
+        width: 0px !important;
 
         #ai-config-button,
         #sys-settings-button,
@@ -77,33 +175,6 @@ body.big-avatars {
         #explore-button {
             display: none;
         }
-
-        #sidebarToggle {
-            left: 0.45rem;
-
-            .arrow1 {
-                transform: rotate(-36deg) translateY(0.18rem);
-            }
-
-            .arrow2 {
-                transform: rotate(36deg) translateY(-0.18rem);
-            }
-        }
-    }
-
-    &:has(.drawer-icon.openIcon) #sidebarToggle {
-        display: none;
-    }
-}
-
-#avatarCropWrap {
-    .cropper-face.cropper-move {
-        height: 66.666%;
-        top: 16.5%;
-        background-color: rgba(255, 255, 255, 0.1);
-        border: 3px rgb(51, 153, 255) solid;
-        border-radius: 100%;
-        opacity: 1;
     }
 }
 
@@ -111,8 +182,15 @@ body.big-avatars {
     justify-content: left;
 }
 
+.drawer-toggle,
 .drawer-icon {
-    font-size: 1.53em;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+
+.drawer-icon {
+    font-size: 1.5rem;
     padding: 0.36rem;
 
     &::before {
@@ -123,16 +201,9 @@ body.big-avatars {
     &::after {
         vertical-align: middle;
         font-size: 18px;
-        font-weight: 720;
+        font-weight: 700;
         font-family: var(--fontFamily);
     }
-}
-
-.drawer-toggle,
-.drawer-icon {
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
 }
 
 .drawer-toggle {
@@ -149,7 +220,7 @@ body.big-avatars {
 #logo_block,
 #extensions-settings-button,
 #user-settings-button {
-    padding-left: 1.08em;
+    padding-left: 1rem;
 }
 
 #ai-config-button {
@@ -194,7 +265,7 @@ body.big-avatars {
     }
 
     >.inline-drawer-icon {
-        font-size: calc(var(--mainFontSize)*1.25);
+        font-size: calc(var(--mainFontSize) * 1.25);
         position: absolute;
         right: 9%;
         pointer-events: none;
@@ -318,11 +389,8 @@ body.big-avatars {
         }
     }
 
-    &:has(.openIcon) {
-
-        ~#extensions-settings-button {
-            display: flex !important;
-        }
+    &:has(.openIcon)~#extensions-settings-button {
+        display: flex !important;
     }
 
     &:has(~#extensions-settings-button .openIcon) {
@@ -347,7 +415,7 @@ body.big-avatars {
 #persona-management-button {
     position: fixed;
     bottom: -3px;
-    padding: 0.63em;
+    padding: var(--borderRadiusSmol);
     margin-left: -0.666em;
     z-index: 1;
     width: inherit;
@@ -358,18 +426,18 @@ body.big-avatars {
         align-items: center;
         gap: 8px;
 
+        &.closedIcon {
+            opacity: 0.72 !important;
+
+            &:hover {
+                opacity: 1 !important;
+            }
+        }
+
         span {
             font-size: 18px;
             font-weight: 720;
             font-family: var(--fontFamily);
-        }
-    }
-
-    .drawer-icon.closedIcon {
-        opacity: 0.72 !important;
-
-        &:hover {
-            opacity: 1 !important;
         }
     }
 
@@ -402,7 +470,7 @@ body.big-avatars {
             &::after {
                 content: " All Cards";
                 font-family: var(--fontFamily);
-                font-weight: 720;
+                font-weight: 700;
             }
         }
 
@@ -413,7 +481,7 @@ body.big-avatars {
         &:has(#rm_ch_create_block[style*="display: block"]) #rm_button_characters::after {
             content: " Back";
             font-family: var(--fontFamily);
-            font-weight: 720;
+            font-weight: 700;
         }
 
         &:has(#rm_ch_create_block[style*="display: none"]) #rm_button_selected_ch h2:not(:empty)::after {
@@ -464,33 +532,49 @@ body.big-avatars {
     cursor: pointer;
     order: 11;
     visibility: visible !important;
-    transition: 0.18s all ease-in-out;
+    transition: var(--transition);
+
+    #top-settings-holder:has(.drawer-icon.openIcon) & {
+        display: none;
+    }
+
+    #top-settings-holder.collapsed & {
+        left: 0.5rem;
+
+        .arrow1 {
+            transform: rotate(-35deg) translateY(0.25rem);
+        }
+
+        .arrow2 {
+            transform: rotate(35deg) translateY(-0.25rem);
+        }
+    }
 
     .arrow1,
     .arrow2 {
-        height: 1.08rem;
-        width: 0.36em;
+        height: 1.25rem;
+        width: 0.25rem;
         background-color: white;
-        transition: 0.18s all ease-in-out;
+        transition: var(--transition);
     }
 
     .arrow1 {
-        border-top-left-radius: 0.18rem;
-        border-top-right-radius: 0.18rem;
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
     }
 
     .arrow2 {
-        border-bottom-left-radius: 0.18rem;
-        border-bottom-right-radius: 0.18rem;
+        border-bottom-left-radius: 0.25rem;
+        border-bottom-right-radius: 0.25rem;
     }
 
     &:hover {
         .arrow1 {
-            transform: rotate(36deg) translateY(0.18rem);
+            transform: rotate(35deg) translateY(0.25rem);
         }
 
         .arrow2 {
-            transform: rotate(-36deg) translateY(-0.18rem);
+            transform: rotate(-35deg) translateY(-0.25rem);
         }
     }
 }
@@ -502,30 +586,42 @@ body.big-avatars {
     max-height: 100dvh !important;
     width: var(--panelSize);
     height: 100dvh;
-    top: 0;
+    top: 0px;
     right: inherit;
     left: var(--barSize);
     padding: var(--insidePadding);
-    border: 0;
-    border-radius: 0;
+    border: 0px;
+    border-radius: 0px;
     background-color: var(--SmartThemeChatTintColor);
     box-shadow: none;
 }
 
 #sheld {
-    max-width: calc(100% - var(--barSize)) !important;
+    max-width: calc(100% - var(--barSize));
     max-height: 100dvh;
     height: 100dvh;
-    top: 0;
+    top: 0px;
     left: var(--barSize);
-    padding: 0 var(--insidePadding);
+    padding: 0px var(--insidePadding);
     background-color: var(--SmartThemeChatTintColor);
     backdrop-filter: blur(var(--SmartThemeBlurStrength));
     -webkit-backdrop-filter: blur(var(--SmartThemeBlurStrength));
 
+    #top-settings-holder:has(.drawer-icon.openIcon):not(:has(#explore-button .drawer-icon.openIcon))~&,
+    #top-settings-holder:has(.drawer-content.pinnedOpen)~&,
+    body:has(#character_popup[style*="display: flex"])>& {
+        left: initial;
+        width: calc(100% - var(--barSize) - var(--panelSize));
+
+        #splash {
+            top: 9px;
+            left: 63px;
+        }
+    }
+
     &.collapsed {
-        left: 0;
-        transition: 0.18s all ease-in-out;
+        left: 0px;
+        transition: var(--transition);
     }
 
     &.shifted {
@@ -577,42 +673,23 @@ body.big-avatars {
             }
 
             #rightSendForm {
-                margin-right: 0.27rem;
+                margin-right: 0.25rem;
 
-                #send_but {
-                    &::before {
-                        content: "\f0aa";
-                    }
+                #send_but::before {
+                    content: "\f0aa";
                 }
 
-                #mes_continue {
-                    ::before {
-                        content: "\f0a9";
-                    }
+                #mes_continue::before {
+                    content: "\f0a9";
                 }
             }
         }
     }
 }
 
-#top-settings-holder:has(.drawer-icon.openIcon):not(:has(#explore-button .drawer-icon.openIcon))~#sheld,
-#top-settings-holder:has(.drawer-content.pinnedOpen)~#sheld,
-body:has(#character_popup[style*="display: flex"])>#sheld {
-    left: initial;
-    width: calc(100% - var(--barSize) - var(--panelSize));
-
-    #splash {
-        top: 9px;
-        left: 63px;
-    }
-}
-
 .mes {
 
     &.last_mes {
-        .mes_text {
-            padding-right: 0px;
-        }
 
         >.swipe_left,
         >.swipe_right {
@@ -650,13 +727,13 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
         .swipes-counter {
             font-weight: 500;
             opacity: 0;
-            transition: 0.18s ease-in-out;
+            transition: var(--transition);
         }
 
         .mes_swipe_left,
         .mes_swipe_right {
             cursor: pointer;
-            transition: 0.18s ease-in-out;
+            transition: var(--transition);
             filter: drop-shadow(0px 0px 2px black);
             opacity: 0;
 
@@ -681,7 +758,7 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
             padding-bottom: 0;
 
             .menu_button {
-                height: 18px;
+                height: 1rem;
                 aspect-ratio: 3/1;
             }
         }
@@ -714,7 +791,7 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
             }
 
             #curEditTextarea {
-                padding: 0;
+                padding: 0px;
                 resize: none;
                 background-color: transparent;
                 font-family: inherit;
@@ -725,105 +802,17 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
         }
     }
 
-    body.hideChatAvatars & {
-        .mesAvatarWrapper {
-            display: none;
+    body:not(.bubblechat) &[is_user="true"] {
+        .name_text::after {
+            content: "(You)" !important;
+            text-indent: 0px;
+            visibility: visible;
+            display: block;
+            line-height: initial;
         }
     }
 
-    body.bubblechat & {
-        border: none;
-        border-radius: 0px;
-        background-color: transparent;
-        margin-bottom: 0;
-
-        .mes_text {
-            width: fit-content;
-            padding: 0.625rem 1rem;
-            border-radius: var(--borderRadius);
-            background-color: var(--SmartThemeBotMesBlurTintColor);
-
-            #curEditTextarea {
-                width: -webkit-fill-available;
-            }
-        }
-
-        .mes_text:has(#curEditTextarea) {
-            width: unset;
-        }
-    }
-
-    &[is_user="true"] {
-        body.bubblechat & {
-            background-color: transparent;
-
-            .mesAvatarWrapper {
-                display: none;
-            }
-
-            .mes_block {
-                display: flex;
-                padding-left: 0px;
-                padding-right: 0px;
-                overflow-y: hidden;
-                justify-content: end;
-
-                .mes_text {
-                    background-color: var(--SmartThemeUserMesBlurTintColor);
-                }
-
-                .mes_img_container.img_extra {
-                    float: right;
-                    clear: both;
-                    width: fit-content;
-                    border-radius: var(--borderRadius);
-                    border-top-right-radius: 3px;
-                    margin-top: 10px;
-                    padding: 0.81rem;
-                    background-color: var(--SmartThemeUserMesBlurTintColor);
-                }
-
-                .ch_name.flex-container.justifySpaceBetween {
-                    flex-wrap: nowrap;
-                    align-self: center;
-                    gap: 10px;
-
-                    .flex-container.flex1.alignitemscenter {
-                        order: 2;
-                        flex-direction: row-reverse;
-                        flex: 0;
-                    }
-                }
-            }
-        }
-
-        body:not(.bubblechat) & {
-            .name_text::after {
-                content: "(You)" !important;
-                text-indent: 0px;
-                visibility: visible;
-                display: block;
-                line-height: initial;
-            }
-        }
-
-        .flex-container.alignItemsBaseline {
-            flex-direction: row-reverse;
-            width: max-content;
-
-            .name_text {
-                visibility: hidden;
-                text-indent: -999px;
-                line-height: 0;
-            }
-
-            .timestamp {
-                align-self: end;
-            }
-        }
-    }
-
-    &:not([is_user="true"]) {
+    &[is_user="false"] {
         .ch_name.flex-container.justifySpaceBetween {
             margin-bottom: 0.5rem;
         }
@@ -848,7 +837,7 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
     .mesIDDisplay,
     .mes_timer,
     .tokenCounterDisplay {
-        transition: 0.18s all ease-in-out;
+        transition: var(--transition);
     }
 
     .mes_img_controls {
@@ -863,6 +852,41 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
     }
 }
 
+/* splash text */
+@keyframes splash {
+    0% {
+        transform: scale(0.9) rotate(-10deg)
+    }
+
+    100% {
+        transform: scale(1) rotate(-10deg)
+    }
+}
+
+#splash {
+    text-align: center;
+    font-style: normal;
+    color: #FFFF00;
+    text-shadow: 2px 2px 0px #3F3F00 !important;
+    position: relative;
+    margin: 0px;
+    height: 0px;
+    left: 20%;
+    animation: splash 250ms alternate infinite;
+}
+
+/* random stuff */
+#avatarCropWrap {
+    .cropper-face.cropper-move {
+        height: 66.666%;
+        top: 16.5%;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 3px rgb(51, 153, 255) solid;
+        border-radius: 100%;
+        opacity: 1;
+    }
+}
+
 #extensions_settings .inline-drawer-toggle.inline-drawer-header,
 #extensions_settings2 .inline-drawer-toggle.inline-drawer-header,
 #user-settings-block h4,
@@ -873,36 +897,9 @@ body:has(#character_popup[style*="display: flex"])>#sheld {
 .expression-holder {
     width: fit-content;
     resize: none;
-
-    body.waifuMode & {
-        left: var(--barSize);
-    }
 }
 
 .zoomed_avatar,
 .zoomed_avatar img {
     z-index: 10000;
-}
-
-/* Spash text */
-@keyframes splash {
-    0% {
-        transform: scale(0.9) rotate(-9deg)
-    }
-
-    100% {
-        transform: scale(1) rotate(-9deg)
-    }
-}
-
-#splash {
-    text-align: center;
-    font-style: normal;
-    color: #FFFF00;
-    text-shadow: 2px 2px 0px #3F3F00 !important;
-    position: relative;
-    margin: 0;
-    height: 0;
-    left: 50%;
-    animation: splash .27s alternate infinite;
 }
