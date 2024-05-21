@@ -30,6 +30,7 @@ body.bubblechat {
         margin-bottom: 0px;
 
         &[is_user="true"] {
+            padding: 0 10px;
             background-color: transparent;
 
             .mesAvatarWrapper {
@@ -44,9 +45,23 @@ body.bubblechat {
                 overflow-y: hidden;
                 justify-content: end;
 
+                .ch_name.flex-container.justifySpaceBetween {
+                    display: none;
+                }
+
                 .mes_text {
+                    margin-top: 0;
                     margin-left: auto;
                     background-color: var(--SmartThemeUserMesBlurTintColor);
+                }
+
+                .mes_buttons,
+                .mes_edit_buttons {
+                    justify-content: flex-end;
+                }
+
+                .mes_edit_buttons {
+                    float: right;
                 }
 
                 .mes_img_container.img_extra {
@@ -54,12 +69,6 @@ body.bubblechat {
                     margin-top: 0px;
                     padding: 0px;
                     background-color: transparent;
-                }
-
-                .name_text {
-                    visibility: hidden;
-                    text-indent: -999px;
-                    line-height: 0;
                 }
 
                 .timestamp {
@@ -673,6 +682,7 @@ hr {
 }
 
 .mes {
+    padding: 10px;
 
     &.last_mes {
 
@@ -690,6 +700,10 @@ hr {
         .mes_swipe_right {
             display: none;
         }
+    }
+
+    &[is_user="true"] {
+        padding: 0 10px;
     }
 
     &:hover {
@@ -727,12 +741,10 @@ hr {
         }
     }
 
-    &[is_user="false"] {
-
-        .mes_buttons,
-        .mes_edit_buttons {
-            justify-content: flex-start;
-        }
+    .mes_buttons,
+    .mes_edit_buttons {
+        justify-content: flex-start;
+        float: none;
     }
 
     .mes_block {
@@ -757,6 +769,7 @@ hr {
 
         .mes_text {
             margin: 0.5rem 0;
+            padding: 0;
             line-height: var(--lineHeight);
 
             &>:last-child {
@@ -796,13 +809,20 @@ hr {
     }
 
     body:not(.bubblechat) &[is_user="true"] {
-        .name_text::after {
-            content: "(You)" !important;
-            text-indent: 0px;
-            visibility: visible;
-            display: block;
-            line-height: initial;
+        .name_text {
+            visibility: hidden;
+            text-indent: -999px;
+            line-height: 0;
+
+            &::after {
+                content: "(You)" !important;
+                text-indent: 0px;
+                visibility: visible;
+                display: block;
+                line-height: initial;
+            }
         }
+
     }
 
     &:not(:hover) {
