@@ -37,7 +37,7 @@ function getPersona() {
         $persona_button.insertAdjacentHTML('beforeend', `<span>${name1}</span>`);
     });
 
-    $persona_button.addEventListener('click', () => {
+    $persona_button.addEventListener('mousedown', () => {
         $persona_button.closest('.drawer-content').classList.toggle('closedDrawer openDrawer');
     });
 }
@@ -50,7 +50,7 @@ function toggleSidebar() {
         </button>
     `);
 
-    document.querySelector('#sidebarToggle').addEventListener('click', () => {
+    document.querySelector('#sidebarToggle').addEventListener('mousedown', () => {
         $settings_holder.classList.toggle('collapsed');
         document.querySelector('#sheld').classList.toggle('collapsed');
     });
@@ -66,12 +66,12 @@ async function initSettings() {
     const $enable_nudges = document.querySelector('#enable_nudges');
     const $api_key_chub = document.querySelector('#api_key_chub');
 
-    $rename_chats.addEventListener('click', () => {
+    $rename_chats.addEventListener('mousedown', () => {
         extension_settings[extensionName].rename_chats = $rename_chats.checked;
         saveSettingsDebounced();
     });
 
-    $enable_nudges.addEventListener('click', () => {
+    $enable_nudges.addEventListener('mousedown', () => {
         extension_settings[extensionName].enable_nudges = $enable_nudges.checked;
         if (extension_settings[extensionName].enable_nudges) {
             initNudgeUI();
@@ -104,7 +104,7 @@ function loadSplashText() {
 
             const $splash = document.querySelector('#splash');
             $splash.innerHTML = splashes[Math.floor(Math.random() * splashes.length)];
-            $splash.addEventListener('click', () => {
+            $splash.addEventListener('mousedown', () => {
                 $splash.innerHTML = splashes[Math.floor(Math.random() * splashes.length)];
             });
 
@@ -132,7 +132,7 @@ async function initNudgeUI() {
             if (nudges[`prompt${index + 1}`]) {
                 let prompt = nudges[`prompt${index + 1}`];
                 button.insertAdjacentHTML('beforeend', `<span id="nudge_prompt">${prompt}</span>`);
-                button.querySelector('#nudge_prompt').addEventListener('click', (event) => {
+                button.querySelector('#nudge_prompt').addEventListener('mousedown', (event) => {
                     document.querySelector('#send_textarea').value = event.target.textContent;
                     $nudges.style.display = 'none';
                 })
@@ -189,8 +189,8 @@ function addSwipeButtons() {
         const $mes_swipe_left = $chat.querySelector('.last_mes .mes_swipe_left');
         const $mes_swipe_right = $chat.querySelector('.last_mes .mes_swipe_right');
 
-        $mes_swipe_left.addEventListener('click', leftSwipeHandler);
-        $mes_swipe_right.addEventListener('click', rightSwipeHandler);
+        $mes_swipe_left.addEventListener('mousedown', leftSwipeHandler);
+        $mes_swipe_right.addEventListener('mousedown', rightSwipeHandler);
     }
 
     eventSource.on('chatLoaded', registerSwipeButtons);

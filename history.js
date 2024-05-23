@@ -228,7 +228,7 @@ export async function loadChatHistory() {
         element.style.display = 'none'
     });
 
-    $settings_holder.querySelector('#new_chat').addEventListener('click', () => {
+    $settings_holder.querySelector('#new_chat').addEventListener('mousedown', () => {
         document.querySelector('#option_start_new_chat').click();
     });
 
@@ -251,7 +251,7 @@ export async function loadChatHistory() {
         }
     };
 
-    document.addEventListener('click', openChat, true);
+    document.addEventListener('mousedown', openChat, true);
 
     eventSource.on('chat_id_changed', () => {
         displayPastChats();

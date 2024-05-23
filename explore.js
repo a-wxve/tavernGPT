@@ -50,7 +50,7 @@ async function setupExplorePanel() {
         });
 
         if (!request.ok) {
-            toastr.info('Click to go to the character page', 'Custom content import failed', { onclick: () => window.open(url, '_blank') });
+            toastr.info('Click to go to the character page', 'Custom content import failed', { onmousedown: () => window.open(url, '_blank') });
             console.error('Custom content import failed', request.status, request.statusText);
             return;
         }
@@ -148,7 +148,7 @@ async function setupExplorePanel() {
             }
 
             $characterList.querySelectorAll('.download-btn').forEach(button => {
-                button.addEventListener('click', () => {
+                button.addEventListener('mousedown', () => {
                     downloadCharacter(button.getAttribute('data-path'))
                 });
             });
@@ -277,12 +277,12 @@ async function setupExplorePanel() {
         element.addEventListener('change', searchHandler);
     })
 
-    $searchWrapper.querySelector('#characterSearchButton').addEventListener('click', searchHandler);
-    $searchWrapper.querySelector('#pageUpButton').addEventListener('click', searchHandler);
-    $searchWrapper.querySelector('#pageDownButton').addEventListener('click', searchHandler);
+    $searchWrapper.querySelector('#characterSearchButton').addEventListener('mousedown', searchHandler);
+    $searchWrapper.querySelector('#pageUpButton').addEventListener('mousedown', searchHandler);
+    $searchWrapper.querySelector('#pageDownButton').addEventListener('mousedown', searchHandler);
 
     $characterList.addEventListener('scroll', infiniteScrollDebounced);
-    $characterList.addEventListener('click', popupImageHandler);
+    $characterList.addEventListener('mousedown', popupImageHandler);
 
     $characterList.scrollTop = 0;
     $pageNumber.value = 1;
@@ -296,7 +296,7 @@ export async function loadExplorePanel() {
     setupExplorePanel();
 
     const $explore_toggle = document.querySelector('#explore-button .drawer-toggle');
-    $explore_toggle.addEventListener('click', () => {
+    $explore_toggle.addEventListener('mousedown', () => {
         let icon = $explore_toggle.querySelector('.drawer-icon');
         let drawer = $explore_toggle.parentNode.querySelector('.drawer-content');
         let drawerOpen = drawer.classList.contains('openDrawer');
