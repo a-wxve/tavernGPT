@@ -4,84 +4,104 @@ import {
     getRequestHeaders,
     getUserAvatar,
     name1,
-    saveSettingsDebounced
-} from '../../../../script.js';
-import { extension_settings } from '../../../extensions.js';
-import { loadExplorePanel } from './explore.js';
-import { loadChatHistory } from './history.js';
+    saveSettingsDebounced,
+} from "../../../../script.js";
+import { extension_settings } from "../../../extensions.js";
+import { loadExplorePanel } from "./explore.js";
+import { loadChatHistory } from "./history.js";
 
-export const extensionName = 'tavernGPT';
+export const extensionName = "tavernGPT";
 export const extensionFolderPath = `scripts/extensions/third-party/${extensionName}`;
 const defaultSettings = {};
 
 function getPersona() {
-    const $persona_button = document.querySelector('#persona-management-button .drawer-icon.fa-solid.fa-face-smile');
+    const $persona_button = document.querySelector(
+        "#persona-management-button .drawer-icon.fa-solid.fa-face-smile",
+    );
 
-    eventSource.on('settings_updated', async () => {
-        const response = await fetch('/api/settings/get', {
-            method: 'POST',
+    eventSource.on("settings_updated", async () => {
+        const response = await fetch("/api/settings/get", {
+            method: "POST",
             headers: getRequestHeaders(),
             body: JSON.stringify({}),
-            cache: 'no-cache',
+            cache: "no-cache",
         });
 
         if (!response.ok) {
-            toastr.error('Settings could not be loaded. Try reloading the page.');
-            throw new Error('Error getting settings.');
+            toastr.error(
+                "Settings could not be loaded. Try reloading the page.",
+            );
+            throw new Error("Error getting settings.");
         }
 
-        let settings = await response.json().then(data => JSON.parse(data.settings));
+        let settings = await response
+            .json()
+            .then((data) => JSON.parse(data.settings));
         let avatar_img = getUserAvatar(settings.user_avatar);
 
         $persona_button.innerHTML = `<img class='persona_avatar' src='${avatar_img}'/>`;
-        $persona_button.insertAdjacentHTML('beforeend', `<span>${name1}</span>`);
+        $persona_button.insertAdjacentHTML(
+            "beforeend",
+            `<span>${name1}</span>`,
+        );
     });
 
-    $persona_button.addEventListener('mousedown', () => {
-        $persona_button.closest('.drawer-content').classList.toggle('closedDrawer openDrawer');
+    $persona_button.addEventListener("mousedown", () => {
+        $persona_button
+            .closest(".drawer-content")
+            .classList.toggle("closedDrawer openDrawer");
     });
 }
 
 function toggleSidebar() {
-    const $settings_holder = document.querySelector('#top-settings-holder');
-    $settings_holder.insertAdjacentHTML('beforeend', `
-        <button id='sidebarToggle'>
-            <div class='arrow1'></div><div class='arrow2'></div>
-        </button>
-    `);
+    const $settings_holder = document.querySelector("#top-settings-holder");
+    $settings_holder.insertAdjacentHTML(
+        "beforeend",
+        `<button id='sidebarToggle'>
+            <div class='arrow1'></div>
+            <div class='arrow2'></div>
+        </button>`,
+    );
 
-    document.querySelector('#sidebarToggle').addEventListener('mousedown', () => {
-        $settings_holder.classList.toggle('collapsed');
-        document.querySelector('#sheld').classList.toggle('collapsed');
-    });
+    document
+        .querySelector("#sidebarToggle")
+        .addEventListener("mousedown", () => {
+            $settings_holder.classList.toggle("collapsed");
+            document.querySelector("#sheld").classList.toggle("collapsed");
+        });
 }
 
 async function initSettings() {
-    const $settings = document.querySelector('#extensions_settings2');
-    await fetch(`${extensionFolderPath}/html/settings.html`).then(data => data.text()).then(data => {
-        $settings.insertAdjacentHTML('beforeend', data);
-    });
+    const $settings = document.querySelector("#extensions_settings2");
+    await fetch(`${extensionFolderPath}/html/settings.html`)
+        .then((data) => data.text())
+        .then((data) => {
+            $settings.insertAdjacentHTML("beforeend", data);
+        });
 
-    const $rename_chats = document.querySelector('#rename_chats');
-    const $enable_nudges = document.querySelector('#enable_nudges');
-    const $api_key_chub = document.querySelector('#api_key_chub');
+    const $rename_chats = document.querySelector("#rename_chats");
+    const $enable_nudges = document.querySelector("#enable_nudges");
+    const $api_key_chub = document.querySelector("#api_key_chub");
 
-    $rename_chats.addEventListener('mousedown', () => {
+    $rename_chats.addEventListener("mousedown", () => {
         extension_settings[extensionName].rename_chats = $rename_chats.checked;
         saveSettingsDebounced();
     });
 
-    $enable_nudges.addEventListener('mousedown', () => {
-        extension_settings[extensionName].enable_nudges = $enable_nudges.checked;
+    $enable_nudges.addEventListener("mousedown", () => {
+        extension_settings[extensionName].enable_nudges =
+            $enable_nudges.checked;
+
         if (extension_settings[extensionName].enable_nudges) {
             initNudgeUI();
         } else {
-            document.querySelector('#nudges').style.display = 'none';
+            document.querySelector("#nudges").style.display = "none";
         }
+
         saveSettingsDebounced();
     });
 
-    $api_key_chub.addEventListener('change', () => {
+    $api_key_chub.addEventListener("change", () => {
         extension_settings[extensionName].api_key_chub = $api_key_chub.value;
         saveSettingsDebounced();
     });
@@ -96,20 +116,123 @@ async function initSettings() {
 }
 
 function loadSplashText() {
-    const splashes = ['desu~', 'desu~!', 'DESU~!', 'Jimmy Apples!', 'Sam Altman!', 'ChatGPT is better!', 'Splash Text!', 'The Singularity!', 'AGI!', 'Shocking!', 'Shocking the industry!', 'e/acc!', 'Acceleration!', 'AGI achieved internally!', 'Q*!', 'GPT-7!', 'Chinchilla scaling!', 'Low perplexity!', 'AUPATE!', 'Ethnnically Anbigious!', 'eethnically amboruaius!', 'Laver huling nnuctiol!', 'Costco Wholeslale!', 'CFTF?', 'Foxbots doko?', 'OpenAI BTFO!', 'Anthropic BTFO!', '1 morbillion token context!', 'Summer Dragon!', 'ahh ahh mistress!', 'My model has 24 parameters!', 'NVIDIA, fuck you!', 'TPUs!', 'ClosedAI!', '175 Beaks!', '1.7 Toucans!', 'Will Smith eating spaghetti!', 'SOVL!', 'SOVLLESS!', 'Rugpulled!', 'Fiz love!', '$7 Trillion!', 'Feel the AGI!', 'Reddit\\nSpacing!', 'Also try NovelAI!', 'Also try AetherRoom!', 'AIIIEEEEEEEE!', 'We\'re back!', 'We\'re so back!', 'It\'s over!', 'It\'s so over!', 'Can generate hands!', 'Slight twist on the upstroke!', '(´• ω •`) ', '(´- ω -`) ', '(\`・ω・\´) ', 'Big if true!', 'Meta BTFO!', 'Groq!', 'Grok?', '0.99 p(doom)!', 'Anchor!', 'No meanies allowed!', 'The Rock eating rocks!', 'Malfoy\'s last name!', 'Todd Howard!', 'DeepMind BTFO!', 'sillylittleguy.org!', 'I kneel!', 'Where bake?', 'Focksposting!', 'struggling to conceptualize the thickness of her bush...', 'Anti love!', 'GPT-2 was very bad!', 'GPT-3 was pretty bad!', 'GPT-4 is bad!', 'GPT-4 kind of sucks!', 'GPT-5 is okay!', 'Count Grey!', 'Google Colab!', 'Also try AI Dungeon!', 'Her!', 'GPT-4o(mni)!', 'I\'m a good GPT2 chatbot!', 'I\'m also a good GPT2 chatbot!', 'Pepsi love!', 'MysteryMan!', 'Cloudy is open on the weekends!', 'R.I.P. Desu!', 'R.I.P. Scrappy!', 'Total locust death!', 'Post burners!', 'thoughbeit!', 'Slop!', 'Coomageddon!', 'Boku!', 'Desu!', 'Boku Desu!', 'Beff Jezos!'];
+    const splashes = [
+        "desu~",
+        "desu~!",
+        "DESU~!",
+        "Jimmy Apples!",
+        "Sam Altman!",
+        "ChatGPT is better!",
+        "Splash Text!",
+        "The Singularity!",
+        "AGI!",
+        "Shocking!",
+        "Shocking the industry!",
+        "e/acc!",
+        "Acceleration!",
+        "AGI achieved internally!",
+        "Q*!",
+        "GPT-7!",
+        "Chinchilla scaling!",
+        "Low perplexity!",
+        "AUPATE!",
+        "Ethnnically Anbigious!",
+        "eethnically amboruaius!",
+        "Laver huling nnuctiol!",
+        "Costco Wholeslale!",
+        "CFTF?",
+        "Foxbots doko?",
+        "OpenAI BTFO!",
+        "Anthropic BTFO!",
+        "1 morbillion token context!",
+        "Summer Dragon!",
+        "ahh ahh mistress!",
+        "My model has 24 parameters!",
+        "NVIDIA, fuck you!",
+        "TPUs!",
+        "ClosedAI!",
+        "175 Beaks!",
+        "1.7 Toucans!",
+        "Will Smith eating spaghetti!",
+        "SOVL!",
+        "SOVLLESS!",
+        "Rugpulled!",
+        "Fiz love!",
+        "$7 Trillion!",
+        "Feel the AGI!",
+        "Reddit\\nSpacing!",
+        "Also try NovelAI!",
+        "Also try AetherRoom!",
+        "AIIIEEEEEEEE!",
+        "We're back!",
+        "We're so back!",
+        "It's over!",
+        "It's so over!",
+        "Can generate hands!",
+        "Slight twist on the upstroke!",
+        "(´• ω •`) ",
+        "(´- ω -`) ",
+        "(`・ω・´) ",
+        "Big if true!",
+        "Meta BTFO!",
+        "Groq!",
+        "Grok?",
+        "0.99 p(doom)!",
+        "Anchor!",
+        "No meanies allowed!",
+        "The Rock eating rocks!",
+        "Malfoy's last name!",
+        "Todd Howard!",
+        "DeepMind BTFO!",
+        "sillylittleguy.org!",
+        "I kneel!",
+        "Where bake?",
+        "Focksposting!",
+        "struggling to conceptualize the thickness of her bush...",
+        "Anti love!",
+        "GPT-2 was very bad!",
+        "GPT-3 was pretty bad!",
+        "GPT-4 is bad!",
+        "GPT-4 kind of sucks!",
+        "GPT-5 is okay!",
+        "Count Grey!",
+        "Google Colab!",
+        "Also try AI Dungeon!",
+        "Her!",
+        "GPT-4o(mni)!",
+        "I'm a good GPT2 chatbot!",
+        "I'm also a good GPT2 chatbot!",
+        "Pepsi love!",
+        "MysteryMan!",
+        "Cloudy is open on the weekends!",
+        "R.I.P. Desu!",
+        "R.I.P. Scrappy!",
+        "Total locust death!",
+        "Post burners!",
+        "thoughbeit!",
+        "Slop!",
+        "Coomageddon!",
+        "Boku!",
+        "Desu!",
+        "Boku Desu!",
+        "Beff Jezos!",
+    ];
 
     function setSplashText() {
-        if (!!document.querySelector('#version_display_welcome')) {
-            document.querySelector('#version_display_welcome').insertAdjacentHTML('afterend', `<p id="splash"></p>`);
+        if (!!document.querySelector("#version_display_welcome")) {
+            document
+                .querySelector("#version_display_welcome")
+                .insertAdjacentHTML("afterend", '<p id="splash"></p>');
 
-            const $splash = document.querySelector('#splash');
-            $splash.innerHTML = splashes[Math.floor(Math.random() * splashes.length)];
-            $splash.addEventListener('mousedown', () => {
-                $splash.innerHTML = splashes[Math.floor(Math.random() * splashes.length)];
+            const $splash = document.querySelector("#splash");
+            $splash.innerHTML =
+                splashes[Math.floor(Math.random() * splashes.length)];
+            $splash.addEventListener("mousedown", () => {
+                $splash.innerHTML =
+                    splashes[Math.floor(Math.random() * splashes.length)];
             });
-
         } else {
-            setTimeout(setSplashText, 540);
+            setTimeout(setSplashText, 500);
         }
     }
 
@@ -117,141 +240,194 @@ function loadSplashText() {
 }
 
 async function initNudgeUI() {
-    await fetch(`${extensionFolderPath}/html/nudges.html`).then(data => data.text()).then(data => {
-        document.querySelector('#form_sheld').insertAdjacentHTML('afterbegin', data);
-    });
-    const $nudges = document.querySelector('#nudges');
+    await fetch(`${extensionFolderPath}/html/nudges.html`)
+        .then((data) => data.text())
+        .then((data) => {
+            document
+                .querySelector("#form_sheld")
+                .insertAdjacentHTML("afterbegin", data);
+        });
+    const $nudges = document.querySelector("#nudges");
 
-    eventSource.on('character_message_rendered', async () => {
-        const prompt = 'Generate 4 one line replies from {{user}}\'s point of view using the chat history so far as a guideline for {{user}}\'s writing style in JSON format with the keys "prompt1", "prompt2", "prompt3", and "prompt4". Be sure to "quote" dialogue. Output only the JSON without any additional commentary.';
-        let nudges = await generateQuietPrompt(prompt, false, false).then(data => JSON.parse(data));
+    eventSource.on("character_message_rendered", async () => {
+        const prompt = `Generate 4 one line replies from {{user}}'s point of view using the chat history so far as a guideline for {{user}}'s writing style in JSON format with the keys "prompt1", "prompt2", "prompt3", and "prompt4". Be sure to "quote" dialogue. Output only the JSON without any additional commentary.`;
+        let nudges = await generateQuietPrompt(prompt, false, false).then(
+            (data) => JSON.parse(data),
+        );
 
-        $nudges.style.display = 'grid';
+        $nudges.style.display = "grid";
 
-        $nudges.querySelectorAll('.nudge_button').forEach((button, index) => {
+        $nudges.querySelectorAll(".nudge_button").forEach((button, index) => {
             if (nudges[`prompt${index + 1}`]) {
                 let prompt = nudges[`prompt${index + 1}`];
-                button.insertAdjacentHTML('beforeend', `<span id="nudge_prompt">${prompt}</span>`);
-                button.querySelector('#nudge_prompt').addEventListener('mousedown', (event) => {
-                    document.querySelector('#send_textarea').value = event.target.textContent;
-                    $nudges.style.display = 'none';
-                })
+                button.insertAdjacentHTML(
+                    "beforeend",
+                    `<span id="nudge_prompt">${prompt}</span>`,
+                );
+                button
+                    .querySelector("#nudge_prompt")
+                    .addEventListener("mousedown", (event) => {
+                        document.querySelector("#send_textarea").value =
+                            event.target.textContent;
+                        $nudges.style.display = "none";
+                    });
             }
-        })
-    })
+        });
+    });
 }
 
 function setMobileUI() {
-    const $sheld = document.querySelector('#sheld');
-    $sheld.insertAdjacentHTML('afterbegin', `<div class="flex-container" id="chat_header"></div>`);
+    const $sheld = document.querySelector("#sheld");
+    $sheld.insertAdjacentHTML(
+        "afterbegin",
+        '<div class="flex-container" id="chat_header"></div>',
+    );
 
     function addChatHeader() {
-        const $chat_header = $sheld.querySelector('#chat_header');
-        const $last_mes = $sheld.querySelector('.last_mes');
+        const $chat_header = $sheld.querySelector("#chat_header");
+        const $last_mes = $sheld.querySelector(".last_mes");
 
         $chat_header.replaceChildren();
-        let avatarImg = $last_mes.querySelector('.avatar').cloneNode(true);
-        let charName = $last_mes.querySelector('.ch_name').cloneNode(true);
-        let mesID = $last_mes.querySelector('.mesIDDisplay').cloneNode(true);
-        let mesTimer = $last_mes.querySelector('.mes_timer').cloneNode(true);
-        let tokenCount = $last_mes.querySelector('.tokenCounterDisplay').cloneNode(true);
+        let avatarImg = $last_mes.querySelector(".avatar").cloneNode(true);
+        let charName = $last_mes.querySelector(".ch_name").cloneNode(true);
+        let mesID = $last_mes.querySelector(".mesIDDisplay").cloneNode(true);
+        let mesTimer = $last_mes.querySelector(".mes_timer").cloneNode(true);
+        let tokenCount = $last_mes
+            .querySelector(".tokenCounterDisplay")
+            .cloneNode(true);
 
         $chat_header.append(avatarImg, charName);
-        $chat_header.querySelector('.ch_name').append(mesID, mesTimer, tokenCount);
+        $chat_header
+            .querySelector(".ch_name")
+            .append(mesID, mesTimer, tokenCount);
     }
 
-    eventSource.on('chatLoaded', addChatHeader);
-    eventSource.on('character_message_rendered', addChatHeader);
-    eventSource.on('message_deleted', addChatHeader);
-    eventSource.on('message_swiped', addChatHeader);
+    eventSource.on("chatLoaded", addChatHeader);
+    eventSource.on("character_message_rendered", addChatHeader);
+    eventSource.on("message_deleted", addChatHeader);
+    eventSource.on("message_swiped", addChatHeader);
 }
 
-function addSwipeButtons() {
-    document.querySelector('#message_template .mes_buttons').insertAdjacentHTML('afterbegin', `
-        <div class="flex-container swipes">
-            <div class="mes_swipe_left fa-solid fa-chevron-left"></div>
-            <div class="swipes-counter">1/1</div>
-            <div class="mes_swipe_right fa-solid fa-chevron-right"></div>
-        </div>
-    `);
-
-    const $chat = document.querySelector('#chat');
-
-    function leftSwipeHandler() {
-        $chat.querySelector('.last_mes .swipe_left').click();
-    }
-
-    function rightSwipeHandler() {
-        $chat.querySelector('.last_mes .swipe_right').click();
+function moveSwipeButtons() {
+    function handleSwipe(event) {
+        const $chat = document.querySelector("#chat");
+        const swipeDirection = event.target.matches(".mes_swipe_left")
+            ? ".swipe_left"
+            : ".swipe_right";
+        $chat.querySelector(`.last_mes ${swipeDirection}`).click();
     }
 
     function registerSwipeButtons() {
-        const $mes_swipe_left = $chat.querySelector('.last_mes .mes_swipe_left');
-        const $mes_swipe_right = $chat.querySelector('.last_mes .mes_swipe_right');
+        const $chat = document.querySelector("#chat");
+        const $mes_swipe_left = $chat.querySelector(
+            ".last_mes .mes_swipe_left",
+        );
+        const $mes_swipe_right = $chat.querySelector(
+            ".last_mes .mes_swipe_right",
+        );
 
-        $mes_swipe_left.addEventListener('mousedown', leftSwipeHandler);
-        $mes_swipe_right.addEventListener('mousedown', rightSwipeHandler);
+        $mes_swipe_left.addEventListener("mousedown", handleSwipe);
+        $mes_swipe_right.addEventListener("mousedown", handleSwipe);
     }
 
-    eventSource.on('chatLoaded', registerSwipeButtons);
-    eventSource.on('character_message_rendered', registerSwipeButtons);
-    eventSource.on('message_deleted', registerSwipeButtons);
+    const $mesTemplate = document.querySelector("#message_template");
+    const $mesButtons = $mesTemplate.querySelector(".mes_buttons");
+    const $mesEditButtons = $mesTemplate.querySelector(".mes_edit_buttons");
+
+    $mesButtons.insertAdjacentHTML(
+        "afterbegin",
+        `<div class="flex-container swipes">
+            <div class="mes_swipe_left fa-solid fa-chevron-left"></div>
+            <div class="swipes-counter">1/1</div>
+            <div class="mes_swipe_right fa-solid fa-chevron-right"></div>
+        </div>`,
+    );
+    $mesTemplate.querySelector(".mes_text").after($mesButtons, $mesEditButtons);
+
+    eventSource.on("chatLoaded", registerSwipeButtons);
+    eventSource.on("character_message_rendered", registerSwipeButtons);
+    eventSource.on("message_deleted", registerSwipeButtons);
 }
 
 function main() {
-    initSettings();
-    getPersona();
-    loadExplorePanel();
-    loadChatHistory();
-    toggleSidebar();
-    loadSplashText();
-    addSwipeButtons();
-
-    if (window.matchMedia('only screen and ((max-width: 768px))').matches) {
-        setMobileUI();
-    }
-
-    const $drawerToggle = document.querySelector('#ai-config-button');
-    $drawerToggle.insertAdjacentHTML('beforeend', '<i class="fa-solid fa-chevron-down inline-drawer-icon"></i>');
-
-    const $mesButtons = document.querySelector('#message_template .mes_buttons')
-    const $mesEditButtons = document.querySelector('#message_template .mes_edit_buttons')
-    document.querySelector('#message_template .mes_text').after($mesButtons, $mesEditButtons)
-
-    const $sheld = document.querySelector('#sheld');
-    $sheld.setAttribute('tabindex', '0');
-    $sheld.addEventListener('keydown', (event) => {
-        switch (event.which) {
-            case 37:
-                if (!$sheld.querySelector('textarea').matches(':focus')) {
-                    $sheld.querySelector('.last_mes .swipe_left').click();
-                    break;
-                }
-            case 39:
-                if (!$sheld.querySelector('textarea').matches(':focus')) {
-                    $sheld.querySelector('.last_mes .swipe_right').click();
-                    break;
-                }
-            default:
-                break;
-        }
-    });
-
     function checkWaifuVisibility() {
         const $waifuImage = document.querySelector("#expression-image");
-        if ($waifuImage.getAttribute('src') !== "") {
+        if ($waifuImage.getAttribute("src") !== "") {
             $sheld.classList.add("shifted");
         } else {
             $sheld.classList.remove("shifted");
         }
     }
 
-    eventSource.on('generation_started', checkWaifuVisibility);
-    eventSource.on('chat_id_changed', checkWaifuVisibility);
+    initSettings();
+    getPersona();
+    loadExplorePanel();
+    loadChatHistory();
+    toggleSidebar();
+    loadSplashText();
+    moveSwipeButtons();
+
+    if (window.matchMedia("only screen and ((max-width: 768px))").matches) {
+        setMobileUI();
+    }
+
+    const $settingsDrawerToggle = document.querySelector("#ai-config-button");
+    $settingsDrawerToggle.insertAdjacentHTML(
+        "beforeend",
+        '<i class="fa-solid fa-chevron-down inline-drawer-icon"></i>',
+    );
+
+    const $characterPopup = document.querySelector("#character_popup");
+    const $rightNavPanel = document.querySelector("#right-nav-panel");
+    const $rightNavPin = $rightNavPanel.querySelector("#rm_button_panel_pin");
+    $rightNavPanel
+        .querySelector("#advanced_div")
+        .addEventListener("mousedown", () => {
+            if ($rightNavPin.checked == false) $rightNavPin.click();
+        });
+    $characterPopup.addEventListener("keydown", (event) => {
+        switch (event.key) {
+            case "Escape":
+                if ($rightNavPin.checked == true) $rightNavPin.click();
+                break;
+            default:
+                break;
+        }
+    });
+    $characterPopup
+        .querySelector("#character_cross")
+        .addEventListener("mousedown", () => {
+            if ($rightNavPin.checked == true) $rightNavPin.click();
+        });
+
+    const $exampleMessages = $characterPopup.querySelector("#mes_example_div");
+    $rightNavPanel
+        .querySelector("#firstMessageWrapper")
+        .after($exampleMessages);
+
+    const $sheld = document.querySelector("#sheld");
+    $sheld.setAttribute("tabindex", "0");
+    $sheld.addEventListener("keydown", (event) => {
+        if (!$sheld.querySelector("textarea").matches(":focus")) {
+            switch (event.key) {
+                case "ArrowLeft":
+                    $sheld.querySelector(".last_mes .swipe_left").click();
+                    break;
+                case "ArrowRight":
+                    $sheld.querySelector(".last_mes .swipe_right").click();
+                    break;
+                default:
+                    break;
+            }
+        }
+    });
+
+    eventSource.on("generation_started", checkWaifuVisibility);
+    eventSource.on("chat_id_changed", checkWaifuVisibility);
 }
 
-if (document.readyState === 'complete') {
+if (document.readyState === "complete") {
     main();
 } else {
-    document.addEventListener('DOMContentLoaded', main, { once: true });
+    document.addEventListener("DOMContentLoaded", main, { once: true });
 }

@@ -95,12 +95,11 @@
     width: 50% !important;
     padding: 0.62rem 0.18rem;
 
-    &:not(.collapsed)~#sheld {
-        filter: brightness(45%)
+    &:not(.collapsed) ~ #sheld {
+        filter: brightness(45%);
     }
 
     &.collapsed {
-
         #ai-config-button,
         #sys-settings-button,
         #advanced-formatting-button,
@@ -135,6 +134,10 @@
     overflow-x: hidden;
 }
 
+#character_popup {
+    z-index: 3005;
+}
+
 #sys-settings-button,
 #advanced-formatting-button,
 #WI-SP-button,
@@ -146,7 +149,7 @@
 }
 
 #ai-config-button {
-    >.inline-drawer-icon {
+    > .inline-drawer-icon {
         display: none;
     }
 }
@@ -165,7 +168,6 @@
 }
 
 .expression-holder {
-
     body.waifuMode & {
         left: 0;
     }

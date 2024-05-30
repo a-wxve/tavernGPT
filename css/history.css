@@ -12,7 +12,7 @@
             opacity: 1;
         }
 
-        >span {
+        > span {
             font-size: var(--mainFontSize);
             font-weight: 600;
             padding: 3px 5px 3px 0;
@@ -30,7 +30,7 @@
     background-color: var(--color1);
     border-radius: var(--borderRadiusSmol);
 
-    #select_chat_div:empty~& {
+    #select_chat_div:empty ~ & {
         display: none;
     }
 
@@ -39,6 +39,7 @@
     }
 
     input {
+        width: 87%;
         background-color: transparent;
         border: none;
         outline: none;
@@ -50,23 +51,16 @@
     overflow-y: scroll;
     margin-bottom: 3.6em;
 
-    &:not(:hover) {
-        scrollbar-width: none;
-
-        &::-webkit-scrollbar {
-            display: none;
-        }
-    }
-
     .select_chat_block_wrapper:not(:hover) .fa-solid {
         visibility: hidden;
     }
 
     h5 {
         margin: 0.5rem 0.25rem;
+        opacity: 0.5;
     }
 
-    h5+.select_chat_block_wrapper {
+    h5 + .select_chat_block_wrapper {
         .select_chat_block {
             margin-top: 0;
         }
@@ -81,19 +75,20 @@
         text-wrap: nowrap;
         overflow: hidden;
 
-        >div:is(:first-child) {
+        > div:is(:first-child) {
             max-width: 100%;
 
             .select_chat_block_filename.select_chat_block_filename_item {
-                opacity: 1;
+                opacity: 0.9;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 max-width: 100%;
                 display: inline-block;
+                color: var(--SmartThemeBodyColor);
             }
         }
 
-        >.flex-container.gap10px>.flex-container.gap10px {
+        > .flex-container.gap10px > .flex-container.gap10px {
             flex-wrap: nowrap;
             gap: 5px !important;
 
@@ -104,7 +99,7 @@
     }
 
     .select_chat_block:hover {
-        #select_chat_name_wrapper>div:is(:first-child) {
+        #select_chat_name_wrapper > div:is(:first-child) {
             max-width: 60%;
         }
     }
