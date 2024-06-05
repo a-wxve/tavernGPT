@@ -78,7 +78,7 @@
                 color: var(--SmartThemeBodyColor);
 
                 a {
-                    color: var(--SmartThemeBodyColor)
+                    color: var(--SmartThemeBodyColor);
                 }
             }
 
@@ -91,14 +91,24 @@
 
             .tags {
                 margin-top: 10px;
+                .tag {
+                    cursor: pointer;
+                }
+                .included {
+                    color: green;
+                    border-color: green;
+                }
+                .excluded {
+                    color: red;
+                    border-color: red;
+                }
             }
 
             .author {
                 font-size: 0.8rem;
-                color: var(--SmartThemeEmColor)
+                color: var(--SmartThemeEmColor);
             }
         }
-
 
         .menu_button.download-btn.fa-solid.fa-cloud-arrow-down.faSmallFontSquareFix {
             display: inline-flex;
