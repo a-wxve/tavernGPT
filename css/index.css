@@ -203,7 +203,7 @@ hr {
     border-radius: var(--borderRadiusSmol);
 
     &:hover {
-        background-color: var(--SmartThemeBlurTintColor);
+        background-color: var(--white30a);
     }
 }
 
@@ -614,7 +614,6 @@ hr {
     padding: 0px var(--insidePadding);
     background-color: var(--SmartThemeChatTintColor);
     backdrop-filter: blur(var(--SmartThemeBlurStrength));
-    -webkit-backdrop-filter: blur(var(--SmartThemeBlurStrength));
 
     #top-settings-holder:has(.drawer-content.openDrawer):not(
             :has(#explore-button .drawer-content.openDrawer)
@@ -645,6 +644,7 @@ hr {
         padding-bottom: 4rem;
         background-color: transparent;
         scrollbar-width: none;
+        backdrop-filter: none;
 
         &::-webkit-scrollbar {
             display: none;
@@ -658,7 +658,6 @@ hr {
         margin-left: -10px;
         padding: 10px;
         backdrop-filter: blur(9px);
-        -webkit-backdrop-filter: blur(9px);
 
         #send_form {
             border: none;

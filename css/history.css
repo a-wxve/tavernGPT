@@ -3,13 +3,13 @@
     order: 10;
 
     .historyButton {
-        background-color: var(--SmartThemeBlurTintColor);
         border-radius: var(--borderRadiusSmol);
         opacity: 0.54;
         padding: 5px 0;
 
         &:hover {
             opacity: 1;
+            background-color: var(--white30a);
         }
 
         > span {
