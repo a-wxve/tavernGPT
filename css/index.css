@@ -13,8 +13,6 @@
     --insidePadding: 10px;
     --borderRadius: 1.5rem;
     --borderRadiusSmol: 0.625rem;
-    --color1: rgb(45, 45, 45);
-    --color2: rgb(63, 63, 63);
     --transition: all 200ms ease-in-out;
 }
 
@@ -205,7 +203,7 @@ hr {
     border-radius: var(--borderRadiusSmol);
 
     &:hover {
-        background-color: var(--color1);
+        background-color: var(--SmartThemeBlurTintColor);
     }
 }
 
@@ -680,7 +678,7 @@ hr {
                 border-radius: var(--borderRadius);
                 border-color: transparent;
                 clip-path: none;
-                background-color: var(--color1);
+                background-color: var(--SmartThemeBlurTintColor);
                 padding: 6px 1rem;
                 resize: none;
             }

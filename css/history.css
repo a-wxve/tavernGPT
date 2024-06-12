@@ -3,7 +3,7 @@
     order: 10;
 
     .historyButton {
-        background-color: var(--color1);
+        background-color: var(--SmartThemeBlurTintColor);
         border-radius: var(--borderRadiusSmol);
         opacity: 0.54;
         padding: 5px 0;
@@ -27,7 +27,7 @@
 #select_chat_search {
     order: 11;
     max-height: 36px;
-    background-color: var(--color1);
+    background-color: var(--SmartThemeBlurTintColor);
     border-radius: var(--borderRadiusSmol);
 
     #select_chat_div:empty ~ & {

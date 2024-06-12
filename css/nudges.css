@@ -12,7 +12,7 @@
 
     .nudge_button {
         border-radius: var(--borderRadiusSmol);
-        background-color: var(--color1);
+        background-color: var(--SmartThemeBlurTintColor);
         margin: 0;
 
         #nudge_prompt {
