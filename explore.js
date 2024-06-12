@@ -87,6 +87,7 @@ async function setupExplorePanel() {
     async function fetchCharacters(
         {
             searchTerm,
+            namespace,
             includeTags,
             excludeTags,
             nsfw,
@@ -106,13 +107,13 @@ async function setupExplorePanel() {
         toastr.info(`Searching...`);
 
         searchTerm = searchTerm
-            ? `search=${encodeURIComponent(searchTerm)}&`
+            ? `search=${searchTerm.replace(/ /g, "+")}&`
             : "";
         sort = sort || "download_count";
 
         let url = `https://api.chub.ai/api/characters/`;
         url += `search?${searchTerm}`;
-        url += `&namespace=characters`;
+        url += `&namespace=${namespace}`;
         url += `&first=${findCount}`;
         url += `&page=${page}`;
         url += `&sort=${sort}`;
@@ -138,7 +139,7 @@ async function setupExplorePanel() {
             url += `&excludetopics=${encodeURIComponent(excludeTags.join(",").slice(0, 100))}`;
         }
 
-        let chubApiKey = extension_settings[extensionName].api_key_chub;
+        const chubApiKey = extension_settings[extensionName].api_key_chub;
         let searchData = await fetch(url, {
             headers: {
                 "CH-API-KEY": chubApiKey,
@@ -264,6 +265,7 @@ async function setupExplorePanel() {
         const searchTerm = document.querySelector(
             "#characterSearchInput",
         ).value;
+        const namespace = document.querySelector("#namespace").value;
         const includeTags = splitAndTrim(
             document.querySelector("#includeTags").value,
         );
@@ -275,9 +277,9 @@ async function setupExplorePanel() {
         const sort = document.querySelector("#sortOrder").value;
         let page = document.querySelector("#pageNumber").value;
 
-        fetchCharactersDebounced(
-            {
+        fetchCharactersDebounced({
                 searchTerm,
+                namespace,
                 includeTags,
                 excludeTags,
                 nsfw,
@@ -366,7 +368,7 @@ async function setupExplorePanel() {
 
     const infiniteScrollDebounced = debounce(
         (event) => infiniteScroll(event),
-        debounce_timeout.relaxed,
+        debounce_timeout.standard,
     );
     let popupImage = null;
 
@@ -376,7 +378,7 @@ async function setupExplorePanel() {
 
     $searchWrapper
         .querySelectorAll(
-            "#characterSearchInput, #includeTags, #excludeTags, #findCount, #sortOrder, #nsfwCheckbox",
+            "#characterSearchInput, #namespace, #includeTags, #excludeTags, #findCount, #sortOrder, #nsfwCheckbox",
         )
         .forEach((element) => {
             element.addEventListener("change", searchHandler);
@@ -385,15 +387,6 @@ async function setupExplorePanel() {
     $searchWrapper
         .querySelector("#characterSearchButton")
         .addEventListener("click", searchHandler);
-    $searchWrapper
-        .querySelector("#characterSearchButton")
-        .addEventListener("mousedown", searchHandler);
-    $searchWrapper
-        .querySelector("#pageUpButton")
-        .addEventListener("mousedown", searchHandler);
-    $searchWrapper
-        .querySelector("#pageDownButton")
-        .addEventListener("mousedown", searchHandler);
 
     $characterList.addEventListener("scroll", infiniteScrollDebounced);
     $characterList.addEventListener("mousedown", popupImageHandler);
