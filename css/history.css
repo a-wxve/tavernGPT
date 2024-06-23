@@ -27,7 +27,6 @@
 #select_chat_search {
     order: 11;
     max-height: 36px;
-    background-color: var(--SmartThemeBlurTintColor);
     border-radius: var(--borderRadiusSmol);
 
     #select_chat_div:empty ~ & {

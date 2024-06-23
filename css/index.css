@@ -1,15 +1,17 @@
 @import "history.css";
 @import "explore.css";
 @import "nudges.css";
-@import "mobile.css" screen and (max-width: 1000px);
+@import "mobile.css" screen and (width <= 1000px);
 
 :root {
     --fontFamily: "SF Pro", system-ui, -apple-system, BlinkMacSystemFont,
         "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --fontFamilyMonospace: "SF Mono", SFMono-Regular, ui-monospace,
+        "DejaVu Sans Mono", Menlo, Consolas, monospace;
     --mainFontSize: calc(var(--fontScale) * 17px);
     --lineHeight: calc(var(--mainFontSize) * 1.5);
     --barSize: 20%;
-    --panelSize: 45%;
+    --panelSize: 42.5%;
     --insidePadding: 10px;
     --borderRadius: 1.5rem;
     --borderRadiusSmol: 0.625rem;
@@ -20,6 +22,20 @@
 html,
 body {
     font-family: var(--fontFamily);
+}
+
+input[type="checkbox"],
+input[type="checkbox"]:not(#nav-toggle):not(#rm_button_panel_pin):not(
+        #lm_button_panel_pin
+    ):not(#WI_panel_pin) {
+    border: none;
+    outline: none;
+    box-shadow: none;
+}
+
+hr {
+    background-image: none;
+    background-color: var(--SmartThemeBodyColor);
 }
 
 body.bubblechat {
@@ -122,11 +138,6 @@ body.waifuMode {
     }
 }
 
-hr {
-    background-image: none;
-    background-color: var(--SmartThemeBodyColor);
-}
-
 #top-bar,
 #persona-management-button .drawer-icon::before,
 #ReverseProxyWarningMessage,
@@ -148,6 +159,17 @@ hr {
     gap: 3px;
     padding: var(--insidePadding);
     transition: var(--transition);
+
+    &::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        backdrop-filter: blur(9px);
+    }
 
     &.collapsed {
         visibility: collapse;
@@ -525,10 +547,6 @@ hr {
             flex-direction: column;
             gap: 0;
         }
-
-        .tags.tags_inline {
-            display: none;
-        }
     }
 }
 
@@ -599,6 +617,7 @@ hr {
     right: inherit;
     left: var(--barSize);
     padding: var(--insidePadding);
+    padding-bottom: 0px;
     border: 0px;
     border-radius: 0px;
     background-color: var(--SmartThemeChatTintColor);
@@ -641,7 +660,6 @@ hr {
 
     #chat {
         max-height: 100dvh;
-        padding-bottom: 4rem;
         background-color: transparent;
         scrollbar-width: none;
         backdrop-filter: none;
@@ -658,6 +676,10 @@ hr {
         margin-left: -10px;
         padding: 10px;
         backdrop-filter: blur(9px);
+
+        #hypeBotBar {
+            padding: 0 0 10px 10px;
+        }
 
         #send_form {
             border: none;
@@ -705,6 +727,7 @@ hr {
         > .swipe_right {
             visibility: hidden;
         }
+        padding-bottom: 6.75rem !important;
     }
 
     &:not(.last_mes),
@@ -897,6 +920,10 @@ hr {
 }
 
 /* random stuff */
+.icon-svg.timestamp-icon {
+    height: calc(var(--mainFontSize) + 1px);
+}
+
 #avatarCropWrap {
     .cropper-face.cropper-move {
         height: 66.666%;
@@ -923,4 +950,11 @@ hr {
 .zoomed_avatar,
 .zoomed_avatar img {
     z-index: 10000;
+}
+
+/* code blocks */
+code,
+code.hljs,
+code [class^="hljs-"] {
+    font-family: var(--fontFamilyMonospace);
 }

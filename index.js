@@ -216,6 +216,7 @@ function loadSplashText() {
         "Desu!",
         "Boku Desu!",
         "Beff Jezos!",
+        "Cuteposting!",
     ];
 
     function setSplashText() {
@@ -361,11 +362,11 @@ function main() {
 
     initSettings();
     getPersona();
+    toggleSidebar();
     loadExplorePanel();
     loadChatHistory();
-    toggleSidebar();
-    loadSplashText();
     moveSwipeButtons();
+    loadSplashText();
 
     if (window.matchMedia("only screen and ((max-width: 768px))").matches) {
         setMobileUI();

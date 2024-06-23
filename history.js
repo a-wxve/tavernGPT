@@ -236,7 +236,7 @@ async function renameChat() {
 
     if (matchesTimePattern(old_filename) && context.chat.length > 2) {
         const prompt =
-            'Generate a name for this chat in as few words as possible. Avoid including special characters, words like "chat", or the user\'s name. Only output the chat name.';
+            'Generate a unique name for this chat in as few words as possible. Avoid including special characters, words like "chat", or the user\'s name. Only output the chat name.';
         var new_filename = await generateQuietPrompt(prompt, false, false);
         new_filename = new_filename
             .toString()

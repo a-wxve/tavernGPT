@@ -155,8 +155,7 @@
 }
 
 #persona-management-button {
-    position: absolute;
-    align-self: center;
+    position: absolute !important;
 }
 
 .character-list-item {
