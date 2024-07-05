@@ -1,109 +1,122 @@
 .chat-flex {
-    justify-content: space-around;
     order: 10;
+    justify-content: space-around;
+}
 
-    .historyButton {
-        border-radius: var(--borderRadiusSmol);
-        opacity: 0.54;
-        padding: 5px 0;
-
-        &:hover {
-            opacity: 1;
-            background-color: var(--white30a);
-        }
-
-        > span {
-            font-size: var(--mainFontSize);
-            font-weight: 600;
-            padding: 3px 5px 3px 0;
-        }
-
-        .fa-solid {
-            padding-left: 3px;
-        }
+.historyButton {
+    &:hover {
+        opacity: 1;
+        background-color: var(--white30a);
     }
+    border-radius: var(--borderRadiusSmol);
+    opacity: 0.54;
+    padding: 5px 0;
+}
+
+.historyButton,
+.historyButton > span {
+    font-size: var(--mainFontSize);
+    padding: 3px 5px 3px 0;
+    font-weight: 600;
+}
+
+.chat-flex .historyButton .fa-solid {
+    padding-left: 3px;
 }
 
 #select_chat_search {
+    border-radius: var(--borderRadiusSmol);
     order: 11;
     max-height: 36px;
-    border-radius: var(--borderRadiusSmol);
+}
 
-    #select_chat_div:empty ~ & {
-        display: none;
-    }
+#select_chat_div:empty ~ #select_chat_search {
+    display: none;
+}
 
-    .fa-magnifying-glass {
-        color: darkgray;
-    }
+#select_chat_search .fa-magnifying-glass {
+    color: #a9a9a9;
+}
 
-    input {
-        width: 87%;
-        background-color: transparent;
-        border: none;
-        outline: none;
-    }
+#select_chat_search input {
+    background-color: #0000;
+    border: none;
+    outline: none;
+    width: 87%;
 }
 
 #select_chat_div {
+    &:not(:hover)::-webkit-scrollbar {
+        width: 0;
+    }
+    .select_chat_block:not(:hover) {
+        .fa-solid {
+            visibility: hidden;
+        }
+    }
     order: 12;
-    overflow-y: scroll;
     margin-bottom: 3.6em;
+    overflow-y: scroll;
+}
 
-    .select_chat_block_wrapper:not(:hover) .fa-solid {
-        visibility: hidden;
-    }
+#select_chat_div h5 {
+    opacity: 0.5;
+    margin: 0.5rem 0.25rem;
+}
 
-    h5 {
-        margin: 0.5rem 0.25rem;
-        opacity: 0.5;
-    }
+#select_chat_div h5 + .select_chat_block_wrapper .select_chat_block {
+    margin-top: 0;
+}
 
-    h5 + .select_chat_block_wrapper {
-        .select_chat_block {
-            margin-top: 0;
-        }
-    }
+#select_chat_div .select_chat_block {
+    border-radius: var(--borderRadiusSmol);
+}
 
-    .select_chat_block {
-        border-radius: var(--borderRadiusSmol);
-    }
+#select_chat_div #select_chat_name_wrapper {
+    text-wrap: nowrap;
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
 
-    #select_chat_name_wrapper {
-        flex-wrap: nowrap;
-        text-wrap: nowrap;
-        overflow: hidden;
+#select_chat_div #select_chat_name_wrapper > div:first-child {
+    max-width: 100%;
+}
 
-        > div:is(:first-child) {
-            max-width: 100%;
+#select_chat_div
+    #select_chat_name_wrapper
+    > div:first-child
+    .select_chat_block_filename.select_chat_block_filename_item {
+    opacity: 0.9;
+    text-overflow: ellipsis;
+    color: var(--SmartThemeBodyColor);
+    max-width: 100%;
+    display: inline-block;
+    overflow: hidden;
+}
 
-            .select_chat_block_filename.select_chat_block_filename_item {
-                opacity: 0.9;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                max-width: 100%;
-                display: inline-block;
-                color: var(--SmartThemeBodyColor);
-            }
-        }
+#select_chat_div
+    #select_chat_name_wrapper
+    > .flex-container.gap10px
+    > .flex-container.gap10px {
+    flex-wrap: nowrap;
+    gap: 5px !important;
+}
 
-        > .flex-container.gap10px > .flex-container.gap10px {
-            flex-wrap: nowrap;
-            gap: 5px !important;
+#select_chat_div
+    #select_chat_name_wrapper
+    > .flex-container.gap10px
+    > .flex-container.gap10px
+    .exportRawChatButton.fa-solid.fa-file-export:before {
+    content: "";
+}
 
-            .exportRawChatButton.fa-solid.fa-file-export::before {
-                content: "\f1c9";
-            }
-        }
-    }
+#select_chat_div
+    .select_chat_block:hover
+    #select_chat_name_wrapper
+    > div:first-child {
+    max-width: 60%;
+}
 
-    .select_chat_block:hover {
-        #select_chat_name_wrapper > div:is(:first-child) {
-            max-width: 60%;
-        }
-    }
-
-    .PastChat_cross.opacity50p.hoverglow.fa-solid.fa-skull::before {
-        content: "\f1f8";
-    }
+#select_chat_div .PastChat_cross.opacity50p.hoverglow.fa-solid.fa-skull:before {
+    content: "";
 }

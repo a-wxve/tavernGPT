@@ -1,132 +1,125 @@
 /* chub.ai character seach CSS. taken from the chubsearch extension */
 #explore-button {
     order: 9;
+}
 
-    .drawer-icon::after {
-        content: " Character Hub";
-    }
+#explore-button .drawer-icon::after {
+    content: " Character Hub";
+}
 
-    & .drawer-content {
-        width: calc(100dvw - var(--barSize));
-    }
+#explore-button .drawer-content {
+    width: calc(100dvw - var(--barSize));
 }
 
 .list-and-search-wrapper {
-    display: flex;
     flex-direction: column;
     height: 100%;
+    display: flex;
+}
 
-    .flex-container {
-        display: flex;
-        flex-flow: row wrap;
-    }
-
-    .flex-align-center {
-        align-items: center;
-    }
-
-    .flex-container label {
-        align-self: center;
-        white-space: nowrap;
-    }
+.list-and-search-wrapper .flex-container label {
+    white-space: nowrap;
+    align-self: center;
 }
 
 .search-container {
-    position: sticky;
     padding: 0 0.9rem;
+    position: sticky;
 }
 
 .character-list {
-    display: flex;
     flex-flow: wrap;
     padding: 0 0.9rem;
+    display: flex;
     overflow-y: auto;
+}
 
-    #loading {
-        height: 81dvh;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-    }
+.character-list:has(#loading) {
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
 
-    .character-list-item {
-        display: inline-flex;
-        align-items: flex-start;
-        margin: 10px 0;
-        padding: 0 10px;
-        width: 50%;
+.character-list .character-list-item {
+    align-items: flex-start;
+    width: 50%;
+    margin: 10px 0;
+    padding: 0 10px;
+    display: inline-flex;
+}
 
-        img.thumbnail {
-            flex: 0 0 100px;
-            height: 100px;
-            object-fit: cover;
-            margin-right: 10px;
-            border-radius: var(--borderRadiusSmol);
-        }
+.character-list .character-list-item img.thumbnail {
+    object-fit: cover;
+    border-radius: var(--borderRadiusSmol);
+    flex: 0 0 100px;
+    height: 100px;
+    margin-right: 10px;
+}
 
-        .info {
-            flex: 1;
-            text-align: left;
-            overflow: hidden;
+.character-list .character-list-item .info {
+    text-align: left;
+    flex: 1;
+    overflow: hidden;
+}
 
-            .name {
-                font-weight: bold;
-                margin-bottom: 5px;
-                text-align: left;
-                color: var(--SmartThemeBodyColor);
+.character-list .character-list-item .info .name {
+    text-align: left;
+    color: var(--SmartThemeBodyColor);
+    margin-bottom: 5px;
+    font-weight: bold;
+}
 
-                a {
-                    color: var(--SmartThemeBodyColor);
-                }
-            }
+.character-list .character-list-item .info .name a {
+    color: var(--SmartThemeBodyColor);
+}
 
-            .description {
-                color: var(--SmartThemeEmColor);
-                overflow: hidden;
-                text-overflow: visble;
-                text-align: left;
-            }
+.character-list .character-list-item .info .description {
+    color: var(--SmartThemeEmColor);
+    text-overflow: visble;
+    text-align: left;
+    overflow: hidden;
+}
 
-            .tags {
-                margin-top: 10px;
-                .tag {
-                    cursor: pointer;
-                }
-                .included {
-                    color: green;
-                    border-color: green;
-                }
-                .excluded {
-                    color: red;
-                    border-color: red;
-                }
-            }
+.character-list .character-list-item .info .tags {
+    margin-top: 10px;
+}
 
-            .author {
-                font-size: 0.8rem;
-                color: var(--SmartThemeEmColor);
-            }
-        }
+.character-list .character-list-item .info .tags .tag {
+    cursor: pointer;
+}
 
-        .menu_button.download-btn.fa-solid.fa-cloud-arrow-down.faSmallFontSquareFix {
-            display: inline-flex;
-            margin: 0;
-        }
-    }
+.character-list .character-list-item .info .tags .included {
+    color: green;
+    border-color: green;
+}
+
+.character-list .character-list-item .info .tags .excluded {
+    color: red;
+    border-color: red;
+}
+
+.character-list .character-list-item .info .creator {
+    color: var(--SmartThemeEmColor);
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.character-list
+    .character-list-item
+    .menu_button.download-btn.fa-solid.fa-cloud-arrow-down.faSmallFontSquareFix {
+    margin: 0;
+    display: inline-flex;
 }
 
 .page-buttons {
-    align-content: center;
+    place-content: center space-between;
     align-items: center;
-    justify-content: space-between;
+}
 
-    .flex-container:has(#sortOrder) {
-        flex-flow: row;
-    }
+.page-buttons .flex-container:has(#sortOrder) {
+    flex-flow: row;
 }
 
 .searching {
-    filter: grayscale(100%);
+    filter: grayscale();
 }
