@@ -2,6 +2,7 @@ import {
     callPopup,
     characters,
     clearChat,
+    doNewChat,
     eventSource,
     generateQuietPrompt,
     getChat,
@@ -213,13 +214,13 @@ async function displayPastChats() {
 
     displayChats("");
 
-    const debouncedDisplayChats = debounce((searchQuery) => {
+    const displayChatsDebounced = debounce((searchQuery) => {
         displayChats(searchQuery);
     });
 
     $select_chat_search.addEventListener(
         "input",
-        debouncedDisplayChats($select_chat_search.value),
+        displayChatsDebounced($select_chat_search.value),
     );
 }
 
@@ -304,7 +305,7 @@ export async function loadChatHistory() {
     $settings_holder
         .querySelector("#new_chat")
         .addEventListener("click", () => {
-            document.querySelector("#option_start_new_chat").click();
+            doNewChat({ deleteCurrentChat: false });
         });
 
     const openChat = async (event) => {
