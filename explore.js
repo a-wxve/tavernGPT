@@ -213,11 +213,24 @@ async function setupExplorePanel() {
             });
 
             $characterList.querySelectorAll(".creator").forEach((creator) => {
-                const $creatorSearch = document.querySelector("#creatorSearch");
+                const $searchWrapper = document.querySelector(
+                    "#list-and-search-wrapper",
+                );
+                const $searchTerm = $searchWrapper.querySelector(
+                    "#characterSearchInput",
+                );
+                const $creatorSearch =
+                    $searchWrapper.querySelector("#creatorSearch");
+                const $tags = $searchWrapper.querySelector("#includeTags");
+                const $excludedTags =
+                    $searchWrapper.querySelector("#excludeTags");
                 const username = creator.innerHTML.toLowerCase().split(" ")[1];
 
                 creator.addEventListener("click", (event) => {
+                    $searchTerm.value = "";
                     $creatorSearch.value = `${username}`;
+                    $tags.value = "";
+                    $excludedTags.value = "";
                     search(event, true);
                 });
             });
