@@ -20,95 +20,74 @@ body {
     font-family: var(--fontFamily);
 }
 
-body.bubblechat .mes {
-    background-color: #0000;
-    border: none;
-    border-radius: 0;
-    margin-bottom: 0;
+body.bubblechat {
+    .mes {
+        background-color: #0000;
+        border: none;
+        border-radius: 0;
+        margin-bottom: 0;
+    }
+    .mes[is_user="true"] {
+        .mesAvatarWrapper {
+            display: none;
+        }
+        .mes_block {
+            justify-content: end;
+            max-width: 90%;
+            margin-left: auto;
+            padding-left: 0;
+            padding-right: 0;
+            overflow-y: hidden;
+        }
+        .ch_name.flex-container.justifySpaceBetween {
+            display: none;
+        }
+        .mes_text {
+            background-color: var(--SmartThemeUserMesBlurTintColor);
+            margin-top: 0;
+            margin-left: auto;
+        }
+        .mes_buttons,
+        .mes_edit_buttons {
+            justify-content: end;
+        }
+        .timestamp {
+            align-self: end;
+        }
+        background-color: #0000;
+        padding: 0 10px;
+    }
+    .mes[is_user="false"] .mes_text {
+        border-top-left-radius: var(--borderRadiusSmol);
+    }
+    .mes_text {
+        border-radius: var(--borderRadius);
+        background-color: var(--SmartThemeBotMesBlurTintColor);
+        width: fit-content;
+        padding: 0.625rem 1rem;
+    }
+    .mes_text:has(#curEditTextarea) {
+        width: unset;
+    }
+    .mes_buttons[style*="display: none"] ~ .mes_edit_buttons {
+        display: flex !important;
+    }
+    .mes_img_container.img_extra,
+    .mes_file_container {
+        margin: 0.5rem 0 0 auto;
+    }
 }
 
-body.bubblechat .mes[is_user="true"] {
-    background-color: #0000;
-    padding: 0 10px;
+body.big-avatars {
+    .avatar,
+    .avatar img {
+        width: 50px;
+        height: 75px;
+    }
 }
 
-body.bubblechat .mes[is_user="true"] .mesAvatarWrapper {
+body.hideChatAvatars .mesAvatarWrapper {
     display: none;
-}
-
-body.bubblechat .mes[is_user="true"] .mes_block {
-    justify-content: end;
-    max-width: 90%;
-    margin-left: auto;
-    padding-left: 0;
-    padding-right: 0;
-    overflow-y: hidden;
-}
-
-body.bubblechat
-    .mes[is_user="true"]
-    .mes_block
-    .ch_name.flex-container.justifySpaceBetween {
-    display: none;
-}
-
-body.bubblechat .mes[is_user="true"] .mes_block .mes_text {
-    background-color: var(--SmartThemeUserMesBlurTintColor);
-    margin-top: 0;
-    margin-left: auto;
-}
-
-body.bubblechat .mes[is_user="true"] .mes_block .mes_buttons,
-body.bubblechat .mes[is_user="true"] .mes_block .mes_edit_buttons {
-    justify-content: flex-end;
-}
-
-body.bubblechat .mes[is_user="true"] .mes_block .mes_edit_buttons {
-    float: right;
-}
-
-body.bubblechat .mes[is_user="true"] .mes_block .mes_img_container.img_extra {
-    background-color: #0000;
-    border-radius: 0;
-    padding: 0;
-}
-
-body.bubblechat .mes[is_user="true"] .mes_block .timestamp {
-    align-self: end;
-}
-
-body.bubblechat .mes[is_user="false"] .mes_text {
-    border-top-left-radius: var(--borderRadiusSmol);
-}
-
-body.bubblechat .mes .mes_text {
-    border-radius: var(--borderRadius);
-    background-color: var(--SmartThemeBotMesBlurTintColor);
-    width: fit-content;
-    padding: 0.625rem 1rem;
-}
-
-body.bubblechat .mes .mes_text #curEditTextarea {
-    width: -webkit-fill-available;
-}
-
-body.bubblechat .mes .mes_text:has(#curEditTextarea) {
-    width: unset;
-}
-
-body.bubblechat .mes_img_container.img_extra,
-body.bubblechat .mes_file_container {
-    margin: 0.5rem 0 0 auto;
-}
-
-body.hideChatAvatars .mes .mesAvatarWrapper {
-    display: none;
-}
-
-body.big-avatars .avatar,
-body.big-avatars .avatar img {
-    width: 50px;
-    height: 75px;
 }
 
 body.waifuMode .expression-holder {
@@ -697,10 +676,12 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
     visibility: hidden;
 }
 
-.mes[is_user="true"]:not(.last_mes) .swipes-counter,
-.mes[is_user="true"]:not(.last_mes) .mes_swipe_left,
-.mes[is_user="true"]:not(.last_mes) .mes_swipe_right {
-    display: none;
+.mes[is_user="true"]:not(.last_mes) {
+    .swipes-counter,
+    .mes_swipe_left,
+    .mes_swipe_right {
+        display: none;
+    }
 }
 
 .mes[is_user="true"] {
@@ -750,7 +731,7 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
     height: 1rem;
 }
 
-.mes .mes_block .mes_text {
+.mes_text {
     line-height: var(--lineHeight);
     padding: 0;
 }
