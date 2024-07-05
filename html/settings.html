@@ -2,12 +2,14 @@
     <div class="inline-drawer">
         <div class="inline-drawer-toggle inline-drawer-header">
             <b>TavernGPT</b>
-            <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+            <div
+                class="inline-drawer-icon fa-solid fa-circle-chevron-down down"
+            ></div>
         </div>
         <div class="inline-drawer-content">
             <div class="flex-container wide100p">
                 <label class="checkbox_label flexBasis100p" for="rename_chats">
-                    <input class="checkbox" id="rename_chats" type="checkbox">
+                    <input class="checkbox" id="rename_chats" type="checkbox" />
                     Automatically Rename Chats
                 </label>
                 <small class="flexBasis100p m-b-1">
@@ -16,18 +18,30 @@
             </div>
             <div class="flex-container wide100p">
                 <label class="checkbox_label flexBasis100p" for="enable_nudges">
-                    <input class="checkbox" id="enable_nudges" type="checkbox">
+                    <input
+                        class="checkbox"
+                        id="enable_nudges"
+                        type="checkbox"
+                    />
                     Enable Nudges
                 </label>
                 <small class="flexBasis100p m-b-1">
-                    Automatically generates 4 CYOA-style choices. Make sure your proxy isn't rate limited before
-                    enabling!
+                    Automatically generates 4 CYOA-style choices. Make sure your
+                    proxy isn't rate limited before enabling!
                 </small>
             </div>
             <div class="flex-container wide100p">
-                <input class="text_pole flex1s" id="api_key_chub" type="text" placeholder="CharacterHub API Key">
+                <input
+                    class="text_pole flex1s"
+                    id="api_key_chub"
+                    type="text"
+                    placeholder="CharacterHub API Key"
+                />
                 <small class="flexBasis100p m-b-1">
-                    Necessary to show characters marked "NSFL" by CharacterHub's moderation team. To get your API key, view the request headers for the search object while logged into CharacterHub.
+                    Necessary to show characters marked "NSFL" by Character
+                    Hub's moderation team. To get your API key, view the request
+                    headers for the search object while logged in. Your API key
+                    will be shown under the 'CH-API-KEY' and 'samwise' headers.
                 </small>
             </div>
             <hr class="sysHR" />

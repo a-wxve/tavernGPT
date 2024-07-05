@@ -1,65 +1,111 @@
 <div id="explore-button" class="drawer">
     <div class="drawer-toggle">
-        <div class="drawer-icon fa-solid fa-cube closedIcon" title="Explore" data-i18n="[title]Explore"></div>
+        <div
+            class="drawer-icon fa-solid fa-cube closedIcon"
+            title="Explore"
+            data-i18n="[title]Explore"
+        ></div>
     </div>
     <div id="explore-block" class="drawer-content closedDrawer">
         <div class="list-and-search-wrapper" id="list-and-search-wrapper">
             <div class="search-container">
-                <div class="flex-container flex-no-wrap flex-align-center">
-                    <label for="characterSearchInput"><i class="fas fa-search"></i></label>
-                    <input type="text" id="characterSearchInput" class="text_pole flex1" placeholder="Search"
-                        autocomplete="off" />
+                <div class="flex-container flexnowrap alignitemscenter">
+                    <label for="characterSearchInput"
+                        ><i class="fas fa-search"></i
+                    ></label>
+                    <input
+                        type="text"
+                        id="characterSearchInput"
+                        class="text_pole flex1"
+                        placeholder="Search"
+                        autocomplete="off"
+                    />
+                    <div class="menu_button" id="characterSearchButton">
+                        Search
+                    </div>
                 </div>
-                <div class="flex-container flex-no-wrap flex-align-center">
-                    <label for="includeTags"><i class="fas fa-plus-square"></i></label>
-                    <input type="text" id="includeTags" class="text_pole flex1"
-                        placeholder="Include tags (comma separated)">
-                    <label for="excludeTags"><i class="fas fa-minus-square"></i></label>
-                    <input type="text" id="excludeTags" class="text_pole flex1"
-                        placeholder="Exclude tags (comma separated)" value="ntr, ">
+                <div class="flex-container flexnowrap alignitemscenter">
+                    <label for="creatorSearch"
+                        ><i class="fas fa-user"></i
+                    ></label>
+                    <input
+                        type="text"
+                        id="creatorSearch"
+                        class="text_pole flex1"
+                        placeholder="Creator"
+                    />
+                    <label for="includeTags"
+                        ><i class="fas fa-plus-square"></i
+                    ></label>
+                    <input
+                        type="text"
+                        id="includeTags"
+                        class="text_pole flex1"
+                        placeholder="Tags (comma separated)"
+                    />
+                    <label for="excludeTags"
+                        ><i class="fas fa-minus-square"></i
+                    ></label>
+                    <input
+                        type="text"
+                        id="excludeTags"
+                        class="text_pole flex1"
+                        placeholder="Excluded tags (comma separated)"
+                        value="ntr, "
+                    />
                 </div>
-                <div class="page-buttons flex-container flex-no-wrap flex-align-center">
-                    <div class="flex-container flex-no-wrap flex-align-center">
-                        <label for="pageNumber">Page:</label>
-                        <input type="number" id="pageNumber" class="text_pole textarea_compact wide10pMinFit" min="1"
-                            value="1">
-                    </div>
-                    <div class="flex-container flex-no-wrap flex-align-center">
-                        <label for="findCount">Items per page:</label>
-                        <input type="number" class="text_pole textarea_compact wide10pMinFit margin0" id="findCount"
-                            min="10" max="1000" step="2" value="24"></input>
-                    </div>
-                    <div class="flex-container flex-no-wrap flex-align-center">
-                        <label for="namespace">Category:</label>
-                        <select class="margin0" id="namespace">
-                            <option value="characters">Characters</option>
-                            <option value="lorebooks">Lorebooks</option>
-                        </select>
-                    </div>
-                    <div class="flex-container flex-no-wrap flex-align-center">
-                        <label for="sortOrder">Sort:</label>
-                        <select class="margin0" id="sortOrder">
-                            <option value="default">Default</option>
-                            <option value="trending_downloads">Trending</option>
-                            <option value="star_count">Popularity</option>
-                            <option value="download_count">Download Count</option>
-                            <option value="id">ID</option>
-                            <option value="rating_count">Rating Count</option>
-                            <option value="last_activity_at">Recently Updated</option>
-                            <option value="created_at">Creation Date</option>
-                            <option value="name">Name</option>
-                            <option value="n_tokens">Token Count</option>
-                            <option value="random">Random</option>
-                        </select>
-                    </div>
-                    <div class="flex-container flex-no-wrap flex-align-center">
-                        <label for="nsfwCheckbox">NSFW:</label>
-                        <input type="checkbox" id="nsfwCheckbox" checked="true">
-                    </div>
-                    <div class="menu_button" id="characterSearchButton">Search</div>
+                <div
+                    class="page-buttons flex-container flexnowrap alignitemscenter"
+                >
+                    <label for="namespace">Category:</label>
+                    <select id="namespace" class="margin0">
+                        <option value="characters">Characters</option>
+                        <option value="lorebooks">Lorebooks</option>
+                    </select>
+                    <label for="pageNumber">Page:</label>
+                    <input
+                        type="number"
+                        id="pageNumber"
+                        class="text_pole textarea_compact"
+                        min="1"
+                        value="1"
+                    />
+                    <label for="findCount">Items/page:</label>
+                    <input
+                        type="number"
+                        id="findCount"
+                        class="text_pole textarea_compact"
+                        min="10"
+                        max="1000"
+                        step="2"
+                        value="24"
+                    />
+                    <label for="sortOrder">Sort by:</label>
+                    <select id="sortOrder" class="margin0">
+                        <option value="download_count">Downloads</option>
+                        <option value="star_count">Popularity</option>
+                        <option value="trending">Trending</option>
+                        <option value="trending_downloads">
+                            Trending (Downloads)
+                        </option>
+                        <option value="id">ID</option>
+                        <option value="rating">Rating</option>
+                        <option value="rating_count">Rating Count</option>
+                        <option value="last_activity_at">
+                            Recently Updated
+                        </option>
+                        <option value="n_favorites">Favorite Count</option>
+                        <option value="created_at">Creation Date</option>
+                        <option value="name">Name</option>
+                        <option value="n_tokens">Token Count</option>
+                        <option value="newcomer">Newcomers</option>
+                        <option value="random">Random</option>
+                    </select>
+                    <label for="nsfwCheckbox">NSFW:</label>
+                    <input type="checkbox" id="nsfwCheckbox" checked="true" />
                 </div>
             </div>
-            <hr>
+            <hr />
             <div class="character-list">
                 <i id="loading" class="fa-regular fa-compass fa-spin fa-4x"></i>
             </div>

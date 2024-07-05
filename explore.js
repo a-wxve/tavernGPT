@@ -42,7 +42,7 @@ async function setupExplorePanel() {
 
     async function downloadCharacter(input) {
         const url = `https://www.chub.ai/characters/${input.trim()}`;
-        console.debug("Custom content import started", url);
+        console.debug("Custom content import started for", url);
 
         let request = null;
         request = await fetch("/api/content/importURL", {
@@ -88,6 +88,7 @@ async function setupExplorePanel() {
         {
             searchTerm,
             namespace,
+            creator,
             includeTags,
             excludeTags,
             nsfw,
@@ -96,6 +97,7 @@ async function setupExplorePanel() {
             page = 1,
         },
         reset,
+        callback,
     ) {
         const $characterList = document.querySelector(
             "#list-and-search-wrapper .character-list",
@@ -109,11 +111,13 @@ async function setupExplorePanel() {
         searchTerm = searchTerm
             ? `search=${searchTerm.replace(/ /g, "+")}&`
             : "";
+        creator = creator ? `&username=${creator}` : "";
         sort = sort || "download_count";
 
-        let url = `https://api.chub.ai/api/characters/`;
+        let url = `https://api.chub.ai/api/${namespace}/`;
         url += `search?${searchTerm}`;
         url += `&namespace=${namespace}`;
+        url += `${creator}`;
         url += `&first=${findCount}`;
         url += `&page=${page}`;
         url += `&sort=${sort}`;
@@ -159,11 +163,11 @@ async function setupExplorePanel() {
             characters.push({
                 url: imageUrl,
                 description:
-                    searchData.nodes[i].tagline || "Description here...",
+                    searchData.nodes[i].tagline || "No description found.",
                 name: searchData.nodes[i].name,
                 fullPath: searchData.nodes[i].fullPath,
                 tags: searchData.nodes[i].topics,
-                author: searchData.nodes[i].fullPath.split("/")[0],
+                creator: searchData.nodes[i].fullPath.split("/")[0],
             });
         });
 
@@ -184,7 +188,7 @@ async function setupExplorePanel() {
             $characterList
                 .querySelectorAll(".download-btn")
                 .forEach((button) => {
-                    button.addEventListener("mousedown", () => {
+                    button.addEventListener("click", () => {
                         downloadCharacter(button.getAttribute("data-path"));
                     });
                 });
@@ -207,9 +211,23 @@ async function setupExplorePanel() {
                     search(event, true);
                 });
             });
+
+            $characterList.querySelectorAll(".creator").forEach((creator) => {
+                const $creatorSearch = document.querySelector("#creatorSearch");
+                const username = creator.innerHTML.toLowerCase();
+
+                creator.addEventListener("click", (event) => {
+                    $creatorSearch.value = `${username}`;
+                    search(event, true);
+                });
+            });
         } else {
             $characterList.innerHTML =
                 '<div class="no-characters-found">No characters found.</div>';
+        }
+
+        if (callback && typeof callback === "function") {
+            callback();
         }
     }
 
@@ -219,9 +237,7 @@ async function setupExplorePanel() {
                 <img class="thumbnail" src="${character.url}">
                 <div class="info">
                     <a href="https://chub.ai/characters/${character.fullPath}" target="_blank"><div class="name">${character.name || "Default Name"}</a>
-                    <a href="https://chub.ai/users/${character.author}" target="_blank">
-                        <span class="author">by ${character.author}</span>
-                    </a>
+                    <span class="creator">by ${character.creator}</span>
                     <div data-path="${character.fullPath}" class="menu_button download-btn fa-solid fa-cloud-arrow-down faSmallFontSquareFix"></div>
                 </div>
                 <div class="description">${character.description}</div>
@@ -239,7 +255,7 @@ async function setupExplorePanel() {
         `;
     }
 
-    function search(event, reset) {
+    function search(event, reset, callback) {
         if (
             event.type === "keydown" &&
             event.key !== "Enter" &&
@@ -248,9 +264,14 @@ async function setupExplorePanel() {
         ) {
             return;
         }
+        const $searchWrapper = document.querySelector(
+            "#list-and-search-wrapper",
+        );
+
         const fetchCharactersDebounced = debounce(
-            (options, reset) => fetchCharacters(options, reset),
-            debounce_timeout.relaxed,
+            (options, reset, callback) =>
+                fetchCharacters(options, reset, callback),
+            debounce_timeout.standard,
         );
         console.log("Search event:", event);
 
@@ -262,24 +283,27 @@ async function setupExplorePanel() {
             return str.split(",").map((tag) => tag.trim());
         };
 
-        const searchTerm = document.querySelector(
+        const searchTerm = $searchWrapper.querySelector(
             "#characterSearchInput",
         ).value;
-        const namespace = document.querySelector("#namespace").value;
+        const creator = $searchWrapper.querySelector("#creatorSearch").value;
+        const namespace = $searchWrapper.querySelector("#namespace").value;
         const includeTags = splitAndTrim(
-            document.querySelector("#includeTags").value,
+            $searchWrapper.querySelector("#includeTags").value,
         );
         const excludeTags = splitAndTrim(
-            document.querySelector("#excludeTags").value,
+            $searchWrapper.querySelector("#excludeTags").value,
         );
-        const nsfw = document.querySelector("#nsfwCheckbox").checked;
-        const findCount = document.querySelector("#findCount").value;
-        const sort = document.querySelector("#sortOrder").value;
-        let page = document.querySelector("#pageNumber").value;
+        const nsfw = $searchWrapper.querySelector("#nsfwCheckbox").checked;
+        const findCount = $searchWrapper.querySelector("#findCount").value;
+        const sort = $searchWrapper.querySelector("#sortOrder").value;
+        let page = $searchWrapper.querySelector("#pageNumber").value;
 
-        fetchCharactersDebounced({
+        fetchCharactersDebounced(
+            {
                 searchTerm,
                 namespace,
+                creator,
                 includeTags,
                 excludeTags,
                 nsfw,
@@ -288,6 +312,7 @@ async function setupExplorePanel() {
                 page,
             },
             reset,
+            callback,
         );
     }
 
@@ -315,24 +340,28 @@ async function setupExplorePanel() {
         }
     }
 
+    let isLoading = false;
     function infiniteScroll(event) {
+        if (isLoading) return;
         const $characterList = document.querySelector(
             "#list-and-search-wrapper .character-list",
         );
         const $pageNumber = document.querySelector("#pageNumber");
+        const scrollThreshold = 100;
 
-        if (
+        const distanceFromBottom =
             $characterList.scrollHeight -
-                Math.round($characterList.scrollTop) -
-                100 <=
-            $characterList.clientHeight
-        ) {
+            ($characterList.scrollTop + $characterList.clientHeight);
+
+        if (distanceFromBottom <= scrollThreshold) {
+            isLoading = true;
             $pageNumber.value = Math.max(
                 1,
                 parseInt($pageNumber.value.toString()) + 1,
             );
-            toastr.info(`Loading page ${$pageNumber.value}...`);
-            search(event, false);
+            search(event, false, () => {
+                isLoading = false;
+            });
         }
     }
 
@@ -368,7 +397,7 @@ async function setupExplorePanel() {
 
     const infiniteScrollDebounced = debounce(
         (event) => infiniteScroll(event),
-        debounce_timeout.standard,
+        debounce_timeout.quick,
     );
     let popupImage = null;
 
@@ -378,7 +407,7 @@ async function setupExplorePanel() {
 
     $searchWrapper
         .querySelectorAll(
-            "#characterSearchInput, #namespace, #includeTags, #excludeTags, #findCount, #sortOrder, #nsfwCheckbox",
+            "#characterSearchInput, #creatorSearch, #namespace, #includeTags, #excludeTags, #findCount, #sortOrder, #nsfwCheckbox",
         )
         .forEach((element) => {
             element.addEventListener("change", searchHandler);
@@ -389,7 +418,7 @@ async function setupExplorePanel() {
         .addEventListener("click", searchHandler);
 
     $characterList.addEventListener("scroll", infiniteScrollDebounced);
-    $characterList.addEventListener("mousedown", popupImageHandler);
+    $characterList.addEventListener("click", popupImageHandler);
 
     $characterList.scrollTop = 0;
     $pageNumber.value = 1;
@@ -409,7 +438,7 @@ export async function loadExplorePanel() {
     const $explore_toggle = document.querySelector(
         "#explore-button .drawer-toggle",
     );
-    $explore_toggle.addEventListener("mousedown", () => {
+    $explore_toggle.addEventListener("click", () => {
         const icon = $explore_toggle.querySelector(".drawer-icon");
         const drawer =
             $explore_toggle.parentNode.querySelector(".drawer-content");
