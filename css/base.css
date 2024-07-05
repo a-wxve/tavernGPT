@@ -28,6 +28,8 @@ body.bubblechat {
         margin-bottom: 0;
     }
     .mes[is_user="true"] {
+        background-color: #0000;
+        padding: 0 10px;
         .mesAvatarWrapper {
             display: none;
         }
@@ -54,8 +56,6 @@ body.bubblechat {
         .timestamp {
             align-self: end;
         }
-        background-color: #0000;
-        padding: 0 10px;
     }
     .mes[is_user="false"] .mes_text {
         border-top-left-radius: var(--borderRadiusSmol);
@@ -95,7 +95,7 @@ body.waifuMode .expression-holder {
 }
 
 #top-bar,
-#persona-management-button .drawer-icon:before,
+#persona-management-button .drawer-icon::before,
 #ReverseProxyWarningMessage,
 #quickReplyPopoutButton,
 #summaryExtensionPopoutButton,
@@ -116,7 +116,7 @@ body.waifuMode .expression-holder {
     position: fixed;
 }
 
-#top-settings-holder:before {
+#top-settings-holder::before {
     content: "";
     z-index: -1;
     backdrop-filter: blur(9px);
@@ -164,12 +164,12 @@ body.waifuMode .expression-holder {
     font-size: 1.5rem;
 }
 
-.drawer-icon:before {
+.drawer-icon::before {
     width: 36px;
     display: inline-block;
 }
 
-.drawer-icon:after {
+.drawer-icon::after {
     vertical-align: middle;
     font-size: 18px;
     font-weight: 700;
@@ -221,11 +221,11 @@ body.waifuMode .expression-holder {
     }
 }
 
-#ai-config-button .drawer-icon:before {
+#ai-config-button .drawer-icon::before {
     content: "";
 }
 
-#ai-config-button .drawer-icon:after {
+#ai-config-button .drawer-icon::after {
     content: " Settings";
 }
 
@@ -240,7 +240,7 @@ body.waifuMode .expression-holder {
     order: 2;
 }
 
-#sys-settings-button .drawer-icon:after {
+#sys-settings-button .drawer-icon::after {
     content: " API Settings";
 }
 
@@ -261,7 +261,7 @@ body.waifuMode .expression-holder {
     order: 3;
 }
 
-#advanced-formatting-button .drawer-icon:after {
+#advanced-formatting-button .drawer-icon::after {
     content: " Formatting";
 }
 
@@ -284,7 +284,7 @@ body.waifuMode .expression-holder {
     order: 4;
 }
 
-#WI-SP-button .drawer-icon:after {
+#WI-SP-button .drawer-icon::after {
     content: " Lorebooks";
 }
 
@@ -301,7 +301,7 @@ body.waifuMode .expression-holder {
     order: 5;
 }
 
-#user-settings-button .drawer-icon:after {
+#user-settings-button .drawer-icon::after {
     content: " User Settings";
 }
 
@@ -325,11 +325,11 @@ body.waifuMode .expression-holder {
     order: 6;
 }
 
-#logo_block .drawer-icon:before {
+#logo_block .drawer-icon::before {
     content: "";
 }
 
-#logo_block .drawer-icon:after {
+#logo_block .drawer-icon::after {
     content: " Backgrounds";
 }
 
@@ -342,11 +342,11 @@ body.waifuMode .expression-holder {
     order: 7;
 }
 
-#extensions-settings-button .drawer-icon:before {
+#extensions-settings-button .drawer-icon::before {
     content: "";
 }
 
-#extensions-settings-button .drawer-icon:after {
+#extensions-settings-button .drawer-icon::after {
     content: " Extensions";
 }
 
@@ -355,7 +355,7 @@ body.waifuMode .expression-holder {
     z-index: 1;
     width: inherit;
     order: 13;
-    margin-left: -0.666em;
+    margin-left: -0.675rem;
     position: fixed;
     bottom: -3px;
 }
@@ -391,7 +391,11 @@ body.waifuMode .expression-holder {
     order: 8;
 }
 
-#rightNavHolder .drawer-icon:after {
+#rightNavHolder .drawer-icon::before {
+    content: "\f0c0";
+}
+
+#rightNavHolder .drawer-icon::after {
     content: "Characters";
     margin-left: -3px;
 }
@@ -409,7 +413,7 @@ body.waifuMode .expression-holder {
     width: max-content;
 }
 
-#rightNavHolder #right-nav-panel #rm_button_characters:after {
+#rightNavHolder #right-nav-panel #rm_button_characters::after {
     content: " All Characters";
     font-family: var(--fontFamily);
     font-weight: 700;
@@ -417,13 +421,13 @@ body.waifuMode .expression-holder {
 
 #rightNavHolder
     #right-nav-panel:has(#rm_ch_create_block[style*="display: block"])
-    #rm_button_characters:before {
+    #rm_button_characters::before {
     content: "";
 }
 
 #rightNavHolder
     #right-nav-panel:has(#rm_ch_create_block[style*="display: block"])
-    #rm_button_characters:after {
+    #rm_button_characters::after {
     content: " Back";
     font-family: var(--fontFamily);
     font-weight: 700;
@@ -432,7 +436,7 @@ body.waifuMode .expression-holder {
 #rightNavHolder
     #right-nav-panel:has(#rm_ch_create_block[style*="display: none"])
     #rm_button_selected_ch
-    h2:not(:empty):after {
+    h2:not(:empty)::after {
     content: " ";
     font-family: "Font Awesome 6 Free";
     font-weight: 900;
@@ -630,11 +634,11 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
     background-color: transparent !important;
 }
 
-#extensionsMenuButton.fa-magic-wand-sparkles:before {
+#extensionsMenuButton.fa-magic-wand-sparkles::before {
     content: "";
 }
 
-#options_button:before {
+#options_button::before {
     content: "";
 }
 
@@ -655,11 +659,11 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
     margin-right: 0.25rem;
 }
 
-#send_but:before {
+#send_but::before {
     content: "";
 }
 
-#mes_continue:before {
+#mes_continue::before {
     content: "";
 }
 
@@ -728,7 +732,7 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
 
 .mes .mes_block .mes_edit_buttons .menu_button {
     aspect-ratio: 3;
-    height: 1rem;
+    height: 21px;
 }
 
 .mes_text {
@@ -775,7 +779,7 @@ body:not(.bubblechat) .mes[is_user="true"] .name_text {
     line-height: 0;
 }
 
-body:not(.bubblechat) .mes[is_user="true"] .name_text:after {
+body:not(.bubblechat) .mes[is_user="true"] .name_text::after {
     text-indent: 0;
     visibility: visible;
     line-height: initial;
