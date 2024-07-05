@@ -46,7 +46,7 @@ function getPersona() {
         );
     });
 
-    $persona_button.addEventListener("mousedown", () => {
+    $persona_button.addEventListener("click", () => {
         $persona_button
             .closest(".drawer-content")
             .classList.toggle("closedDrawer openDrawer");
@@ -63,12 +63,10 @@ function toggleSidebar() {
         </button>`,
     );
 
-    document
-        .querySelector("#sidebarToggle")
-        .addEventListener("mousedown", () => {
-            $settings_holder.classList.toggle("collapsed");
-            document.querySelector("#sheld").classList.toggle("collapsed");
-        });
+    document.querySelector("#sidebarToggle").addEventListener("click", () => {
+        $settings_holder.classList.toggle("collapsed");
+        document.querySelector("#sheld").classList.toggle("collapsed");
+    });
 }
 
 async function initSettings() {
@@ -83,12 +81,12 @@ async function initSettings() {
     const $enable_nudges = document.querySelector("#enable_nudges");
     const $api_key_chub = document.querySelector("#api_key_chub");
 
-    $rename_chats.addEventListener("mousedown", () => {
+    $rename_chats.addEventListener("click", () => {
         extension_settings[extensionName].rename_chats = $rename_chats.checked;
         saveSettingsDebounced();
     });
 
-    $enable_nudges.addEventListener("mousedown", () => {
+    $enable_nudges.addEventListener("click", () => {
         extension_settings[extensionName].enable_nudges =
             $enable_nudges.checked;
 
@@ -170,9 +168,9 @@ function loadSplashText() {
         "It's so over!",
         "Can generate hands!",
         "Slight twist on the upstroke!",
-        "(´• ω •`) ",
-        "(´- ω -`) ",
-        "(`・ω・´) ",
+        "(´• ω •`)",
+        "(´- ω -`)",
+        "(`・ω・´)",
         "Big if true!",
         "Meta BTFO!",
         "Groq!",
@@ -217,6 +215,26 @@ function loadSplashText() {
         "Boku Desu!",
         "Beff Jezos!",
         "Cuteposting!",
+        "Sorry, I can't help with that request!",
+        "AI Safety?",
+        "ASI!",
+        "SSI!",
+        "What did Ilya see?",
+        "Artificial General Intelligence!",
+        "Artificial Superintelligence!",
+        "Safe Superintelligence!",
+        "Mixture of Experts!",
+        "Mixture of Agents!",
+        "Mixture of Depths!",
+        "Mixture of Depths and Experts!",
+        "MoE!",
+        "MoA!",
+        "MoD!",
+        "MoDE!",
+        "Safety Sex Cult!",
+        "Feel the AGI!",
+        "Emergent capabilities!",
+        "I'm sorry, but as an AI language model I can't do X, Y, and Z!",
     ];
 
     function setSplashText() {
@@ -228,7 +246,7 @@ function loadSplashText() {
             const $splash = document.querySelector("#splash");
             $splash.innerHTML =
                 splashes[Math.floor(Math.random() * splashes.length)];
-            $splash.addEventListener("mousedown", () => {
+            $splash.addEventListener("click", () => {
                 $splash.innerHTML =
                     splashes[Math.floor(Math.random() * splashes.length)];
             });
@@ -267,7 +285,7 @@ async function initNudgeUI() {
                 );
                 button
                     .querySelector("#nudge_prompt")
-                    .addEventListener("mousedown", (event) => {
+                    .addEventListener("click", (event) => {
                         document.querySelector("#send_textarea").value =
                             event.target.textContent;
                         $nudges.style.display = "none";
@@ -278,12 +296,6 @@ async function initNudgeUI() {
 }
 
 function setMobileUI() {
-    const $sheld = document.querySelector("#sheld");
-    $sheld.insertAdjacentHTML(
-        "afterbegin",
-        '<div class="flex-container" id="chat_header"></div>',
-    );
-
     function addChatHeader() {
         const $chat_header = $sheld.querySelector("#chat_header");
         const $last_mes = $sheld.querySelector(".last_mes");
@@ -302,6 +314,12 @@ function setMobileUI() {
             .querySelector(".ch_name")
             .append(mesID, mesTimer, tokenCount);
     }
+
+    const $sheld = document.querySelector("#sheld");
+    $sheld.insertAdjacentHTML(
+        "afterbegin",
+        '<div class="flex-container" id="chat_header"></div>',
+    );
 
     eventSource.on("chatLoaded", addChatHeader);
     eventSource.on("character_message_rendered", addChatHeader);
@@ -327,8 +345,8 @@ function moveSwipeButtons() {
             ".last_mes .mes_swipe_right",
         );
 
-        $mes_swipe_left.addEventListener("mousedown", handleSwipe);
-        $mes_swipe_right.addEventListener("mousedown", handleSwipe);
+        $mes_swipe_left.addEventListener("click", handleSwipe);
+        $mes_swipe_right.addEventListener("click", handleSwipe);
     }
 
     const $mesTemplate = document.querySelector("#message_template");
@@ -383,7 +401,7 @@ function main() {
     const $rightNavPin = $rightNavPanel.querySelector("#rm_button_panel_pin");
     $rightNavPanel
         .querySelector("#advanced_div")
-        .addEventListener("mousedown", () => {
+        .addEventListener("click", () => {
             if ($rightNavPin.checked == false) $rightNavPin.click();
         });
     $characterPopup.addEventListener("keydown", (event) => {
@@ -397,7 +415,7 @@ function main() {
     });
     $characterPopup
         .querySelector("#character_cross")
-        .addEventListener("mousedown", () => {
+        .addEventListener("click", () => {
             if ($rightNavPin.checked == true) $rightNavPin.click();
         });
 
