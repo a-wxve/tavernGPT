@@ -1,0 +1,40 @@
+input[type="checkbox"],
+input[type="checkbox"]:not(#nav-toggle):not(#rm_button_panel_pin):not(
+        #lm_button_panel_pin
+    ):not(#WI_panel_pin) {
+    box-shadow: none;
+    border: none;
+    outline: none;
+}
+
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+input[type="checkbox"]:focus-visible {
+    outline: none;
+}
+
+hr {
+    background-image: none;
+    background-color: var(--SmartThemeBodyColor);
+}
+
+input[type="checkbox"] {
+    appearance: auto;
+    transform: initial;
+    filter: initial;
+    display: initial;
+    margin: 0;
+    align-self: center;
+}
+
+input[type="checkbox"]::before {
+    content: initial;
+}
+
+#extensions_settings .inline-drawer-toggle.inline-drawer-header,
+#extensions_settings2 .inline-drawer-toggle.inline-drawer-header,
+#user-settings-block h4,
+.standoutHeader {
+    background-image: none;
+}

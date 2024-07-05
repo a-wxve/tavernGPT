@@ -1,0 +1,908 @@
+:root {
+    color-scheme: only dark;
+    --fontFamily: "SF Pro", system-ui, -apple-system, BlinkMacSystemFont,
+        "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --fontFamilyMono: "SF Mono", SFMono-Regular, ui-monospace,
+        "DejaVu Sans Mono", Menlo, Consolas, monospace;
+    --mainFontSize: calc(var(--fontScale) * 17px);
+    --lineHeight: calc(var(--mainFontSize) * 1.5);
+    --barSize: 20%;
+    --panelSize: 42.5%;
+    --insidePadding: 10px;
+    --borderRadius: 1.5rem;
+    --borderRadiusSmol: 0.625rem;
+    --transition: all 0.2s ease-in-out;
+}
+
+*,
+html,
+body {
+    font-family: var(--fontFamily);
+}
+
+body.bubblechat .mes {
+    background-color: #0000;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 0;
+}
+
+body.bubblechat .mes[is_user="true"] {
+    background-color: #0000;
+    padding: 0 10px;
+}
+
+body.bubblechat .mes[is_user="true"] .mesAvatarWrapper {
+    display: none;
+}
+
+body.bubblechat .mes[is_user="true"] .mes_block {
+    justify-content: end;
+    max-width: 90%;
+    margin-left: auto;
+    padding-left: 0;
+    padding-right: 0;
+    overflow-y: hidden;
+}
+
+body.bubblechat
+    .mes[is_user="true"]
+    .mes_block
+    .ch_name.flex-container.justifySpaceBetween {
+    display: none;
+}
+
+body.bubblechat .mes[is_user="true"] .mes_block .mes_text {
+    background-color: var(--SmartThemeUserMesBlurTintColor);
+    margin-top: 0;
+    margin-left: auto;
+}
+
+body.bubblechat .mes[is_user="true"] .mes_block .mes_buttons,
+body.bubblechat .mes[is_user="true"] .mes_block .mes_edit_buttons {
+    justify-content: flex-end;
+}
+
+body.bubblechat .mes[is_user="true"] .mes_block .mes_edit_buttons {
+    float: right;
+}
+
+body.bubblechat .mes[is_user="true"] .mes_block .mes_img_container.img_extra {
+    background-color: #0000;
+    border-radius: 0;
+    padding: 0;
+}
+
+body.bubblechat .mes[is_user="true"] .mes_block .timestamp {
+    align-self: end;
+}
+
+body.bubblechat .mes[is_user="false"] .mes_text {
+    border-top-left-radius: var(--borderRadiusSmol);
+}
+
+body.bubblechat .mes .mes_text {
+    border-radius: var(--borderRadius);
+    background-color: var(--SmartThemeBotMesBlurTintColor);
+    width: fit-content;
+    padding: 0.625rem 1rem;
+}
+
+body.bubblechat .mes .mes_text #curEditTextarea {
+    width: -webkit-fill-available;
+}
+
+body.bubblechat .mes .mes_text:has(#curEditTextarea) {
+    width: unset;
+}
+
+body.bubblechat .mes_img_container.img_extra,
+body.bubblechat .mes_file_container {
+    margin: 0.5rem 0 0 auto;
+}
+
+body.hideChatAvatars .mes .mesAvatarWrapper {
+    display: none;
+}
+
+body.big-avatars .avatar,
+body.big-avatars .avatar img {
+    width: 50px;
+    height: 75px;
+}
+
+body.waifuMode .expression-holder {
+    left: var(--barSize);
+}
+
+#top-bar,
+#persona-management-button .drawer-icon:before,
+#ReverseProxyWarningMessage,
+#quickReplyPopoutButton,
+#summaryExtensionPopoutButton,
+.mes_edit_copy,
+.mes_edit_up,
+.mes_edit_down {
+    display: none !important;
+}
+
+#top-settings-holder {
+    background-color: var(--SmartThemeBlurTintColor);
+    width: var(--barSize);
+    padding: var(--insidePadding);
+    transition: var(--transition);
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100dvh;
+    position: fixed;
+}
+
+#top-settings-holder:before {
+    content: "";
+    z-index: -1;
+    backdrop-filter: blur(9px);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#top-settings-holder.collapsed {
+    visibility: collapse;
+    width: 0 !important;
+}
+
+#top-settings-holder.collapsed #ai-config-button,
+#top-settings-holder.collapsed #sys-settings-button,
+#top-settings-holder.collapsed #advanced-formatting-button,
+#top-settings-holder.collapsed #WI-SP-button,
+#top-settings-holder.collapsed #logo_block,
+#top-settings-holder.collapsed #extensions-settings-button,
+#top-settings-holder.collapsed #persona-management-button,
+#top-settings-holder.collapsed #user-settings-button,
+#top-settings-holder.collapsed #rightNavHolder,
+#top-settings-holder.collapsed .historyButton,
+#top-settings-holder.collapsed #select_chat_div,
+#top-settings-holder.collapsed #select_chat_search,
+#top-settings-holder.collapsed #explore-button {
+    display: none;
+}
+
+.drawer {
+    justify-content: left;
+}
+
+.drawer-toggle,
+.drawer-icon {
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+
+.drawer-icon {
+    padding: 0.36rem;
+    font-size: 1.5rem;
+}
+
+.drawer-icon:before {
+    width: 36px;
+    display: inline-block;
+}
+
+.drawer-icon:after {
+    vertical-align: middle;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: var(--fontFamily);
+}
+
+.drawer-toggle {
+    border-radius: var(--borderRadiusSmol);
+}
+
+.drawer-toggle:hover {
+    background-color: var(--white30a);
+}
+
+#sys-settings-button,
+#advanced-formatting-button,
+#WI-SP-button,
+#logo_block,
+#extensions-settings-button,
+#user-settings-button {
+    padding-left: 1rem;
+}
+
+#ai-config-button {
+    order: 1;
+}
+
+#ai-config-button:not(:has(.openIcon))
+    ~ #sys-settings-button:not(:has(.openIcon)),
+#ai-config-button:not(:has(.openIcon))
+    ~ #advanced-formatting-button:not(:has(.openIcon)),
+#ai-config-button:not(:has(.openIcon)) ~ #WI-SP-button:not(:has(.openIcon)),
+#ai-config-button:not(:has(.openIcon))
+    ~ #extensions-settings-button:not(:has(.openIcon)),
+#ai-config-button:not(:has(.openIcon)) ~ #logo_block:not(:has(.openIcon)),
+#ai-config-button:not(:has(.openIcon))
+    ~ #user-settings-button:not(:has(.openIcon)) {
+    display: none;
+}
+
+#ai-config-button .drawer-toggle {
+    align-items: center;
+    display: flex;
+}
+
+#ai-config-button {
+    .drawer-toggle:not(:hover) ~ .inline-drawer-icon {
+        opacity: 0.3;
+    }
+}
+
+#ai-config-button .drawer-icon:before {
+    content: "";
+}
+
+#ai-config-button .drawer-icon:after {
+    content: " Settings";
+}
+
+#ai-config-button > .inline-drawer-icon {
+    font-size: calc(var(--mainFontSize) * 1.25);
+    pointer-events: none;
+    position: absolute;
+    right: 9%;
+}
+
+#sys-settings-button {
+    order: 2;
+}
+
+#sys-settings-button .drawer-icon:after {
+    content: " API Settings";
+}
+
+#sys-settings-button:has(.openIcon) ~ #advanced-formatting-button,
+#sys-settings-button:has(.openIcon) ~ #WI-SP-button,
+#sys-settings-button:has(.openIcon) ~ #extensions-settings-button,
+#sys-settings-button:has(.openIcon) ~ #logo_block,
+#sys-settings-button:has(.openIcon) ~ #user-settings-button,
+#sys-settings-button:has(+ #advanced-formatting-button .openIcon),
+#sys-settings-button:has(~ #WI-SP-button .openIcon),
+#sys-settings-button:has(~ #extensions-settings-button .openIcon),
+#sys-settings-button:has(~ #logo_block .openIcon),
+#sys-settings-button:has(~ #user-settings-button .openIcon) {
+    display: flex !important;
+}
+
+#advanced-formatting-button {
+    order: 3;
+}
+
+#advanced-formatting-button .drawer-icon:after {
+    content: " Formatting";
+}
+
+#advanced-formatting-button:has(.openIcon) ~ #WI-SP-button,
+#advanced-formatting-button:has(.openIcon) ~ #extensions-settings-button,
+#advanced-formatting-button:has(.openIcon) ~ #logo_block,
+#advanced-formatting-button:has(.openIcon) ~ #user-settings-button,
+#advanced-formatting-button:has(~ #WI-SP-button .openIcon),
+#advanced-formatting-button:has(~ #extensions-settings-button .openIcon),
+#advanced-formatting-button:has(~ #logo_block .openIcon),
+#advanced-formatting-button:has(~ #user-settings-button .openIcon) {
+    display: flex !important;
+}
+
+#advanced-formatting-button .drawer-content > .flex-container {
+    flex-direction: column;
+}
+
+#WI-SP-button {
+    order: 4;
+}
+
+#WI-SP-button .drawer-icon:after {
+    content: " Lorebooks";
+}
+
+#WI-SP-button:has(.openIcon) ~ #extensions-settings-button,
+#WI-SP-button:has(.openIcon) ~ #logo_block,
+#WI-SP-button:has(.openIcon) ~ #user-settings-button,
+#WI-SP-button:has(~ #extensions-settings-button .openIcon),
+#WI-SP-button:has(~ #logo_block .openIcon),
+#WI-SP-button:has(~ #user-settings-button .openIcon) {
+    display: flex !important;
+}
+
+#user-settings-button {
+    order: 5;
+}
+
+#user-settings-button .drawer-icon:after {
+    content: " User Settings";
+}
+
+#user-settings-button:has(.openIcon) ~ #extensions-settings-button,
+#user-settings-button:has(.openIcon) ~ #logo_block,
+#user-settings-button:has(~ #extensions-settings-button .openIcon),
+#user-settings-button:has(~ #logo_block .openIcon) {
+    display: flex !important;
+}
+
+#user-settings-button
+    .flex-container.flexFlowRow.alignitemscenter.spaceBetween {
+    flex-wrap: wrap;
+}
+
+#user-settings-button #user-settings-block-content {
+    flex-direction: column;
+}
+
+#logo_block {
+    order: 6;
+}
+
+#logo_block .drawer-icon:before {
+    content: "";
+}
+
+#logo_block .drawer-icon:after {
+    content: " Backgrounds";
+}
+
+#logo_block:has(.openIcon) ~ #extensions-settings-button,
+#logo_block:has(~ #extensions-settings-button .openIcon) {
+    display: flex !important;
+}
+
+#extensions-settings-button {
+    order: 7;
+}
+
+#extensions-settings-button .drawer-icon:before {
+    content: "";
+}
+
+#extensions-settings-button .drawer-icon:after {
+    content: " Extensions";
+}
+
+#persona-management-button {
+    padding: var(--borderRadiusSmol);
+    z-index: 1;
+    width: inherit;
+    order: 13;
+    margin-left: -0.666em;
+    position: fixed;
+    bottom: -3px;
+}
+
+#persona-management-button .drawer-icon {
+    align-items: center;
+    gap: 8px;
+    display: flex;
+}
+
+#persona-management-button .drawer-icon.closedIcon {
+    opacity: 0.72 !important;
+}
+
+#persona-management-button .drawer-icon.closedIcon:hover {
+    opacity: 1 !important;
+}
+
+#persona-management-button .drawer-icon span {
+    font-size: 18px;
+    font-weight: 720;
+    font-family: var(--fontFamily);
+}
+
+#persona-management-button .persona_avatar {
+    object-fit: cover;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+}
+
+#rightNavHolder {
+    order: 8;
+}
+
+#rightNavHolder .drawer-icon:after {
+    content: "Characters";
+    margin-left: -3px;
+}
+
+#rightNavHolder
+    #right-nav-panel
+    #CharListButtonAndHotSwaps
+    .flexFlowColumn.flex-container {
+    flex-flow: row-reverse;
+    flex: 1;
+    justify-content: space-between;
+}
+
+#rightNavHolder #right-nav-panel #rm_button_characters {
+    width: max-content;
+}
+
+#rightNavHolder #right-nav-panel #rm_button_characters:after {
+    content: " All Characters";
+    font-family: var(--fontFamily);
+    font-weight: 700;
+}
+
+#rightNavHolder
+    #right-nav-panel:has(#rm_ch_create_block[style*="display: block"])
+    #rm_button_characters:before {
+    content: "";
+}
+
+#rightNavHolder
+    #right-nav-panel:has(#rm_ch_create_block[style*="display: block"])
+    #rm_button_characters:after {
+    content: " Back";
+    font-family: var(--fontFamily);
+    font-weight: 700;
+}
+
+#rightNavHolder
+    #right-nav-panel:has(#rm_ch_create_block[style*="display: none"])
+    #rm_button_selected_ch
+    h2:not(:empty):after {
+    content: " ";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+
+#rightNavHolder
+    #right-nav-panel
+    #form_create:has(#firstMessageWrapper[style*="display: none"])
+    #mes_example_div {
+    display: none;
+}
+
+#rightNavHolder #right-nav-panel #form_create #firstmessage_textarea {
+    flex: none;
+    height: 20svh !important;
+}
+
+#rightNavHolder #right-nav-panel #form_create textarea {
+    resize: none;
+}
+
+#rightNavHolder #right-nav-panel #CharListButtonAndHotSwaps {
+    flex-wrap: wrap;
+}
+
+#rightNavHolder
+    #right-nav-panel
+    #CharListButtonAndHotSwaps
+    .hotswap.avatars_inline.flex-container.expander {
+    max-height: calc(
+        var(--avatar-base-height) * var(--big-avatar-height-factor) + 2 *
+            var(--avatar-base-border-radius) - 10px
+    );
+    flex-wrap: nowrap;
+    overflow-x: scroll;
+}
+
+#rightNavHolder #right-nav-panel .wide100p.character_name_block {
+    flex-direction: column;
+    gap: 0;
+}
+
+#sidebarToggle {
+    cursor: pointer;
+    transition: var(--transition);
+    background-color: #0000;
+    border: none;
+    order: 11;
+    position: absolute;
+    top: 45%;
+    left: 103%;
+    visibility: visible !important;
+}
+
+#top-settings-holder:has(.drawer-icon.openIcon) #sidebarToggle {
+    display: none;
+}
+
+#top-settings-holder.collapsed #sidebarToggle {
+    left: 0.5rem;
+}
+
+#top-settings-holder.collapsed #sidebarToggle .arrow1 {
+    transform: rotate(-35deg) translateY(0.25rem);
+}
+
+#top-settings-holder.collapsed #sidebarToggle .arrow2 {
+    transform: rotate(35deg) translateY(-0.25rem);
+}
+
+#sidebarToggle .arrow1,
+#sidebarToggle .arrow2 {
+    transition: var(--transition);
+    background-color: #fff;
+    width: 0.25rem;
+    height: 1.25rem;
+}
+
+#sidebarToggle .arrow1 {
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+
+#sidebarToggle .arrow2 {
+    border-bottom-right-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+}
+
+#sidebarToggle:hover .arrow1 {
+    transform: rotate(35deg) translateY(0.25rem);
+}
+
+#sidebarToggle:hover .arrow2 {
+    transform: rotate(-35deg) translateY(-0.25rem);
+}
+
+.drawer-content,
+#right-nav-panel,
+#character_popup {
+    width: var(--panelSize);
+    top: 0;
+    right: inherit;
+    left: var(--barSize);
+    padding: var(--insidePadding);
+    background-color: var(--SmartThemeChatTintColor);
+    box-shadow: none;
+    border: 0;
+    border-radius: 0;
+    height: 100dvh;
+    padding-bottom: 0;
+    position: fixed;
+    max-height: 100dvh !important;
+}
+
+#sheld {
+    max-width: calc(100% - var(--barSize));
+    top: 0;
+    left: var(--barSize);
+    padding: 0px var(--insidePadding);
+    background-color: var(--SmartThemeChatTintColor);
+    backdrop-filter: blur(var(--SmartThemeBlurStrength));
+    height: 100dvh;
+    max-height: 100dvh;
+}
+
+#top-settings-holder:has(.drawer-content.openDrawer):not(
+        :has(#explore-button .drawer-content.openDrawer)
+    )
+    ~ #sheld,
+#top-settings-holder:has(.drawer-content.pinnedOpen) ~ #sheld,
+body:has(#character_popup[style*="display: flex"]) > #sheld {
+    left: initial;
+    width: calc(100% - var(--barSize) - var(--panelSize));
+}
+
+:is(
+        #top-settings-holder:has(.drawer-content.openDrawer):not(
+                :has(#explore-button .drawer-content.openDrawer)
+            )
+            ~ #sheld,
+        #top-settings-holder:has(.drawer-content.pinnedOpen) ~ #sheld,
+        body:has(#character_popup[style*="display: flex"]) > #sheld
+    )
+    #splash {
+    top: 9px;
+    left: 63px;
+}
+
+#sheld.collapsed {
+    transition: var(--transition);
+    left: 0;
+}
+
+#sheld.shifted {
+    left: 33%;
+}
+
+#chat {
+    backdrop-filter: none;
+    background-color: #0000;
+    max-height: 100dvh;
+}
+
+#chat::-webkit-scrollbar {
+    width: 0;
+}
+
+#form_sheld {
+    backdrop-filter: blur(9px);
+    margin: 0 0 0 -10px;
+    padding: 10px;
+    position: absolute;
+    bottom: 0;
+}
+
+#form_sheld:has(#send_form.no-connection) {
+    background-color: var(--crimson70a);
+}
+
+#hypeBotBar {
+    padding: 0 0 10px 10px;
+}
+
+#send_form {
+    &:has(#send_textarea:focus-visible) {
+        outline: none;
+    }
+    border: none;
+    border-radius: 10px;
+    background-color: transparent;
+    backdrop-filter: none;
+}
+
+#send_form.no-connection {
+    background-color: transparent !important;
+}
+
+#extensionsMenuButton.fa-magic-wand-sparkles:before {
+    content: "";
+}
+
+#options_button:before {
+    content: "";
+}
+
+#send_textarea {
+    border-radius: var(--borderRadius);
+    clip-path: none;
+    background-color: var(--SmartThemeBlurTintColor);
+    resize: none;
+    border-color: #0000;
+    padding: 6px 1rem;
+}
+
+#send_textarea::placeholder {
+    text-align: left;
+}
+
+#rightSendForm {
+    margin-right: 0.25rem;
+}
+
+#send_but:before {
+    content: "";
+}
+
+#mes_continue:before {
+    content: "";
+}
+
+.mes {
+    padding: 10px;
+}
+
+.mes.last_mes {
+    padding-bottom: 4.5rem !important;
+}
+
+.mes.last_mes > .swipe_left,
+.mes.last_mes > .swipe_right {
+    visibility: hidden;
+}
+
+.mes[is_user="true"]:not(.last_mes) .swipes-counter,
+.mes[is_user="true"]:not(.last_mes) .mes_swipe_left,
+.mes[is_user="true"]:not(.last_mes) .mes_swipe_right {
+    display: none;
+}
+
+.mes[is_user="true"] {
+    padding: 0 10px;
+}
+
+.mes .swipes .swipes-counter {
+    opacity: 0;
+    transition: var(--transition);
+    font-weight: 500;
+}
+
+.mes .swipes .mes_swipe_left,
+.mes .swipes .mes_swipe_right {
+    cursor: pointer;
+    transition: var(--transition);
+    filter: drop-shadow(0 0 2px #000);
+    opacity: 0;
+}
+
+.mes .mes_buttons,
+.mes .mes_edit_buttons {
+    float: none;
+    justify-content: flex-start;
+}
+
+.mes .mes_block .timestamp {
+    order: 1;
+}
+
+.mes .mes_block .ch_name.flex-container.justifySpaceBetween {
+    margin-bottom: 0.5rem;
+}
+
+.mes .mes_block .mes_buttons {
+    margin-top: 0.5rem;
+    padding: 0;
+}
+
+.mes .mes_block .mes_edit_buttons {
+    margin-top: 0.5rem;
+    padding-bottom: 0;
+}
+
+.mes .mes_block .mes_edit_buttons .menu_button {
+    aspect-ratio: 3;
+    height: 1rem;
+}
+
+.mes .mes_block .mes_text {
+    line-height: var(--lineHeight);
+    padding: 0;
+}
+
+.mes .mes_block .mes_text > :last-child {
+    margin-bottom: 0;
+}
+
+.mes .mes_block .mes_text p {
+    margin-bottom: var(--lineHeight);
+}
+
+.mes .mes_block .mes_text h1,
+.mes .mes_block .mes_text h2,
+.mes .mes_block .mes_text h3,
+.mes .mes_block .mes_text h4,
+.mes .mes_block .mes_text a:not(.fa-solid) {
+    margin-top: 0;
+    margin-left: 0;
+}
+
+.mes .mes_block .mes_text ol,
+.mes .mes_block .mes_text ul {
+    margin-block: 10px;
+    padding-inline-start: 30px;
+}
+
+.mes .mes_block .mes_text #curEditTextarea {
+    resize: none;
+    font-family: inherit;
+    font-weight: inherit;
+    line-height: var(--lineHeight);
+    background-color: #0000;
+    border: none;
+    padding: 0;
+}
+
+body:not(.bubblechat) .mes[is_user="true"] .name_text {
+    visibility: hidden;
+    text-indent: -999px;
+    line-height: 0;
+}
+
+body:not(.bubblechat) .mes[is_user="true"] .name_text:after {
+    text-indent: 0;
+    visibility: visible;
+    line-height: initial;
+    display: block;
+    content: "(You)" !important;
+}
+
+/* these rules have to be nested to get around silly's css sanitization */
+.mes {
+    &:hover {
+        .swipes {
+            .swipes-counter {
+                opacity: 0.7;
+            }
+            .mes_swipe_left,
+            .mes_swipe_right {
+                opacity: 0.3;
+            }
+        }
+    }
+
+    &:not(:hover) {
+        .mes_buttons,
+        .mesIDDisplay,
+        .mes_timer,
+        .tokenCounterDisplay {
+            opacity: 0;
+        }
+    }
+
+    .swipes .mes_swipe_left:hover,
+    .swipes .mes_swipe_right:hover {
+        opacity: 1;
+    }
+}
+
+.mes .mesIDDisplay,
+.mes .mes_timer,
+.mes .tokenCounterDisplay {
+    transition: var(--transition);
+}
+
+.mes .mes_img_controls {
+    height: 100%;
+}
+
+.mes .right_menu_button.fa-lg.fa-solid.fa-magnifying-glass.mes_img_enlarge {
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes splash {
+    0% {
+        transform: scale(0.9) rotate(-10deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(-10deg);
+    }
+}
+
+#splash {
+    text-align: center;
+    color: #ff0;
+    height: 0;
+    margin: 0;
+    font-style: normal;
+    animation: 0.25s infinite alternate splash;
+    position: relative;
+    left: 5%;
+    text-shadow: 2px 2px #3f3f00 !important;
+}
+
+.icon-svg.timestamp-icon {
+    height: calc(var(--mainFontSize) + 1px);
+}
+
+#avatarCropWrap .cropper-face.cropper-move {
+    opacity: 1;
+    background-color: #ffffff1a;
+    border: 3px solid #39f;
+    border-radius: 100%;
+    height: 66.666%;
+    top: 16.5%;
+}
+
+.expression-holder {
+    resize: none;
+    width: fit-content;
+}
+
+.zoomed_avatar,
+.zoomed_avatar img {
+    z-index: 10000;
+}
+
+.range-block-title {
+    text-align: left;
+}
+
+code,
+code.hljs,
+code [class^="hljs-"] {
+    font-family: var(--fontFamilyMono);
+}
+
+body #toast-container {
+    top: 0;
+}
