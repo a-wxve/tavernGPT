@@ -235,8 +235,7 @@ async function setupExplorePanel() {
                 });
             });
         } else {
-            $characterList.innerHTML =
-                '<div class="no-characters-found">No characters found.</div>';
+            toastr.info("No characters found.");
         }
 
         if (callback && typeof callback === "function") {
