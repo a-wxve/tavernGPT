@@ -214,7 +214,7 @@ async function setupExplorePanel() {
 
             $characterList.querySelectorAll(".creator").forEach((creator) => {
                 const $creatorSearch = document.querySelector("#creatorSearch");
-                const username = creator.innerHTML.toLowerCase();
+                const username = creator.innerHTML.toLowerCase().split(" ")[1];
 
                 creator.addEventListener("click", (event) => {
                     $creatorSearch.value = `${username}`;
