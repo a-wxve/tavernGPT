@@ -58,16 +58,8 @@
     padding-top: 0 !important;
 }
 
-.mes .mesAvatarWrapper {
-    display: none;
-}
-
 .mes .mes_block .ch_name.flex-container.justifySpaceBetween {
     justify-content: end;
-}
-
-body.bubblechat .mes .mes_block .flex-container.flex1.alignitemscenter {
-    display: none;
 }
 
 body.bubblechat .mes[is_user="true"] .mes_block {
