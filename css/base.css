@@ -69,7 +69,7 @@ body.bubblechat {
     .mes_text:has(#curEditTextarea) {
         width: unset;
     }
-    .mes_buttons[style*="display: none"] ~ .mes_edit_buttons {
+    .mes_edit_buttons[style*="display: inline-flex"] {
         display: flex !important;
     }
     .mes_img_container.img_extra,
@@ -859,7 +859,7 @@ body:not(.bubblechat) .mes[is_user="true"] .name_text::after {
     height: calc(var(--mainFontSize) + 1px);
 }
 
-#avatarCropWrap .cropper-face.cropper-move {
+.cropper-crop-box .cropper-face.cropper-move {
     opacity: 1;
     background-color: #ffffff1a;
     border: 3px solid #39f;

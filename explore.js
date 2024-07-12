@@ -397,7 +397,6 @@ async function setupExplorePanel() {
             popupImage.style.position = "absolute";
             popupImage.style.top = `${rect.top + window.scrollY}px`;
             popupImage.style.left = `${rect.left + window.scrollX}px`;
-            popupImage.style.transform = "scale(4)";
             popupImage.style.zIndex = "99999";
             popupImage.style.objectFit = "contain";
 
@@ -437,6 +436,7 @@ async function setupExplorePanel() {
 }
 
 export async function loadExplorePanel() {
+    let exploreFirstOpen = true;
     await fetch(`${extensionFolderPath}/html/explore.html`)
         .then((data) => data.text())
         .then((data) => {
@@ -444,7 +444,6 @@ export async function loadExplorePanel() {
                 .querySelector("#top-settings-holder")
                 .insertAdjacentHTML("beforeend", data);
         });
-
     setupExplorePanel();
 
     const $explore_toggle = document.querySelector(
@@ -491,7 +490,10 @@ export async function loadExplorePanel() {
             icon.classList.replace("closedIcon", "openIcon");
             drawer.classList.replace("closedDrawer", "openDrawer");
 
-            drawer.querySelector("#characterSearchButton").click();
+            if (exploreFirstOpen) {
+                drawer.querySelector("#characterSearchButton").click();
+                exploreFirstOpen = false;
+            }
         } else if (drawerOpen) {
             icon.classList.replace("openIcon", "closedIcon");
 
