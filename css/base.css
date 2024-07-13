@@ -1,10 +1,9 @@
 :root {
     color-scheme: only dark;
-    --fontFamily: "SF Pro", system-ui, -apple-system, BlinkMacSystemFont,
+    --mainFontFamily: "SF Pro", system-ui, -apple-system, BlinkMacSystemFont,
         "Helvetica Neue", Helvetica, Arial, sans-serif;
-    --fontFamilyMono: "SF Mono", SFMono-Regular, ui-monospace,
+    --monoFontFamily: "SF Mono", SFMono-Regular, ui-monospace,
         "DejaVu Sans Mono", Menlo, Consolas, monospace;
-    --mainFontSize: calc(var(--fontScale) * 17px);
     --lineHeight: calc(var(--mainFontSize) * 1.5);
     --barSize: 20%;
     --panelSize: 42.5%;
@@ -12,12 +11,6 @@
     --borderRadius: 1.5rem;
     --borderRadiusSmol: 0.625rem;
     --transition: all 0.2s ease-in-out;
-}
-
-*,
-html,
-body {
-    font-family: var(--fontFamily);
 }
 
 body.bubblechat {
@@ -173,7 +166,7 @@ body.waifuMode .expression-holder {
     vertical-align: middle;
     font-size: 18px;
     font-weight: 700;
-    font-family: var(--fontFamily);
+    font-family: var(--mainFontFamily);
 }
 
 .drawer-toggle {
@@ -377,7 +370,7 @@ body.waifuMode .expression-holder {
 #persona-management-button .drawer-icon span {
     font-size: 18px;
     font-weight: 720;
-    font-family: var(--fontFamily);
+    font-family: var(--mainFontFamily);
 }
 
 #persona-management-button .persona_avatar {
@@ -415,7 +408,7 @@ body.waifuMode .expression-holder {
 
 #rightNavHolder #right-nav-panel #rm_button_characters::after {
     content: " All Characters";
-    font-family: var(--fontFamily);
+    font-family: var(--mainFontFamily);
     font-weight: 700;
 }
 
@@ -429,7 +422,7 @@ body.waifuMode .expression-holder {
     #right-nav-panel:has(#rm_ch_create_block[style*="display: block"])
     #rm_button_characters::after {
     content: " Back";
-    font-family: var(--fontFamily);
+    font-family: var(--mainFontFamily);
     font-weight: 700;
 }
 
@@ -851,7 +844,6 @@ body:not(.bubblechat) .mes[is_user="true"] .name_text::after {
     font-style: normal;
     animation: 0.25s infinite alternate splash;
     position: relative;
-    left: 5%;
     text-shadow: 2px 2px #3f3f00 !important;
 }
 
@@ -880,12 +872,6 @@ body:not(.bubblechat) .mes[is_user="true"] .name_text::after {
 
 .range-block-title {
     text-align: left;
-}
-
-code,
-code.hljs,
-code [class^="hljs-"] {
-    font-family: var(--fontFamilyMono);
 }
 
 body #toast-container {
