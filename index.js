@@ -12,7 +12,12 @@ import { loadChatHistory } from "./history.js";
 
 export const extensionName = "tavernGPT";
 export const extensionFolderPath = `scripts/extensions/third-party/${extensionName}`;
-const defaultSettings = {};
+const default_settings = {
+    rename_chats: true,
+    enable_nudges: false,
+    api_key_chub: "",
+    background_list: [],
+};
 
 function getPersona() {
     const $persona_button = document.querySelector(
@@ -105,9 +110,16 @@ async function initSettings() {
     });
 
     extension_settings[extensionName] = extension_settings[extensionName] || {};
-    if (Object.keys(extension_settings[extensionName]).length === 0) {
-        Object.assign(extension_settings[extensionName], defaultSettings);
+    var settingsChanged = false;
+
+    for (const key in default_settings) {
+        if (!(key in extension_settings[extensionName])) {
+            extension_settings[extensionName][key] = default_settings[key];
+            settingsChanged = true;
+        }
     }
+
+    if (settingsChanged) saveSettingsDebounced();
 
     if (extension_settings[extensionName].rename_chats) $rename_chats.click();
     if (extension_settings[extensionName].enable_nudges) $enable_nudges.click();
@@ -368,6 +380,60 @@ function moveSwipeButtons() {
     eventSource.on("message_deleted", registerSwipeButtons);
 }
 
+function randomizeBackground() {
+    const $background_menu = document.querySelector("#logo_block");
+
+    document
+        .querySelector("#background_template .bg_example")
+        .insertAdjacentHTML(
+            "beforeend",
+            `<input type="checkbox" title="Add to randomization list" class="bg_button bg_randomizer" tabindex="0"></div>`,
+        );
+
+    $background_menu.addEventListener("click", () => {
+        const backgroundList =
+            extension_settings[extensionName].background_list;
+        $background_menu
+            .querySelectorAll(".bg_randomizer")
+            .forEach((background) => {
+                if (
+                    backgroundList.includes(
+                        background.parentNode.getAttribute("bgfile"),
+                    )
+                ) {
+                    background.setAttribute("checked", "true");
+                }
+            });
+    });
+
+    $background_menu.addEventListener("click", (event) => {
+        const backgroundList =
+            extension_settings[extensionName].background_list;
+        if (event.target.matches(".bg_randomizer")) {
+            event.stopPropagation();
+            const filename = event.target.parentNode.getAttribute("bgfile");
+            backgroundList.includes(filename)
+                ? backgroundList.splice(backgroundList.indexOf(filename), 1)
+                : backgroundList.push(filename);
+            saveSettingsDebounced();
+        }
+    });
+
+    if (!extension_settings[extensionName].background_list) return;
+
+    const backgroundList = extension_settings[extensionName].background_list;
+    const idx = Math.floor(Math.random() * backgroundList.length) || 0;
+    const backgroundURL = `backgrounds/${backgroundList[idx]}`;
+    fetch(backgroundURL)
+        .then(() => {
+            document.querySelector("#bg1").style.backgroundImage =
+                `url(${backgroundURL})`;
+        })
+        .catch(() => {
+            console.log(`Background ${backgroundURL} could not be set`);
+        });
+}
+
 function main() {
     function checkWaifuVisibility() {
         const $waifuImage = document.querySelector("#expression-image");
@@ -379,6 +445,7 @@ function main() {
     }
 
     initSettings();
+    randomizeBackground();
     getPersona();
     toggleSidebar();
     loadExplorePanel();
