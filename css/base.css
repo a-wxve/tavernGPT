@@ -741,19 +741,28 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
     margin-bottom: var(--lineHeight);
 }
 
+.mes .mes_block .mes_text p:has(+ ol),
+.mes .mes_block .mes_text p:has(+ ul) {
+    margin-bottom: calc(var(--lineHeight) / 2);
+}
+
 .mes .mes_block .mes_text h1,
 .mes .mes_block .mes_text h2,
 .mes .mes_block .mes_text h3,
 .mes .mes_block .mes_text h4,
 .mes .mes_block .mes_text a:not(.fa-solid) {
-    margin-top: 0;
-    margin-left: 0;
+    margin: 0 0 calc(var(--lineHeight) / 2) 0;
 }
 
 .mes .mes_block .mes_text ol,
 .mes .mes_block .mes_text ul {
-    margin-block: 10px;
-    padding-inline-start: 30px;
+    margin-block: calc(var(--lineHeight) / 2);
+    padding-inline-start: 2rem;
+}
+
+.mes .mes_block .mes_text ol:has(+ p),
+.mes .mes_block .mes_text ul:has(+ p) {
+    margin-block-end: var(--lineHeight);
 }
 
 .mes .mes_block .mes_text #curEditTextarea {
@@ -837,6 +846,7 @@ body:not(.bubblechat) .mes[is_user="true"] .name_text::after {
 }
 
 #splash {
+    left: 2.5rem;
     text-align: center;
     color: #ff0;
     height: 0;
