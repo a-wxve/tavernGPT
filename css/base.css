@@ -846,7 +846,7 @@ body:not(.bubblechat) .mes[is_user="true"] .name_text::after {
 }
 
 #splash {
-    left: 2.5rem;
+    left: 2rem;
     text-align: center;
     color: #ff0;
     height: 0;

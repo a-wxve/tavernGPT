@@ -1,3 +1,21 @@
+body.bubblechat {
+    .mes[is_user="true"] .mes_block {
+        padding-right: 0;
+
+        .mes_text {
+            border-radius: var(--borderRadius);
+        }
+    }
+}
+
+body.hideChatAvatars .mesAvatarWrapper {
+    display: none;
+}
+
+body.waifuMode .expression-holder {
+    left: 0;
+}
+
 #sheld {
     border-radius: 0;
     height: 100dvh;
@@ -6,14 +24,14 @@
 }
 
 #sheld #chat_header {
-    background-color: var(--SmartThemeChatTintColor);
     z-index: 100;
     justify-content: center;
     width: 100%;
-    margin-left: -3px;
-    padding: 0.63rem;
-    position: fixed;
+    padding: 10px;
+    position: absolute;
     top: 0;
+    left: 0;
+    backdrop-filter: blur(9px);
 }
 
 #sheld #chat_header .avatar {
@@ -44,10 +62,6 @@
     padding-top: 6rem;
 }
 
-#sheld #form_sheld #send_form {
-    border: none;
-}
-
 #sheld #form_sheld #send_form #leftSendForm,
 #sheld #form_sheld #send_form #rightSendForm {
     align-self: center;
@@ -62,21 +76,27 @@
     justify-content: end;
 }
 
-body.bubblechat .mes[is_user="true"] .mes_block {
-    padding-right: 0;
+#chat
+    > div.mes
+    > div.mes_block
+    > div.ch_name.flex-container.justifySpaceBetween
+    > div
+    > div {
+    display: none;
 }
 
-body.bubblechat .mes[is_user="true"] .mes_block .mes_text {
-    border-radius: var(--borderRadius);
+#form_sheld {
+    bottom: 1rem;
+    right: 0px;
 }
 
 #top-settings-holder {
-    padding: 0.62rem 0.18rem;
-    width: 50% !important;
+    padding: 0.75rem 0.25rem;
+    width: 66% !important;
 }
 
 #top-settings-holder:not(.collapsed) ~ #sheld {
-    filter: brightness(45%);
+    filter: brightness(50%);
 }
 
 #top-settings-holder.collapsed #ai-config-button,
@@ -108,7 +128,7 @@ body.bubblechat .mes[is_user="true"] .mes_block .mes_text {
     min-width: calc(100dvw - 3.06rem) !important;
     max-width: calc(100dvw - 3.06rem) !important;
     top: 0 !important;
-    left: 3.06rem !important;
+    left: 3rem !important;
 }
 
 #character_popup {
@@ -131,6 +151,8 @@ body.bubblechat .mes[is_user="true"] .mes_block .mes_text {
 
 #persona-management-button {
     position: absolute !important;
+    bottom: 0.5rem;
+    left: 0.25rem;
 }
 
 .character-list-item {
@@ -139,8 +161,4 @@ body.bubblechat .mes[is_user="true"] .mes_block .mes_text {
 
 #splash {
     left: 45px;
-}
-
-body.waifuMode .expression-holder {
-    left: 0;
 }
