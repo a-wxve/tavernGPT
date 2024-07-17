@@ -9,6 +9,7 @@ import {
     getChatsFromFiles,
     getPastCharacterChats,
     getRequestHeaders,
+    reloadCurrentChat,
     this_chid,
 } from "../../../../script.js";
 import { extension_settings, getContext } from "../../../extensions.js";
@@ -274,7 +275,8 @@ async function renameChat() {
                     characters[this_chid].chat;
             }
 
-            displayPastChats();
+            await reloadCurrentChat();
+            await displayPastChats();
         } catch {
             await callPopup(
                 "An error has occurred. Chat was not renamed.",
