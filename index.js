@@ -486,10 +486,14 @@ function main() {
             if ($rightNavPin.checked == true) $rightNavPin.click();
         });
 
-    const $exampleMessages = $characterPopup.querySelector("#mes_example_div");
-    $rightNavPanel
-        .querySelector("#firstMessageWrapper")
-        .after($exampleMessages);
+    $characterPopup.querySelector("#mes_example_div").remove();
+    fetch(`${extensionFolderPath}/html/example_mes.html`)
+        .then((data) => data.text())
+        .then((data) => {
+            $rightNavPanel
+                .querySelector("#form_create")
+                .insertAdjacentHTML("beforeend", data);
+        });
 
     const $sheld = document.querySelector("#sheld");
     $sheld.setAttribute("tabindex", "0");
