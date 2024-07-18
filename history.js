@@ -255,8 +255,8 @@ async function renameChat() {
         try {
             await fetch("/api/chats/rename", {
                 method: "POST",
-                body: JSON.stringify(body),
                 headers: getRequestHeaders(),
+                body: JSON.stringify(body),
             }).catch(() => {
                 throw new Error("Unsuccessful request.");
             });
@@ -271,11 +271,20 @@ async function renameChat() {
                 if (characters[this_chid].chat == old_filename) {
                     characters[this_chid].chat = new_filename;
                 }
+
                 document.querySelector("#selected_chat_pole").value =
                     characters[this_chid].chat;
+
+                await fetch("/api/characters/merge-attributes", {
+                    method: "POST",
+                    headers: getRequestHeaders(),
+                    body: JSON.stringify({
+                        avatar: characters[this_chid].avatar,
+                        chat: characters[this_chid].chat,
+                    }),
+                });
             }
 
-            await reloadCurrentChat();
             await displayPastChats();
         } catch {
             await callPopup(
@@ -339,8 +348,8 @@ export async function loadChatHistory() {
 
     document.addEventListener("click", openChat, true);
 
-    eventSource.on("chat_id_changed", () => {
-        displayPastChats();
+    eventSource.on("chat_id_changed", async () => {
+        await displayPastChats();
         if (extension_settings[extensionName].rename_chats) renameChat();
     });
 }
