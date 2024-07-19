@@ -1,44 +1,13 @@
 import { getRequestHeaders, processDroppedFiles } from "../../../../script.js";
 import { debounce_timeout } from "../../../constants.js";
 import { extension_settings } from "../../../extensions.js";
+import { POPUP_TYPE, callGenericPopup } from "../../../popup.js";
 import { debounce, delay } from "../../../utils.js";
 import { extensionFolderPath, extensionName } from "./index.js";
 
 async function setupExplorePanel() {
-    async function getCharacter(fullPath) {
-        let response = await fetch(
-            "https://api.chub.ai/api/characters/download",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    fullPath: fullPath,
-                    format: "tavern",
-                    version: "main",
-                }),
-            },
-        );
-
-        if (!response.ok) {
-            console.log(
-                `Request failed for ${fullPath}, trying backup endpoint`,
-            );
-            response = await fetch(
-                `https://avatars.charhub.io/avatars/${fullPath}/avatar.webp`,
-                {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                },
-            );
-        }
-
-        let data = await response.blob();
-        return data;
-    }
+    let totalCharactersLoaded = 0;
+    let isLoading = false;
 
     async function downloadCharacter(input) {
         const url = `https://www.chub.ai/characters/${input.trim()}`;
@@ -82,6 +51,120 @@ async function setupExplorePanel() {
                 console.error("Unknown content type", customContentType);
                 break;
         }
+    }
+
+    function generateCharacterListItem(character, index) {
+        return `
+            <div class="character-list-item" data-index="${index}">
+                <div class="thumbnail">
+                    <img src="${character.avatar}">
+                    <div data-path="${character.fullPath}" class="menu_button menu_button_icon wide100p">
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                        <span data-i18n="Download">Download</span>
+                    </div>
+                </div>
+                <div class="info">
+                    <div class="name">${character.name || "Default Name"}
+                    <span class="creator">by ${character.creator}</span>
+                </div>
+                <div class="tagline">${character.tagline}</div>
+                <div class="tags">
+                ${character.tags
+                    .map((tag) =>
+                        document
+                            .querySelector("#includeTags")
+                            .value.includes(tag.toLowerCase())
+                            ? `<span class="tag included">${tag}</span>`
+                            : `<span class="tag">${tag}</span>`,
+                    )
+                    .join("")}
+                </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function generateCharacterPopup(character) {
+        function generateStarRating(rating) {
+            const fullStars = Math.floor(rating);
+            const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+
+            let starsHTML = "";
+            for (let i = 0; i < fullStars; i++) {
+                starsHTML += '<i class="fa-solid fa-star"></i>';
+            }
+
+            if (halfStar) {
+                starsHTML += '<i class="fa-solid fa-star-half-stroke"></i>';
+            }
+
+            return starsHTML;
+        }
+
+        const popupHTML = `<div class="flex-container flexnowrap chubPopup">
+                <div>
+                    <img src="${character.url}" alt="${character.name}">
+                    <div data-path="${character.fullPath}" class="menu_button menu_button_icon wide100p">
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                        <span data-i18n="Download">Download</span>
+                    </div>
+                    <div class="chubDescription">
+                        ${generateStarRating(character.rating)} ${character.rating}/5
+                    </div>
+                    <div class="chubDescription">
+                        <i class="fa-solid ${character.rating > 3 ? `fa-thumbs-up` : `fa-thumbs-down`}"></i>
+                        <span>${character.numRatings} ratings</span>
+                    </div>
+                    <div class="chubDescription">
+                        <i class="fa-solid fa-star"></i>
+                        <span>${character.starCount} stars</span>
+                    </div>
+                    <div class="chubDescription">
+                        <i class="fa-solid fa-heart"></i>
+                        <span>${character.numfavorites} favorites</span>
+                    </div>
+                    <div class="chubDescription">
+                        <i class="fa-solid fa-comments"></i>
+                        <span>${character.numChats} chats</span>
+                    </div>
+                    <div class="chubDescription">
+                        <i class="fa-solid fa-comment-dots"></i>
+                        <span>${character.numMessages} messages</span>
+                    </div>
+                </div>
+                <div class="chubContent">
+                    <div>
+                        <h3>${character.name}</h3>
+                        <h5>by ${character.creator}</h5>
+                    </div>
+                    <div class="chubDescription">
+                        <p>${character.tagline}</p>
+                        <p>${character.description}</p>
+                    </div>
+                    <p class="tags">
+                    ${character.tags
+                        .map((tag) =>
+                            document
+                                .querySelector("#includeTags")
+                                .value.includes(tag.toLowerCase())
+                                ? `<span class="tag included">${tag}</span>`
+                                : `<span class="tag">${tag}</span>`,
+                        )
+                        .join("")}
+                    </p>
+                    <p>
+                        <i class="fa-solid fa-book"></i>
+                        <span>${character.numTokens} tokens</span>
+                        <i class="fa-solid fa-cake-candles"></i>
+                        <span>Created ${new Date(character.createdAt).toLocaleDateString()}</span>
+                        <i class="fa-solid fa-pen-nib"></i>
+                        <span>Last Updated ${new Date(character.lastActivityAt).toLocaleDateString()}</span>
+                    </p>
+                </div>
+            </div>
+            `;
+
+        callGenericPopup(popupHTML, POPUP_TYPE.DISPLAY, "", { wider: true });
     }
 
     async function fetchCharacters(
@@ -152,9 +235,34 @@ async function setupExplorePanel() {
         }).then((data) => data.json());
 
         const characters = [];
-
-        let characterPromises = searchData.nodes.map((node) =>
-            getCharacter(node.fullPath),
+        let characterPromises = searchData.nodes.map(
+            async (node) =>
+                await fetch("https://api.chub.ai/api/characters/download", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        fullPath: node.fullPath,
+                        format: "tavern",
+                        version: "main",
+                    }),
+                })
+                    .catch(async () => {
+                        toastr.warning(
+                            `CHub API request failed, trying backup endpoint...`,
+                        );
+                        return await fetch(
+                            `https://avatars.charhub.io/avatars/${node.fullPath}/avatar.webp`,
+                            {
+                                method: "GET",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                            },
+                        );
+                    })
+                    .then((response) => response.blob()),
         );
         let characterBlobs = await Promise.all(characterPromises);
 
@@ -162,20 +270,38 @@ async function setupExplorePanel() {
             let imageUrl = URL.createObjectURL(character);
             characters.push({
                 url: imageUrl,
+                avatar: searchData.nodes[i].avatar_url,
                 description:
-                    searchData.nodes[i].tagline || "No description found.",
+                    searchData.nodes[i].description || "No description found.",
+                tagline: searchData.nodes[i].tagline || "No tagline found.",
                 name: searchData.nodes[i].name,
                 fullPath: searchData.nodes[i].fullPath,
                 tags: searchData.nodes[i].topics,
                 creator: searchData.nodes[i].fullPath.split("/")[0],
+                starCount: searchData.nodes[i].starCount,
+                lastActivityAt: searchData.nodes[i].lastActivityAt,
+                createdAt: searchData.nodes[i].createdAt,
+                numTokens: searchData.nodes[i].nTokens,
+                numfavorites: searchData.nodes[i].n_favorites,
+                rating: searchData.nodes[i].rating,
+                numRatings: searchData.nodes[i].ratingCount,
+                numChats: searchData.nodes[i].nChats,
+                numMessages: searchData.nodes[i].nMessages,
             });
         });
 
         $characterList.classList.remove("searching");
 
+        if (reset) totalCharactersLoaded = 0;
+
         if (characters && characters.length > 0) {
             const characterHTML = characters
-                .map(generateCharacterListItem)
+                .map((character, index) =>
+                    generateCharacterListItem(
+                        character,
+                        totalCharactersLoaded + index,
+                    ),
+                )
                 .join("");
 
             if (reset) {
@@ -184,6 +310,42 @@ async function setupExplorePanel() {
             } else {
                 $characterList.insertAdjacentHTML("beforeend", characterHTML);
             }
+
+            totalCharactersLoaded += characters.length;
+
+            $characterList.querySelectorAll(".name").forEach((name) => {
+                name.addEventListener("click", () => {
+                    const index = parseInt(
+                        name.parentNode.parentNode.getAttribute("data-index"),
+                    );
+                    console.log(index);
+                    generateCharacterPopup(
+                        characters[
+                            index - totalCharactersLoaded + characters.length
+                        ],
+                    );
+                });
+            });
+
+            $characterList
+                .querySelectorAll(".thumbnail img")
+                .forEach((avatar) => {
+                    avatar_url.addEventListener("click", () => {
+                        const index = parseInt(
+                            avatar.parentNode.parentNode.getAttribute(
+                                "data-index",
+                            ),
+                        );
+                        console.log(index);
+                        generateCharacterPopup(
+                            characters[
+                                index -
+                                    totalCharactersLoaded +
+                                    characters.length
+                            ],
+                        );
+                    });
+                });
 
             $characterList
                 .querySelectorAll(".download-btn")
@@ -235,36 +397,12 @@ async function setupExplorePanel() {
                 });
             });
         } else {
-            toastr.info("No characters found.");
+            toastr.error("No characters found.");
         }
 
         if (callback && typeof callback === "function") {
             callback();
         }
-    }
-
-    function generateCharacterListItem(character, index) {
-        return `
-            <div class="character-list-item" data-index="${index}">
-                <img class="thumbnail" src="${character.url}">
-                <div class="info">
-                    <a href="https://chub.ai/characters/${character.fullPath}" target="_blank"><div class="name">${character.name || "Default Name"}</a>
-                    <span class="creator">by ${character.creator}</span>
-                    <div data-path="${character.fullPath}" class="menu_button download-btn fa-solid fa-cloud-arrow-down faSmallFontSquareFix"></div>
-                </div>
-                <div class="description">${character.description}</div>
-                <div class="tags">${character.tags
-                    .map((tag) =>
-                        document
-                            .querySelector("#includeTags")
-                            .value.includes(tag.toLowerCase())
-                            ? `<span class="tag included">${tag}</span>`
-                            : `<span class="tag">${tag}</span>`,
-                    )
-                    .join("")}</div>
-                </div>
-            </div>
-        `;
     }
 
     function search(event, reset, callback) {
@@ -352,7 +490,6 @@ async function setupExplorePanel() {
         }
     }
 
-    let isLoading = false;
     function infiniteScroll(event) {
         if (isLoading) return;
         const $characterList = document.querySelector(
@@ -377,40 +514,10 @@ async function setupExplorePanel() {
         }
     }
 
-    function popupImageHandler(event) {
-        const $characterList = document.querySelector(
-            "#list-and-search-wrapper .character-list",
-        );
-
-        if (event.target.tagName === "IMG") {
-            const image = event.target;
-
-            if (popupImage) {
-                $characterList.removeChild(popupImage);
-                popupImage = null;
-                return;
-            }
-
-            const rect = image.getBoundingClientRect();
-
-            popupImage = image.cloneNode(true);
-            popupImage.style.position = "absolute";
-            popupImage.style.top = `${rect.top + window.scrollY}px`;
-            popupImage.style.left = `${rect.left + window.scrollX}px`;
-            popupImage.style.zIndex = "99999";
-            popupImage.style.objectFit = "contain";
-
-            $characterList.appendChild(popupImage);
-
-            event.stopPropagation();
-        }
-    }
-
     const infiniteScrollDebounced = debounce(
         (event) => infiniteScroll(event),
         debounce_timeout.quick,
     );
-    let popupImage = null;
 
     const $searchWrapper = document.querySelector("#list-and-search-wrapper");
     const $characterList = $searchWrapper.querySelector(".character-list");
@@ -429,7 +536,6 @@ async function setupExplorePanel() {
         .addEventListener("click", searchHandler);
 
     $characterList.addEventListener("scroll", infiniteScrollDebounced);
-    $characterList.addEventListener("click", popupImageHandler);
 
     $characterList.scrollTop = 0;
     $pageNumber.value = 1;

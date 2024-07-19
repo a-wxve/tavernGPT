@@ -83,22 +83,25 @@
                     <label for="sortOrder">Sort by:</label>
                     <select id="sortOrder" class="margin0">
                         <option value="download_count">Most Downloaded</option>
-                        <option value="star_count">Popularity</option>
+                        <option value="star_count">Most Starred</option>
                         <option value="trending">Trending</option>
                         <option value="trending_downloads">
                             Trending (Downloads)
                         </option>
                         <option value="id">ID</option>
                         <option value="rating">Rating</option>
-                        <option value="rating_count">Rating Count</option>
+                        <option value="rating_count">Most Rated</option>
                         <option value="last_activity_at">
                             Recently Updated
                         </option>
-                        <option value="n_favorites">Favorite Count</option>
+                        <option value="n_favorites">Most Favorited</option>
                         <option value="created_at">Creation Date</option>
                         <option value="name">Name</option>
                         <option value="n_tokens">Token Count</option>
                         <option value="newcomer">Newcomers</option>
+                        <option value="msgs_chat">Messages per chat</option>
+                        <option value="msgs_user">Messages per user</option>
+                        <option value="chats_user">Chats per user</option>
                         <option value="random">Random</option>
                     </select>
                     <label for="nsfwCheckbox">NSFW:</label>
@@ -107,7 +110,7 @@
             </div>
             <hr />
             <div class="character-list">
-                <i id="loading" class="fa-regular fa-compass fa-spin fa-4x"></i>
+                <i id="loading" class="fa-solid fa-compass fa-shake fa-4x"></i>
             </div>
         </div>
     </div>
