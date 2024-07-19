@@ -58,9 +58,10 @@ body.bubblechat {
         background-color: var(--SmartThemeBotMesBlurTintColor);
         width: fit-content;
         padding: 0.625rem 1rem;
-    }
-    .mes_text:has(#curEditTextarea) {
-        width: unset;
+
+        &:has(#curEditTextarea) {
+            width: unset;
+        }
     }
     .mes_edit_buttons[style*="display: inline-flex"] {
         display: flex !important;
@@ -94,7 +95,10 @@ body.waifuMode .expression-holder {
 #summaryExtensionPopoutButton,
 .mes_edit_copy,
 .mes_edit_up,
-.mes_edit_down {
+.mes_edit_down,
+#option_select_chat,
+#option_start_new_chat,
+#load_select_chat_div {
     display: none !important;
 }
 
@@ -412,22 +416,18 @@ body.waifuMode .expression-holder {
     font-weight: 700;
 }
 
-#rightNavHolder
-    #right-nav-panel:has(#rm_ch_create_block[style*="display: block"])
+#right-nav-panel:has(#rm_ch_create_block[style*="display: block"]) {
     #rm_button_characters::before {
-    content: "";
-}
-
-#rightNavHolder
-    #right-nav-panel:has(#rm_ch_create_block[style*="display: block"])
+        content: "";
+    }
     #rm_button_characters::after {
-    content: " Back";
-    font-family: var(--mainFontFamily);
-    font-weight: 700;
+        content: " Back";
+        font-family: var(--mainFontFamily);
+        font-weight: 700;
+    }
 }
 
-#rightNavHolder
-    #right-nav-panel:has(#rm_ch_create_block[style*="display: none"])
+#right-nav-panel:has(#rm_ch_create_block[style*="display: none"])
     #rm_button_selected_ch
     h2:not(:empty)::after {
     content: " ";
@@ -435,39 +435,29 @@ body.waifuMode .expression-holder {
     font-weight: 900;
 }
 
-#rightNavHolder
-    #right-nav-panel
-    #form_create:has(#firstMessageWrapper[style*="display: none"])
-    #mes_example_div {
+#form_create:has(#firstMessageWrapper[style*="display: none"])
+    #exampleMesWrapper {
     display: none;
 }
 
-#rightNavHolder #right-nav-panel #form_create #firstmessage_textarea {
+#firstmessage_textarea {
     flex: none;
     height: 20svh !important;
 }
 
-#rightNavHolder #right-nav-panel #form_create textarea {
+#form_create textarea {
     resize: none;
 }
 
-#rightNavHolder #right-nav-panel #CharListButtonAndHotSwaps {
+#CharListButtonAndHotSwaps {
     flex-wrap: wrap;
 }
 
-#rightNavHolder
-    #right-nav-panel
-    #CharListButtonAndHotSwaps
-    .hotswap.avatars_inline.flex-container.expander {
-    max-height: calc(
-        var(--avatar-base-height) * var(--big-avatar-height-factor) + 2 *
-            var(--avatar-base-border-radius) - 10px
-    );
-    flex-wrap: nowrap;
-    overflow-x: scroll;
+.hotswap.avatars_inline.flex-container.expander {
+    max-height: fit-content;
 }
 
-#rightNavHolder #right-nav-panel .wide100p.character_name_block {
+.character_name_block {
     flex-direction: column;
     gap: 0;
 }
@@ -673,7 +663,7 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
     visibility: hidden;
 }
 
-.mes[is_user="true"]:not(.last_mes) {
+.mes:not(.last_mes) {
     .swipes-counter,
     .mes_swipe_left,
     .mes_swipe_right {
