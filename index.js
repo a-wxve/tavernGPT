@@ -437,9 +437,12 @@ function randomizeBackground() {
 function main() {
     function checkWaifuVisibility() {
         const $waifuImage = document.querySelector("#expression-image");
-        if ($waifuImage.getAttribute("src") !== "") {
+        if (
+            $waifuImage.getAttribute("src") !== "" &&
+            !document.querySelector("body").classList.contains("waifuMode")
+        ) {
             $sheld.classList.add("shifted");
-        } else {
+        } else if ($sheld.classList.contains("shifted")) {
             $sheld.classList.remove("shifted");
         }
     }
