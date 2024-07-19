@@ -1,17 +1,16 @@
 import {
-    callPopup,
     characters,
-    clearChat,
     doNewChat,
     eventSource,
     generateQuietPrompt,
-    getChat,
     getChatsFromFiles,
     getPastCharacterChats,
     getRequestHeaders,
-    reloadCurrentChat,
+    openCharacterChat,
+    saveCharacterDebounced,
     this_chid,
 } from "../../../../script.js";
+import { debounce_timeout } from "../../../constants.js";
 import { extension_settings, getContext } from "../../../extensions.js";
 import {
     getGroupPastChats,
@@ -27,58 +26,50 @@ const group = selected_group
     ? groups.find((x) => x.id === selected_group)
     : null;
 
-async function displayPastChats() {
-    function getRelativeTimeCategory(date) {
-        const today = moment().startOf("day");
-        const yesterday = moment().subtract(1, "days").startOf("day");
-        const thisWeek = moment().subtract(1, "weeks").startOf("week");
-        const thisMonth = moment().startOf("month");
-        const thisYear = moment().startOf("year");
+function getRelativeTimeCategory(date) {
+    const today = moment().startOf("day");
+    const yesterday = moment().subtract(1, "days").startOf("day");
+    const thisWeek = moment().subtract(1, "weeks").startOf("week");
+    const thisMonth = moment().startOf("month");
+    const thisYear = moment().startOf("year");
 
-        switch (true) {
-            case date.isSame(today, "day"):
-                return "Today";
-            case date.isSame(yesterday, "day"):
-                return "Yesterday";
-            case date.isAfter(thisWeek):
-                return "This Week";
-            case date.isSame(thisMonth, "month"):
-                return "This Month";
-            case date.isSame(thisYear, "year"):
-                return date.format("MMMM");
-            default:
-                return date.format("MMMM YYYY");
-        }
+    switch (true) {
+        case date.isSame(today, "day"):
+            return "Today";
+        case date.isSame(yesterday, "day"):
+            return "Yesterday";
+        case date.isAfter(thisWeek):
+            return "This Week";
+        case date.isSame(thisMonth, "month"):
+            return "This Month";
+        case date.isSame(thisYear, "year"):
+            return date.format("MMMM");
+        default:
+            return date.format("MMMM YYYY");
     }
+}
 
-    function sortByTimeCategory(a, b) {
-        const categories = ["Today", "Yesterday", "This Week", "This Month"];
-        const aCat = getRelativeTimeCategory(timestampToMoment(a.last_mes));
-        const bCat = getRelativeTimeCategory(timestampToMoment(b.last_mes));
+function sortByTimeCategory(a, b) {
+    const categories = ["Today", "Yesterday", "This Week", "This Month"];
+    const aCat = getRelativeTimeCategory(timestampToMoment(a.last_mes));
+    const bCat = getRelativeTimeCategory(timestampToMoment(b.last_mes));
 
-        switch (true) {
-            case categories.includes(aCat) && categories.includes(bCat):
-                return categories.indexOf(aCat) - categories.indexOf(bCat);
-            case categories.includes(aCat):
-                return -1;
-            case categories.includes(bCat):
-                return 1;
-            default:
-                return moment(aCat, "MMMM YYYY").isAfter(
-                    moment(bCat, "MMMM YYYY"),
-                )
-                    ? -1
-                    : 1;
-        }
+    switch (true) {
+        case categories.includes(aCat) && categories.includes(bCat):
+            return categories.indexOf(aCat) - categories.indexOf(bCat);
+        case categories.includes(aCat):
+            return -1;
+        case categories.includes(bCat):
+            return 1;
+        default:
+            return moment(aCat, "MMMM YYYY").isAfter(moment(bCat, "MMMM YYYY"))
+                ? -1
+                : 1;
     }
+}
 
+async function displayChats(searchQuery) {
     const $select_chat = document.querySelector("#select_chat_div");
-    const $select_chat_search = document.querySelector(
-        "#select_chat_search input",
-    );
-
-    $select_chat.replaceChildren();
-    $select_chat_search.value = "";
 
     const data = await (selected_group
         ? getGroupPastChats(selected_group)
@@ -107,122 +98,96 @@ async function displayPastChats() {
         chatsByCategory[category].push(chat);
     });
 
-    document.querySelector("#load_select_chat_div").style.display = "none";
+    $select_chat.replaceChildren();
+    Object.entries(chatsByCategory)
+        .filter(([, chats]) => chats.length > 0)
+        .sort(([, aChats], [, bChats]) => {
+            const a = aChats[0];
+            const b = bChats[0];
+            if (!a.last_mes || !b.last_mes) return 0;
+            return sortByTimeCategory(a, b);
+        })
+        .forEach(([category, chats]) => {
+            $select_chat.insertAdjacentHTML(
+                "beforeend",
+                `<h5 class=chat-category>${category}</h5>`,
+            );
 
-    const displayChats = (searchQuery) => {
-        $select_chat.replaceChildren();
+            const filteredData = chats.filter((chat) => {
+                const chatContent = rawChats[chat["file_name"]];
 
-        Object.entries(chatsByCategory)
-            .filter(([, chats]) => chats.length > 0)
-            .sort(([, aChats], [, bChats]) => {
-                const a = aChats[0];
-                const b = bChats[0];
-                if (!a.last_mes || !b.last_mes) return 0;
-                return sortByTimeCategory(a, b);
-            })
-            .forEach(([category, chats]) => {
-                $select_chat.insertAdjacentHTML(
-                    "beforeend",
-                    `<h5 class=chat-category>${category}</h5>`,
+                const fragments = searchQuery
+                    .trim()
+                    .split(/\s+/)
+                    .map((str) => str.trim().toLowerCase())
+                    .filter(onlyUnique);
+
+                return (
+                    chatContent &&
+                    Object.values(chatContent).some((message) =>
+                        fragments.every((item) =>
+                            message?.mes?.toLowerCase().includes(item),
+                        ),
+                    )
                 );
+            });
 
-                const filteredData = chats.filter((chat) => {
-                    const chatContent = rawChats[chat["file_name"]];
+            console.debug(filteredData);
+            for (const value of filteredData.values()) {
+                let strlen = 300;
+                let mes = value["mes"];
 
-                    function makeQueryFragments(query) {
-                        return query
-                            .trim()
-                            .split(/\s+/)
-                            .map((str) => str.trim().toLowerCase())
-                            .filter(onlyUnique);
+                if (mes !== undefined) {
+                    if (mes.length > strlen) {
+                        mes = "..." + mes.substring(mes.length - strlen);
                     }
-
-                    function matchFragments(fragments, text) {
-                        if (!text) return false;
-                        return fragments.every((item) => text.includes(item));
-                    }
-
-                    const fragments = makeQueryFragments(searchQuery);
-
-                    return (
-                        chatContent &&
-                        Object.values(chatContent).some((message) =>
-                            matchFragments(
-                                fragments,
-                                message?.mes?.toLowerCase(),
-                            ),
+                    const fileName = value["file_name"];
+                    const template = document
+                        .querySelector(
+                            "#past_chat_template .select_chat_block_wrapper",
                         )
+                        .cloneNode(true);
+                    const select_chat_info =
+                        template.querySelector(".select_chat_info");
+                    const select_chat_block_mes = template.querySelector(
+                        ".select_chat_block_mes",
                     );
-                });
+                    select_chat_info.parentNode.removeChild(select_chat_info);
+                    select_chat_block_mes.parentNode.removeChild(
+                        select_chat_block_mes,
+                    );
+                    template
+                        .querySelector(".select_chat_block")
+                        .setAttribute("file_name", fileName);
+                    template.querySelector(
+                        ".select_chat_block_filename",
+                    ).textContent = fileName;
+                    template
+                        .querySelector(".PastChat_cross")
+                        .setAttribute("file_name", fileName);
 
-                console.debug(filteredData);
-                for (const value of filteredData.values()) {
-                    let strlen = 300;
-                    let mes = value["mes"];
-
-                    if (mes !== undefined) {
-                        if (mes.length > strlen) {
-                            mes = "..." + mes.substring(mes.length - strlen);
-                        }
-                        const fileName = value["file_name"];
-                        const template = document
-                            .querySelector(
-                                "#past_chat_template .select_chat_block_wrapper",
-                            )
-                            .cloneNode(true);
-                        const select_chat_info =
-                            template.querySelector(".select_chat_info");
-                        const select_chat_block_mes = template.querySelector(
-                            ".select_chat_block_mes",
-                        );
-                        select_chat_info.parentNode.removeChild(
-                            select_chat_info,
-                        );
-                        select_chat_block_mes.parentNode.removeChild(
-                            select_chat_block_mes,
-                        );
+                    const selectedChatFileName = `${selected_group ? group?.chat_id : characters[this_chid].chat}.jsonl`;
+                    if (fileName === selectedChatFileName) {
                         template
                             .querySelector(".select_chat_block")
-                            .setAttribute("file_name", fileName);
-                        template.querySelector(
-                            ".select_chat_block_filename",
-                        ).textContent = fileName;
-                        template
-                            .querySelector(".PastChat_cross")
-                            .setAttribute("file_name", fileName);
-
-                        const selectedChatFileName = `${selected_group ? group?.chat_id : characters[this_chid].chat}.jsonl`;
-                        if (fileName === selectedChatFileName) {
-                            template
-                                .querySelector(".select_chat_block")
-                                .setAttribute("highlight", true);
-                        }
-
-                        $select_chat.append(template);
-
-                        $select_chat
-                            .querySelectorAll(
-                                ".select_chat_block_filename.select_chat_block_filename_item",
-                            )
-                            .forEach((filename) => {
-                                filename.textContent =
-                                    filename.textContent.replace(".jsonl", "");
-                            });
+                            .setAttribute("highlight", true);
                     }
+
+                    $select_chat.append(template);
+
+                    $select_chat
+                        .querySelectorAll(
+                            ".select_chat_block_filename.select_chat_block_filename_item",
+                        )
+                        .forEach((filename) => {
+                            filename.textContent = filename.textContent.replace(
+                                ".jsonl",
+                                "",
+                            );
+                        });
                 }
-            });
-    };
-
-    displayChats("");
-
-    const displayChatsDebounced = debounce((searchQuery) => {
-        displayChats(searchQuery);
-    });
-
-    $select_chat_search.addEventListener(
-        "input",
-        displayChatsDebounced($select_chat_search.value),
-    );
+            }
+        });
 }
 
 async function renameChat() {
@@ -245,20 +210,16 @@ async function renameChat() {
             .replace(/^'((?:\\'|[^'])*)'$/, "$1")
             .substring(0, 90);
 
-        const body = {
-            is_group: !!selected_group,
-            avatar_url: characters[this_chid]?.avatar,
-            original_file: `${old_filename}.jsonl`,
-            renamed_file: `${new_filename}.jsonl`,
-        };
-
         try {
             await fetch("/api/chats/rename", {
                 method: "POST",
                 headers: getRequestHeaders(),
-                body: JSON.stringify(body),
-            }).catch(() => {
-                throw new Error("Unsuccessful request.");
+                body: JSON.stringify({
+                    is_group: !!selected_group,
+                    avatar_url: characters[this_chid]?.avatar,
+                    original_file: `${old_filename}.jsonl`,
+                    renamed_file: `${new_filename}.jsonl`,
+                }),
             });
 
             if (selected_group) {
@@ -275,50 +236,20 @@ async function renameChat() {
                 document.querySelector("#selected_chat_pole").value =
                     characters[this_chid].chat;
 
-                await fetch("/api/characters/merge-attributes", {
-                    method: "POST",
-                    headers: getRequestHeaders(),
-                    body: JSON.stringify({
-                        avatar: characters[this_chid].avatar,
-                        chat: characters[this_chid].chat,
-                    }),
-                });
-            }
+                document.querySelector(
+                    `.select_chat_block[highlight="true"] .select_chat_block_filename.select_chat_block_filename_item`,
+                ).textContent = new_filename;
 
-            await displayPastChats();
+                saveCharacterDebounced();
+            }
         } catch {
-            await callPopup(
-                "An error has occurred. Chat was not renamed.",
-                "text",
-            );
+            toastr.error("An error occurred. Chat was not renamed.");
         }
     }
 }
 
 export async function loadChatHistory() {
-    const $settings_holder = document.querySelector("#top-settings-holder");
-    await fetch(`${extensionFolderPath}/html/history.html`)
-        .then((data) => data.text())
-        .then((data) => {
-            $settings_holder.insertAdjacentHTML("beforeend", data);
-        });
-
-    document
-        .querySelector("#shadow_select_chat_popup")
-        .parentNode.removeChild(shadow_select_chat_popup);
-
-    document
-        .querySelectorAll("#option_select_chat, #option_start_new_chat")
-        .forEach((element) => {
-            element.style.display = "none";
-        });
-
-    $settings_holder
-        .querySelector("#new_chat")
-        .addEventListener("click", () => {
-            doNewChat({ deleteCurrentChat: false });
-        });
-
+    //TODO: override rename and delete buttons too
     const openChat = async (event) => {
         const target = event.target.closest(".select_chat_block");
         if (
@@ -330,26 +261,44 @@ export async function loadChatHistory() {
             event.stopImmediatePropagation();
             event.preventDefault();
 
-            const file_name = target
+            const filename = target
                 .getAttribute("file_name")
                 .replace(".jsonl", "");
             if (selected_group) {
-                await openGroupChat(selected_group, file_name);
+                await openGroupChat(selected_group, filename);
             } else {
-                await clearChat();
-                characters[this_chid].chat = file_name;
-                chat.length = 0;
-                await getChat();
-                document.querySelector("#selected_chat_pole").value =
-                    characters[this_chid].chat;
+                await openCharacterChat(filename);
             }
         }
     };
 
-    document.addEventListener("click", openChat, true);
+    const searchChats = debounce((searchQuery) => {
+        displayChats(searchQuery);
+    }, debounce_timeout.short);
+
+    const $settings_holder = document.querySelector("#top-settings-holder");
+    await fetch(`${extensionFolderPath}/html/history.html`)
+        .then((data) => data.text())
+        .then((data) => {
+            $settings_holder.insertAdjacentHTML("beforeend", data);
+        });
+
+    $settings_holder.addEventListener("click", openChat, true);
+
+    $settings_holder
+        .querySelector("#new_chat")
+        .addEventListener("click", () => {
+            doNewChat({ deleteCurrentChat: false });
+        });
+
+    $settings_holder
+        .querySelector("#select_chat_search input")
+        .addEventListener("input", (event) => {
+            searchChats(event.target.value);
+        });
 
     eventSource.on("chat_id_changed", async () => {
-        await displayPastChats();
+        displayChats("");
         if (extension_settings[extensionName].rename_chats) renameChat();
     });
 }
