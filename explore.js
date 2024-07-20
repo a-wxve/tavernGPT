@@ -101,43 +101,35 @@ async function setupExplorePanel() {
             return starsHTML;
         }
 
-        const popupHTML = `<div class="flex-container flexnowrap chubPopup">
+        const popupHTML = `<div class="flex-container chubPopup">
                 <div>
                     <img src="${character.url}" alt="${character.name}">
                     <div data-path="${character.fullPath}" class="menu_button menu_button_icon wide100p">
                         <i class="fa-solid fa-cloud-arrow-down"></i>
                         <span data-i18n="Download">Download</span>
                     </div>
-                    <div class="chubDescription">
+                    <div class="chub-text-align">
                         ${generateStarRating(character.rating)} ${character.rating}/5
                     </div>
-                    <div class="chubDescription">
+                    <div class="chub-text-align">
                         <i class="fa-solid ${character.rating > 3 ? `fa-thumbs-up` : `fa-thumbs-down`}"></i>
                         <span>${character.numRatings} ratings</span>
                     </div>
-                    <div class="chubDescription">
+                    <div class="chub-text-align">
                         <i class="fa-solid fa-star"></i>
                         <span>${character.starCount} stars</span>
                     </div>
-                    <div class="chubDescription">
+                    <div class="chub-text-align">
                         <i class="fa-solid fa-heart"></i>
                         <span>${character.numfavorites} favorites</span>
                     </div>
-                    <div class="chubDescription">
-                        <i class="fa-solid fa-comments"></i>
-                        <span>${character.numChats} chats</span>
-                    </div>
-                    <div class="chubDescription">
-                        <i class="fa-solid fa-comment-dots"></i>
-                        <span>${character.numMessages} messages</span>
-                    </div>
                 </div>
-                <div class="chubContent">
+                <div class="chub-padding">
                     <div>
                         <h3>${character.name}</h3>
                         <h5>by ${character.creator}</h5>
                     </div>
-                    <div class="chubDescription">
+                    <div class="chub-text-align">
                         <p>${character.tagline}</p>
                         <p>${character.description}</p>
                     </div>
@@ -152,7 +144,7 @@ async function setupExplorePanel() {
                         )
                         .join("")}
                     </p>
-                    <p>
+                    <p class="chub-nowrap">
                         <i class="fa-solid fa-book"></i>
                         <span>${character.numTokens} tokens</span>
                         <i class="fa-solid fa-cake-candles"></i>
@@ -271,8 +263,7 @@ async function setupExplorePanel() {
             characters.push({
                 url: imageUrl,
                 avatar: searchData.nodes[i].avatar_url,
-                description:
-                    searchData.nodes[i].description || "No description found.",
+                description: searchData.nodes[i].description,
                 tagline: searchData.nodes[i].tagline || "No tagline found.",
                 name: searchData.nodes[i].name,
                 fullPath: searchData.nodes[i].fullPath,
@@ -285,8 +276,6 @@ async function setupExplorePanel() {
                 numfavorites: searchData.nodes[i].n_favorites,
                 rating: searchData.nodes[i].rating,
                 numRatings: searchData.nodes[i].ratingCount,
-                numChats: searchData.nodes[i].nChats,
-                numMessages: searchData.nodes[i].nMessages,
             });
         });
 
@@ -316,9 +305,10 @@ async function setupExplorePanel() {
             $characterList.querySelectorAll(".name").forEach((name) => {
                 name.addEventListener("click", () => {
                     const index = parseInt(
-                        name.parentNode.parentNode.getAttribute("data-index"),
+                        name
+                            .closest(".character-list-item")
+                            .getAttribute("data-index"),
                     );
-                    console.log(index);
                     generateCharacterPopup(
                         characters[
                             index - totalCharactersLoaded + characters.length
@@ -330,13 +320,12 @@ async function setupExplorePanel() {
             $characterList
                 .querySelectorAll(".thumbnail img")
                 .forEach((avatar) => {
-                    avatar_url.addEventListener("click", () => {
+                    avatar.addEventListener("click", () => {
                         const index = parseInt(
-                            avatar.parentNode.parentNode.getAttribute(
-                                "data-index",
-                            ),
+                            avatar
+                                .closest(".character-list-item")
+                                .getAttribute("data-index"),
                         );
-                        console.log(index);
                         generateCharacterPopup(
                             characters[
                                 index -

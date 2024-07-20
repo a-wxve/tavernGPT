@@ -119,6 +119,13 @@
 }
 
 .chubPopup {
+    flex-wrap: nowrap;
+    justify-content: center;
+
+    @media screen and (width<=1024px) {
+        flex-wrap: wrap;
+    }
+
     img {
         max-width: 200px;
         border-radius: var(--borderRadiusSmol);
@@ -129,16 +136,20 @@
         display: inline-block;
     }
 
-    i {
+    i:not(.fa-cloud-arrow-down) {
         margin: 0.25rem;
     }
 
-    .chubContent {
+    .chub-padding {
         padding: 0.5rem;
     }
 
-    .chubDescription {
+    .chub-text-align {
         text-align: left;
+    }
+
+    .chub-nowrap {
+        text-wrap: nowrap;
     }
 
     .tags {
