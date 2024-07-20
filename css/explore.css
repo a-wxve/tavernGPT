@@ -118,7 +118,7 @@
     filter: grayscale();
 }
 
-.chubPopup {
+.chub-popup {
     flex-wrap: nowrap;
     justify-content: center;
 

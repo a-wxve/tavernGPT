@@ -58,7 +58,7 @@ async function setupExplorePanel() {
             <div class="character-list-item" data-index="${index}">
                 <div class="thumbnail">
                     <img src="${character.avatar}">
-                    <div data-path="${character.fullPath}" class="menu_button menu_button_icon wide100p">
+                    <div data-path="${character.fullPath}" class="menu_button menu_button_icon download-btn wide100p">
                         <i class="fa-solid fa-cloud-arrow-down"></i>
                         <span data-i18n="Download">Download</span>
                     </div>
@@ -101,10 +101,10 @@ async function setupExplorePanel() {
             return starsHTML;
         }
 
-        const popupHTML = `<div class="flex-container chubPopup">
+        const popupHTML = `<div class="flex-container chub-popup">
                 <div>
                     <img src="${character.url}" alt="${character.name}">
-                    <div data-path="${character.fullPath}" class="menu_button menu_button_icon wide100p">
+                    <div data-path="${character.fullPath}" class="menu_button menu_button_icon download-btn wide100p">
                         <i class="fa-solid fa-cloud-arrow-down"></i>
                         <span data-i18n="Download">Download</span>
                     </div>
@@ -157,6 +157,11 @@ async function setupExplorePanel() {
             `;
 
         callGenericPopup(popupHTML, POPUP_TYPE.DISPLAY, "", { wider: true });
+        document
+            .querySelector(".chub-popup .download-btn")
+            .addEventListener("click", (event) => {
+                downloadCharacter(event.target.getAttribute("data-path"));
+            });
     }
 
     async function fetchCharacters(
