@@ -6,6 +6,7 @@ import { debounce, delay } from "../../../utils.js";
 import { extensionFolderPath, extensionName } from "./index.js";
 
 async function setupExplorePanel() {
+    let characters = [];
     let totalCharactersLoaded = 0;
     let isLoading = false;
 
@@ -179,6 +180,11 @@ async function setupExplorePanel() {
         reset,
         callback,
     ) {
+        if (reset) {
+            characters = [];
+            totalCharactersLoaded = 0;
+        }
+
         const $characterList = document.querySelector(
             "#list-and-search-wrapper .character-list",
         );
@@ -231,7 +237,7 @@ async function setupExplorePanel() {
             },
         }).then((data) => data.json());
 
-        const characters = [];
+        const newCharacters = [];
         let characterPromises = searchData.nodes.map(
             async (node) =>
                 await fetch("https://api.chub.ai/api/characters/download", {
@@ -265,7 +271,7 @@ async function setupExplorePanel() {
 
         characterBlobs.forEach((character, i) => {
             let imageUrl = URL.createObjectURL(character);
-            characters.push({
+            newCharacters.push({
                 url: imageUrl,
                 avatar: searchData.nodes[i].avatar_url,
                 description: searchData.nodes[i].description,
@@ -283,13 +289,12 @@ async function setupExplorePanel() {
                 numRatings: searchData.nodes[i].ratingCount,
             });
         });
+        characters.push(...newCharacters);
 
         $characterList.classList.remove("searching");
 
-        if (reset) totalCharactersLoaded = 0;
-
-        if (characters && characters.length > 0) {
-            const characterHTML = characters
+        if (newCharacters && newCharacters.length > 0) {
+            const characterHTML = newCharacters
                 .map((character, index) =>
                     generateCharacterListItem(
                         character,
@@ -305,7 +310,7 @@ async function setupExplorePanel() {
                 $characterList.insertAdjacentHTML("beforeend", characterHTML);
             }
 
-            totalCharactersLoaded += characters.length;
+            totalCharactersLoaded += newCharacters.length;
 
             $characterList.querySelectorAll(".name").forEach((name) => {
                 name.addEventListener("click", () => {
@@ -314,11 +319,7 @@ async function setupExplorePanel() {
                             .closest(".character-list-item")
                             .getAttribute("data-index"),
                     );
-                    generateCharacterPopup(
-                        characters[
-                            index - totalCharactersLoaded + characters.length
-                        ],
-                    );
+                    generateCharacterPopup(characters[index]);
                 });
             });
 
@@ -331,13 +332,7 @@ async function setupExplorePanel() {
                                 .closest(".character-list-item")
                                 .getAttribute("data-index"),
                         );
-                        generateCharacterPopup(
-                            characters[
-                                index -
-                                    totalCharactersLoaded +
-                                    characters.length
-                            ],
-                        );
+                        generateCharacterPopup(characters[index]);
                     });
                 });
 
