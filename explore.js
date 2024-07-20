@@ -12,7 +12,7 @@ async function setupExplorePanel() {
 
     async function downloadCharacter(input) {
         const url = `https://www.chub.ai/characters/${input.trim()}`;
-        console.debug("Custom content import started for", url);
+        toastr.info(`Downloading ${input}...`);
 
         let request = null;
         request = await fetch("/api/content/importURL", {
@@ -85,7 +85,7 @@ async function setupExplorePanel() {
         `;
     }
 
-    function generateCharacterPopup(character) {
+    async function generateCharacterPopup(character) {
         function generateStarRating(rating) {
             const fullStars = Math.floor(rating);
             const halfStar = rating % 1 >= 0.5 ? 1 : 0;
@@ -157,12 +157,16 @@ async function setupExplorePanel() {
             </div>
             `;
 
-        callGenericPopup(popupHTML, POPUP_TYPE.DISPLAY, "", { wider: true });
-        document
-            .querySelector(".chub-popup .download-btn")
-            .addEventListener("click", (event) => {
-                downloadCharacter(event.target.getAttribute("data-path"));
-            });
+        await callGenericPopup(popupHTML, POPUP_TYPE.DISPLAY, "", {
+            wider: true,
+            allowVerticalScrolling: true,
+        }).then(
+            document
+                .querySelector(".chub-popup .download-btn")
+                .addEventListener("click", (event) => {
+                    downloadCharacter(event.target.getAttribute("data-path"));
+                }),
+        );
     }
 
     async function fetchCharacters(
