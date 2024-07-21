@@ -315,80 +315,6 @@ async function setupExplorePanel() {
             }
 
             totalCharactersLoaded += newCharacters.length;
-
-            $characterList.querySelectorAll(".name").forEach((name) => {
-                name.addEventListener("click", () => {
-                    const index = parseInt(
-                        name
-                            .closest(".character-list-item")
-                            .getAttribute("data-index"),
-                    );
-                    generateCharacterPopup(characters[index]);
-                });
-            });
-
-            $characterList
-                .querySelectorAll(".thumbnail img")
-                .forEach((avatar) => {
-                    avatar.addEventListener("click", () => {
-                        const index = parseInt(
-                            avatar
-                                .closest(".character-list-item")
-                                .getAttribute("data-index"),
-                        );
-                        generateCharacterPopup(characters[index]);
-                    });
-                });
-
-            $characterList
-                .querySelectorAll(".download-btn")
-                .forEach((button) => {
-                    button.addEventListener("click", () => {
-                        downloadCharacter(button.getAttribute("data-path"));
-                    });
-                });
-
-            $characterList.querySelectorAll(".tag").forEach((tag) => {
-                const $included = document.querySelector("#includeTags");
-                const tagText = tag.innerHTML.toLowerCase();
-
-                tag.addEventListener("click", (event) => {
-                    if (tag.classList.contains("included")) {
-                        tag.classList.remove("included");
-                        $included.value = $included.value
-                            .split(",")
-                            .map((tags) => tags.trim())
-                            .filter((tags) => tags !== tagText)
-                            .join(", ");
-                    } else {
-                        $included.value += `${tagText}, `;
-                    }
-                    search(event, true);
-                });
-            });
-
-            $characterList.querySelectorAll(".creator").forEach((creator) => {
-                const $searchWrapper = document.querySelector(
-                    "#list-and-search-wrapper",
-                );
-                const $searchTerm = $searchWrapper.querySelector(
-                    "#characterSearchInput",
-                );
-                const $creatorSearch =
-                    $searchWrapper.querySelector("#creatorSearch");
-                const $tags = $searchWrapper.querySelector("#includeTags");
-                const $excludedTags =
-                    $searchWrapper.querySelector("#excludeTags");
-                const username = creator.innerHTML.toLowerCase().split(" ")[1];
-
-                creator.addEventListener("click", (event) => {
-                    $searchTerm.value = "";
-                    $creatorSearch.value = `${username}`;
-                    $tags.value = "";
-                    $excludedTags.value = "";
-                    search(event, true);
-                });
-            });
         } else {
             toastr.error("No characters found.");
         }
@@ -489,7 +415,7 @@ async function setupExplorePanel() {
             "#list-and-search-wrapper .character-list",
         );
         const $pageNumber = document.querySelector("#pageNumber");
-        const scrollThreshold = 100;
+        const scrollThreshold = 50;
 
         const distanceFromBottom =
             $characterList.scrollHeight -
@@ -504,6 +430,57 @@ async function setupExplorePanel() {
             search(event, false, () => {
                 isLoading = false;
             });
+        }
+    }
+
+    function handleCharacterClick(event) {
+        const target = event.target;
+        const nameClicked = target.matches(".name");
+        const avatarClicked = target.matches(".thumbnail img");
+        const downloadButtonClicked = target.matches(".download-btn");
+        const tagClicked = target.matches(".tag");
+        const creatorClicked = target.matches(".creator");
+
+        if (nameClicked || avatarClicked) {
+            const index = parseInt(
+                target
+                    .closest(".character-list-item")
+                    .getAttribute("data-index"),
+            );
+            generateCharacterPopup(characters[index]);
+        } else if (downloadButtonClicked) {
+            downloadCharacter(target.getAttribute("data-path"));
+        } else if (tagClicked) {
+            const $tags = $searchWrapper.querySelector("#includeTags");
+            const tagText = target.textContent.toLowerCase();
+
+            if (target.classList.contains("included")) {
+                target.classList.remove("included");
+                $tags.value = $tags.value
+                    .split(",")
+                    .map((tags) => tags.trim())
+                    .filter((tags) => tags !== tagText)
+                    .join(", ");
+            } else {
+                $tags.value += `${tagText}, `;
+            }
+
+            search(event, true);
+        } else if (creatorClicked) {
+            const username = target.textContent.toLowerCase().split(" ")[1];
+            const $searchTerm = $searchWrapper.querySelector(
+                "#characterSearchInput",
+            );
+            const $creatorSearch =
+                $searchWrapper.querySelector("#creatorSearch");
+            const $tags = $searchWrapper.querySelector("#includeTags");
+            const $excludedTags = $searchWrapper.querySelector("#excludeTags");
+
+            $searchTerm.value = "";
+            $creatorSearch.value = `${username}`;
+            $tags.value = "";
+            $excludedTags.value = "";
+            search(event, true);
         }
     }
 
@@ -529,6 +506,7 @@ async function setupExplorePanel() {
         .addEventListener("click", searchHandler);
 
     $characterList.addEventListener("scroll", infiniteScrollDebounced);
+    $characterList.addEventListener("click", handleCharacterClick);
 
     $characterList.scrollTop = 0;
     $pageNumber.value = 1;
