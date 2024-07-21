@@ -110,7 +110,7 @@ async function initSettings() {
     });
 
     extension_settings[extensionName] = extension_settings[extensionName] || {};
-    var settingsChanged = false;
+    let settingsChanged = false;
 
     for (const key in default_settings) {
         if (!(key in extension_settings[extensionName])) {
@@ -339,31 +339,19 @@ function setMobileUI() {
     eventSource.on("message_swiped", addChatHeader);
 }
 
-function moveSwipeButtons() {
-    function handleSwipe(event) {
-        const $chat = document.querySelector("#chat");
-        const swipeDirection = event.target.matches(".mes_swipe_left")
-            ? ".swipe_left"
-            : ".swipe_right";
-        $chat.querySelector(`.last_mes ${swipeDirection}`).click();
-    }
-
-    function registerSwipeButtons() {
-        const $chat = document.querySelector("#chat");
-        const $mes_swipe_left = $chat.querySelector(
-            ".last_mes .mes_swipe_left",
-        );
-        const $mes_swipe_right = $chat.querySelector(
-            ".last_mes .mes_swipe_right",
-        );
-
-        $mes_swipe_left.addEventListener("click", handleSwipe);
-        $mes_swipe_right.addEventListener("click", handleSwipe);
-    }
+function setupSwipeButtons() {
+    const $sheld = document.querySelector("#sheld");
+    const $chat = $sheld.querySelector("#chat");
 
     const $mesTemplate = document.querySelector("#message_template");
     const $mesButtons = $mesTemplate.querySelector(".mes_buttons");
     const $mesEditButtons = $mesTemplate.querySelector(".mes_edit_buttons");
+
+    const handleSwipe = (event, direction) => {
+        event.stopPropagation();
+        event.preventDefault();
+        $chat.querySelector(`.last_mes .swipe_${direction}`).click();
+    };
 
     $mesButtons.insertAdjacentHTML(
         "afterbegin",
@@ -375,9 +363,27 @@ function moveSwipeButtons() {
     );
     $mesTemplate.querySelector(".mes_text").after($mesButtons, $mesEditButtons);
 
-    eventSource.on("chatLoaded", registerSwipeButtons);
-    eventSource.on("character_message_rendered", registerSwipeButtons);
-    eventSource.on("message_deleted", registerSwipeButtons);
+    $chat.addEventListener("click", (event) => {
+        if (event.target.matches(".mes_swipe_left")) {
+            handleSwipe(event, "left");
+        } else if (event.target.matches(".mes_swipe_right")) {
+            handleSwipe(event, "right");
+        }
+    });
+
+    $sheld.setAttribute("tabindex", "0");
+    $sheld.addEventListener("keydown", (event) => {
+        if (!$sheld.querySelector("textarea").matches(":focus")) {
+            switch (event.key) {
+                case "ArrowLeft":
+                    handleSwipe(event, "left");
+                    break;
+                case "ArrowRight":
+                    handleSwipe(event, "right");
+                    break;
+            }
+        }
+    });
 }
 
 function randomizeBackground() {
@@ -453,7 +459,7 @@ function main() {
     toggleSidebar();
     loadExplorePanel();
     loadChatHistory();
-    moveSwipeButtons();
+    setupSwipeButtons();
     loadSplashText();
 
     if (window.matchMedia("only screen and ((max-width: 768px))").matches) {
@@ -479,8 +485,6 @@ function main() {
             case "Escape":
                 if ($rightNavPin.checked == true) $rightNavPin.click();
                 break;
-            default:
-                break;
         }
     });
     $characterPopup
@@ -498,29 +502,8 @@ function main() {
                 .insertAdjacentHTML("beforeend", data);
         });
 
-    const $sheld = document.querySelector("#sheld");
-    $sheld.setAttribute("tabindex", "0");
-    $sheld.addEventListener("keydown", (event) => {
-        if (!$sheld.querySelector("textarea").matches(":focus")) {
-            switch (event.key) {
-                case "ArrowLeft":
-                    $sheld.querySelector(".last_mes .swipe_left").click();
-                    break;
-                case "ArrowRight":
-                    $sheld.querySelector(".last_mes .swipe_right").click();
-                    break;
-                default:
-                    break;
-            }
-        }
-    });
-
     eventSource.on("generation_started", checkWaifuVisibility);
     eventSource.on("chat_id_changed", checkWaifuVisibility);
 }
 
-if (document.readyState === "complete") {
-    main();
-} else {
-    document.addEventListener("DOMContentLoaded", main, { once: true });
-}
+main();
