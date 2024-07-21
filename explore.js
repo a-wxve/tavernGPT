@@ -385,30 +385,6 @@ async function setupExplorePanel() {
         );
     }
 
-    function searchHandler(event) {
-        const $pageNumber = document.querySelector("#pageNumber");
-        switch (true) {
-            case event.target.matches("#pageUpButton"):
-                $pageNumber.value = Math.max(
-                    1,
-                    parseInt($pageNumber.value.toString()) + 1,
-                );
-                search(event, false);
-                break;
-            case event.target.matches("#pageDownButton"):
-                $pageNumber.value = Math.max(
-                    1,
-                    parseInt($pageNumber.value.toString()) - 1,
-                );
-                search(event, false);
-                break;
-            default:
-                $pageNumber.value = 1;
-                search(event, true);
-                break;
-        }
-    }
-
     function infiniteScroll(event) {
         if (isLoading) return;
         const $characterList = document.querySelector(
@@ -498,12 +474,18 @@ async function setupExplorePanel() {
             "#characterSearchInput, #creatorSearch, #namespace, #includeTags, #excludeTags, #findCount, #sortOrder, #nsfwCheckbox",
         )
         .forEach((element) => {
-            element.addEventListener("change", searchHandler);
+            element.addEventListener("change", (event) => {
+                $pageNumber.value = 1;
+                search(event, true);
+            });
         });
 
     $searchWrapper
         .querySelector("#characterSearchButton")
-        .addEventListener("click", searchHandler);
+        .addEventListener("click", (event) => {
+            $pageNumber.value = 1;
+            search(event, true);
+        });
 
     $characterList.addEventListener("scroll", infiniteScrollDebounced);
     $characterList.addEventListener("click", handleCharacterClick);
