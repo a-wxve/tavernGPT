@@ -1,7 +1,8 @@
 import {
     eventSource,
+    event_types,
     generateQuietPrompt,
-    getRequestHeaders,
+    user_avatar,
     getUserAvatar,
     name1,
     saveSettingsDebounced,
@@ -20,42 +21,33 @@ const default_settings = {
 };
 
 function getPersona() {
-    const $persona_button = document.querySelector(
+    const $persona_icon = document.querySelector(
         "#persona-management-button .drawer-icon.fa-solid.fa-face-smile",
     );
 
-    eventSource.on("settings_updated", async () => {
-        const response = await fetch("/api/settings/get", {
-            method: "POST",
-            headers: getRequestHeaders(),
-            body: JSON.stringify({}),
-            cache: "no-cache",
-        });
-
-        if (!response.ok) {
-            toastr.error(
-                "Settings could not be loaded. Try reloading the page.",
-            );
-            throw new Error("Error getting settings.");
+    let lastAvatar = "";
+    let lastName = "";
+    const updatePersona = (avatar, name) => {
+        if (avatar !== lastAvatar || name !== lastName) {
+            const newHTML = `<img class='persona_avatar' src='${avatar}'/><span>${name}</span>`;
+            if ($persona_icon.innerHTML !== newHTML) {
+                $persona_icon.innerHTML = newHTML;
+                lastAvatar = avatar;
+                lastName = name;
+            }
         }
+    };
 
-        let settings = await response
-            .json()
-            .then((data) => JSON.parse(data.settings));
-        let avatar_img = getUserAvatar(settings.user_avatar);
-
-        $persona_button.innerHTML = `<img class='persona_avatar' src='${avatar_img}'/>`;
-        $persona_button.insertAdjacentHTML(
-            "beforeend",
-            `<span>${name1}</span>`,
-        );
+    $persona_icon.addEventListener("click", (event) => {
+        event.stopPropagation();
+        $persona_icon.closest(".drawer").click();
     });
 
-    $persona_button.addEventListener("click", () => {
-        $persona_button
-            .closest(".drawer-content")
-            .classList.toggle("closedDrawer openDrawer");
+    eventSource.on(event_types.SETTINGS_UPDATED, () => {
+        updatePersona(getUserAvatar(user_avatar, name1));
     });
+
+    updatePersona(getUserAvatar(user_avatar, name1));
 }
 
 function toggleSidebar() {
@@ -280,7 +272,7 @@ async function initNudgeUI() {
         });
     const $nudges = document.querySelector("#nudges");
 
-    eventSource.on("character_message_rendered", async () => {
+    eventSource.on(event_types.CHARACTER_MESSAGE_RENDERED, async () => {
         const prompt = `Generate 4 one line replies from {{user}}'s point of view using the chat history so far as a guideline for {{user}}'s writing style in JSON format with the keys "prompt1", "prompt2", "prompt3", and "prompt4". Be sure to "quote" dialogue. Output only the JSON without any additional commentary.`;
         let nudges = await generateQuietPrompt(prompt, false, false).then(
             (data) => JSON.parse(data),
@@ -334,12 +326,12 @@ function setMobileUI() {
     );
 
     eventSource.on("chatLoaded", addChatHeader);
-    eventSource.on("character_message_rendered", addChatHeader);
-    eventSource.on("message_deleted", addChatHeader);
-    eventSource.on("message_swiped", addChatHeader);
+    eventSource.on(event_types.CHARACTER_MESSAGE_RENDERED, addChatHeader);
+    eventSource.on(event_types.MESSAGE_DELETED, addChatHeader);
+    eventSource.on(event_types.MESSAGE_SWIPED, addChatHeader);
 }
 
-function setupSwipeButtons() {
+function moveSwipeButtons() {
     const $sheld = document.querySelector("#sheld");
     const $chat = $sheld.querySelector("#chat");
 
@@ -459,7 +451,7 @@ function main() {
     toggleSidebar();
     loadExplorePanel();
     loadChatHistory();
-    setupSwipeButtons();
+    moveSwipeButtons();
     loadSplashText();
 
     if (window.matchMedia("only screen and ((max-width: 768px))").matches) {
@@ -502,8 +494,8 @@ function main() {
                 .insertAdjacentHTML("beforeend", data);
         });
 
-    eventSource.on("generation_started", checkWaifuVisibility);
-    eventSource.on("chat_id_changed", checkWaifuVisibility);
+    eventSource.on(event_types.GENERATION_STARTED, checkWaifuVisibility);
+    eventSource.on(event_types.CHAT_CHANGED, checkWaifuVisibility);
 }
 
 main();
