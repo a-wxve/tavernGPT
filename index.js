@@ -35,19 +35,17 @@ function getPersona() {
                 lastAvatar = avatar;
                 lastName = name;
             }
+            $persona_icon.childNodes.forEach((element) => {
+                element.style.pointerEvents = "none";
+            });
         }
     };
 
-    $persona_icon.addEventListener("click", (event) => {
-        event.stopPropagation();
-        $persona_icon.closest(".drawer").click();
-    });
-
     eventSource.on(event_types.SETTINGS_UPDATED, () => {
-        updatePersona(getUserAvatar(user_avatar, name1));
+        updatePersona(getUserAvatar(user_avatar), name1);
     });
 
-    updatePersona(getUserAvatar(user_avatar, name1));
+    updatePersona(getUserAvatar(user_avatar), name1);
 }
 
 function toggleSidebar() {
