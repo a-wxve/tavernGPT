@@ -204,7 +204,7 @@ async function renameChat() {
     if (matchesTimePattern(old_filename) && context.chat.length > 2) {
         const prompt =
             'Generate a unique name for this chat in as few words as possible. Avoid including special characters, words like "chat", or the user\'s name. Only output the chat name.';
-        var new_filename = await generateQuietPrompt(prompt, false, false);
+        let new_filename = await generateQuietPrompt(prompt, false, false);
         new_filename = new_filename
             .toString()
             .replace(/^'((?:\\'|[^'])*)'$/, "$1")
@@ -275,6 +275,10 @@ export async function loadChatHistory() {
     const searchChats = debounce((searchQuery) => {
         displayChats(searchQuery);
     }, debounce_timeout.short);
+
+    document
+        .querySelector("#shadow_select_chat_popup")
+        .parentNode.removeChild(shadow_select_chat_popup);
 
     const $settings_holder = document.querySelector("#top-settings-holder");
     await fetch(`${extensionFolderPath}/html/history.html`)
