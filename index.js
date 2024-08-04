@@ -330,8 +330,7 @@ function setMobileUI() {
 }
 
 function moveSwipeButtons() {
-    const $sheld = document.querySelector("#sheld");
-    const $chat = $sheld.querySelector("#chat");
+    const $chat = document.querySelector("#chat");
 
     const $mesTemplate = document.querySelector("#message_template");
     const $mesButtons = $mesTemplate.querySelector(".mes_buttons");
@@ -362,7 +361,7 @@ function moveSwipeButtons() {
     });
 
     document.addEventListener("keydown", (event) => {
-        if (!$sheld.querySelector("textarea").matches(":focus")) {
+        if (!document.querySelector("textarea").matches(":focus")) {
             switch (event.key) {
                 case "ArrowLeft":
                     handleSwipe(event, "left");
@@ -438,6 +437,8 @@ function randomizeBackground() {
 function main() {
     function checkWaifuVisibility() {
         const $waifuImage = document.querySelector("#expression-image");
+        const $sheld = document.querySelector("#sheld");
+
         if (
             $waifuImage.getAttribute("src") !== "" &&
             !document.querySelector("body").classList.contains("waifuMode")
