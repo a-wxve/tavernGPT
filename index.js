@@ -371,6 +371,12 @@ function moveSwipeButtons() {
                 case "ArrowRight":
                     handleSwipe(event, "right");
                     break;
+                case "ArrowUp":
+                    let array = $chat.querySelectorAll(
+                        `.mes[is_user="true"] .mes_button.mes_edit`,
+                    );
+                    array[array.length - 1].click();
+                    break;
             }
         }
     });
