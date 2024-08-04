@@ -4,7 +4,7 @@
         "Helvetica Neue", Helvetica, Arial, sans-serif;
     --monoFontFamily: "SF Mono", SFMono-Regular, ui-monospace,
         "DejaVu Sans Mono", Menlo, Consolas, monospace;
-    --lineHeight: calc(var(--mainFontSize) * 1.5);
+    /* --lineHeight: calc(var(--mainFontSize) * 1.5); */
     --barSize: 20%;
     --panelSize: 42.5%;
     --insidePadding: 10px;
@@ -191,7 +191,7 @@ body.waifuMode .expression-holder {
 }
 
 #ai-config-button {
-    order: 1;
+    order: 3;
 }
 
 #ai-config-button:not(:has(.openIcon))
@@ -234,7 +234,7 @@ body.waifuMode .expression-holder {
 }
 
 #sys-settings-button {
-    order: 2;
+    order: 4;
 }
 
 #sys-settings-button .drawer-icon::after {
@@ -255,7 +255,7 @@ body.waifuMode .expression-holder {
 }
 
 #advanced-formatting-button {
-    order: 3;
+    order: 5;
 }
 
 #advanced-formatting-button .drawer-icon::after {
@@ -278,7 +278,7 @@ body.waifuMode .expression-holder {
 }
 
 #WI-SP-button {
-    order: 4;
+    order: 6;
 }
 
 #WI-SP-button .drawer-icon::after {
@@ -295,7 +295,7 @@ body.waifuMode .expression-holder {
 }
 
 #user-settings-button {
-    order: 5;
+    order: 7;
 }
 
 #user-settings-button .drawer-icon::after {
@@ -319,7 +319,7 @@ body.waifuMode .expression-holder {
 }
 
 #logo_block {
-    order: 6;
+    order: 8;
 }
 
 #logo_block .drawer-icon::before {
@@ -336,7 +336,7 @@ body.waifuMode .expression-holder {
 }
 
 #extensions-settings-button {
-    order: 7;
+    order: 9;
 }
 
 #extensions-settings-button .drawer-icon::before {
@@ -385,7 +385,7 @@ body.waifuMode .expression-holder {
 }
 
 #rightNavHolder {
-    order: 8;
+    order: 1;
 }
 
 #rightNavHolder .drawer-icon::before {
@@ -719,7 +719,7 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
 }
 
 .mes_text {
-    line-height: var(--lineHeight);
+    /* line-height: var(--lineHeight); */
     padding: 0;
 }
 
@@ -727,7 +727,7 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
     margin-bottom: 0;
 }
 
-.mes .mes_block .mes_text p {
+/* .mes .mes_block .mes_text p {
     margin-bottom: var(--lineHeight);
 }
 
@@ -753,13 +753,13 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
 .mes .mes_block .mes_text ol:has(+ p),
 .mes .mes_block .mes_text ul:has(+ p) {
     margin-block-end: var(--lineHeight);
-}
+} */
 
 .mes .mes_block .mes_text #curEditTextarea {
     resize: none;
     font-family: inherit;
     font-weight: inherit;
-    line-height: var(--lineHeight);
+    line-height: calc(var(--mainFontSize) + 0.5rem);
     background-color: #0000;
     border: none;
     padding: 0;

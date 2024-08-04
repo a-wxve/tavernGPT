@@ -72,6 +72,10 @@ body.waifuMode .expression-holder {
     padding-top: 0 !important;
 }
 
+#sheld #chat .mes.last_mes {
+    padding-bottom: 5rem !important;
+}
+
 .mes .mes_block .ch_name.flex-container.justifySpaceBetween {
     justify-content: end;
 }
