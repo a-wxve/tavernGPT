@@ -1,6 +1,7 @@
 import {
     characters,
     doNewChat,
+    event_types,
     eventSource,
     generateQuietPrompt,
     getChatsFromFiles,
@@ -132,7 +133,6 @@ async function displayChats(searchQuery) {
                 );
             });
 
-            console.debug(filteredData);
             for (const value of filteredData.values()) {
                 let strlen = 300;
                 let mes = value["mes"];
@@ -245,6 +245,10 @@ async function renameChat() {
         } catch {
             toastr.error("An error occurred. Chat was not renamed.");
         }
+    } else if (matchesTimePattern(old_filename)) {
+        eventSource.once(event_types.GENERATE_AFTER_DATA, () => {
+            if (extension_settings[extensionName].rename_chats) renameChat();
+        });
     }
 }
 
@@ -301,8 +305,8 @@ export async function loadChatHistory() {
             searchChats(event.target.value);
         });
 
-    eventSource.on("chat_id_changed", async () => {
-        displayChats("");
+    eventSource.on(event_types.CHAT_CHANGED, async () => {
+        await displayChats("");
         if (extension_settings[extensionName].rename_chats) renameChat();
     });
 }
