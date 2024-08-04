@@ -330,6 +330,7 @@ function setMobileUI() {
 }
 
 function moveSwipeButtons() {
+    const $sheld = document.querySelector("#sheld");
     const $chat = document.querySelector("#chat");
 
     const $mesTemplate = document.querySelector("#message_template");
@@ -361,7 +362,8 @@ function moveSwipeButtons() {
     });
 
     document.addEventListener("keydown", (event) => {
-        if (!document.querySelector("textarea").matches(":focus")) {
+        const activeElement = document.activeElement;
+        if (!activeElement.matches("textarea, input, [contenteditable]")) {
             switch (event.key) {
                 case "ArrowLeft":
                     handleSwipe(event, "left");
