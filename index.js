@@ -361,8 +361,7 @@ function moveSwipeButtons() {
         }
     });
 
-    $sheld.setAttribute("tabindex", "0");
-    $sheld.addEventListener("keydown", (event) => {
+    document.addEventListener("keydown", (event) => {
         if (!$sheld.querySelector("textarea").matches(":focus")) {
             switch (event.key) {
                 case "ArrowLeft":
