@@ -237,6 +237,7 @@ function loadSplashText() {
         "Feel the AGI!",
         "Emergent capabilities!",
         "I'm sorry, but as an AI language model I can't do X, Y, and Z!",
+        "Remember what they took from you.",
     ];
 
     function setSplashText() {
@@ -354,9 +355,6 @@ function moveSwipeButtons() {
 
     $chat.addEventListener("click", (event) => {
         const target = event.target;
-        const lastUserMes =
-            parseInt($chat.querySelector(".last_mes").getAttribute("mesid")) -
-            1;
 
         //TODO: automatically swipe on message edit
         if (target.matches(".mes_swipe_left")) {
