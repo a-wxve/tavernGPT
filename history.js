@@ -56,8 +56,8 @@ function getTimeCategory(date) {
 }
 
 function sortTimeCategories(a, b) {
-    const aCat = getRelativeTimeCategory(timestampToMoment(a.last_mes));
-    const bCat = getRelativeTimeCategory(timestampToMoment(b.last_mes));
+    const aCat = getTimeCategory(timestampToMoment(a.last_mes));
+    const bCat = getTimeCategory(timestampToMoment(b.last_mes));
 
     const aOrder = timeCategories.get(aCat);
     const bOrder = timeCategories.get(bCat);
@@ -288,7 +288,8 @@ async function renameChat(auto = false, chatBlock = null) {
     if (auto && matchesTimePattern(oldFilename) && context.chat.length > 2) {
         const prompt =
             'Generate a unique name for this chat in as few words as possible. Avoid including special characters, words like "chat", or the user\'s name. Only output the chat name.';
-        newFilename = await generateQuietPrompt(prompt, false, false)
+        newFilename = await generateQuietPrompt(prompt, false, false);
+        newFilename = newFilename
             .toString()
             .replace(/^'((?:\\'|[^'])*)'$/, "$1")
             .substring(0, 90);
