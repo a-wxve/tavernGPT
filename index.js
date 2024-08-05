@@ -330,7 +330,6 @@ function setMobileUI() {
 }
 
 function moveSwipeButtons() {
-    const $sheld = document.querySelector("#sheld");
     const $chat = document.querySelector("#chat");
 
     const $mesTemplate = document.querySelector("#message_template");
@@ -354,15 +353,25 @@ function moveSwipeButtons() {
     $mesTemplate.querySelector(".mes_text").after($mesButtons, $mesEditButtons);
 
     $chat.addEventListener("click", (event) => {
-        if (event.target.matches(".mes_swipe_left")) {
+        const target = event.target;
+        const lastUserMes =
+            parseInt($chat.querySelector(".last_mes").getAttribute("mesid")) -
+            1;
+
+        //TODO: automatically swipe on message edit
+        if (target.matches(".mes_swipe_left")) {
             handleSwipe(event, "left");
-        } else if (event.target.matches(".mes_swipe_right")) {
+        } else if (target.matches(".mes_swipe_right")) {
             handleSwipe(event, "right");
         }
     });
 
     document.addEventListener("keydown", (event) => {
         const activeElement = document.activeElement;
+        const lastUserMes =
+            parseInt($chat.querySelector(".last_mes").getAttribute("mesid")) -
+            1;
+
         if (!activeElement.matches("textarea, input, [contenteditable]")) {
             switch (event.key) {
                 case "ArrowLeft":
@@ -372,10 +381,9 @@ function moveSwipeButtons() {
                     handleSwipe(event, "right");
                     break;
                 case "ArrowUp":
-                    let array = $chat.querySelectorAll(
-                        `.mes[is_user="true"] .mes_button.mes_edit`,
-                    );
-                    array[array.length - 1].click();
+                    $chat
+                        .querySelector(`.mes[mesid="${lastUserMes}"] .mes_edit`)
+                        .click();
                     break;
             }
         }
