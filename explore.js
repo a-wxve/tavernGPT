@@ -86,7 +86,7 @@ async function setupExplorePanel() {
     }
 
     async function generateCharacterPopup(character) {
-        function generateStarRating(rating) {
+        const generateStarRating = (rating) => {
             const fullStars = Math.floor(rating);
             const halfStar = rating % 1 >= 0.5 ? 1 : 0;
 
@@ -100,7 +100,7 @@ async function setupExplorePanel() {
             }
 
             return starsHTML;
-        }
+        };
 
         const popupHTML = `<div class="flex-container chub-popup">
                 <div>
@@ -162,9 +162,15 @@ async function setupExplorePanel() {
             allowVerticalScrolling: true,
         }).then(
             document
-                .querySelector(".chub-popup .download-btn")
+                .querySelector(".chub-popup")
                 .addEventListener("click", (event) => {
-                    downloadCharacter(event.target.getAttribute("data-path"));
+                    const downloadButton =
+                        event.target.closest(".download-btn");
+                    if (downloadButton) {
+                        downloadCharacter(
+                            downloadButton.getAttribute("data-path"),
+                        );
+                    }
                 }),
         );
     }
@@ -413,7 +419,7 @@ async function setupExplorePanel() {
         const target = event.target;
         const nameClicked = target.matches(".name");
         const avatarClicked = target.matches(".thumbnail img");
-        const downloadButtonClicked = target.matches(".download-btn");
+        const downloadButtonClicked = target.closest(".download-btn");
         const tagClicked = target.matches(".tag");
         const creatorClicked = target.matches(".creator");
 
@@ -425,7 +431,7 @@ async function setupExplorePanel() {
             );
             generateCharacterPopup(characters[index]);
         } else if (downloadButtonClicked) {
-            downloadCharacter(target.getAttribute("data-path"));
+            downloadCharacter(downloadButtonClicked.getAttribute("data-path"));
         } else if (tagClicked) {
             const $tags = $searchWrapper.querySelector("#includeTags");
             const tagText = target.textContent.toLowerCase();
@@ -441,6 +447,7 @@ async function setupExplorePanel() {
                 $tags.value += `${tagText}, `;
             }
 
+            $pageNumber.value = 1;
             search(event, true);
         } else if (creatorClicked) {
             const username = target.textContent.toLowerCase().split(" ")[1];
@@ -456,6 +463,7 @@ async function setupExplorePanel() {
             $creatorSearch.value = `${username}`;
             $tags.value = "";
             $excludedTags.value = "";
+            $pageNumber.value = 1;
             search(event, true);
         }
     }
@@ -489,9 +497,6 @@ async function setupExplorePanel() {
 
     $characterList.addEventListener("scroll", infiniteScrollDebounced);
     $characterList.addEventListener("click", handleCharacterClick);
-
-    $characterList.scrollTop = 0;
-    $pageNumber.value = 1;
 }
 
 export async function loadExplorePanel() {
