@@ -10,7 +10,7 @@
     --insidePadding: 10px;
     --borderRadius: 1.5rem;
     --borderRadiusSmol: 0.625rem;
-    --transition: all 0.2s ease-in-out;
+    --transition: all 0.1s ease-in-out;
 }
 
 body.bubblechat {
@@ -675,6 +675,10 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
     padding: 0 10px;
 }
 
+.mes .swipes {
+    align-items: center;
+}
+
 .mes .swipes .swipes-counter {
     opacity: 0;
     transition: var(--transition);
@@ -845,10 +849,6 @@ body:not(.bubblechat) .mes[is_user="true"] .name_text::after {
     animation: 0.25s infinite alternate splash;
     position: relative;
     text-shadow: 2px 2px #3f3f00 !important;
-}
-
-.icon-svg.timestamp-icon {
-    height: calc(var(--mainFontSize) + 1px);
 }
 
 .cropper-crop-box .cropper-face.cropper-move {
