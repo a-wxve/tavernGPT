@@ -295,7 +295,9 @@ async function renameChat(auto = false, chatBlock = null) {
             .substring(0, 90);
     } else if (auto && matchesTimePattern(oldFilename)) {
         eventSource.once(event_types.GENERATE_AFTER_DATA, () => {
-            renameChat(true);
+            debounce(() => {
+                renameChat(true);
+            }, debounce_timeout.relaxed);
         });
     } else if (!auto && chatBlock) {
         oldFilename = chatBlock.getAttribute("file_name");
