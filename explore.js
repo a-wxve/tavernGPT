@@ -102,6 +102,10 @@ async function setupExplorePanel() {
             return starsHTML;
         };
 
+        const formatForURL = (name) => {
+            return name.replace(/\s+/g, "-").toLowerCase();
+        };
+
         const popupHTML = `<div class="flex-container chub-popup">
                 <div>
                     <img src="${character.url}" alt="${character.name}">
@@ -127,7 +131,7 @@ async function setupExplorePanel() {
                 </div>
                 <div class="chub-padding">
                     <div>
-                        <h3>${character.name}</h3>
+                        <h3><a href="https://www.characterhub.org/characters/${character.fullPath}" target="_blank" rel="noopener noreferrer">${character.name}</a></h3>
                         <h5>by ${character.creator}</h5>
                     </div>
                     <div class="chub-text-align">
