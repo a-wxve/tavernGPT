@@ -234,42 +234,43 @@ async function overrideChatButtons(event) {
             { okButton: "Delete", cancelButton: "Cancel" },
         );
 
-        if (confirmed) {
-            const deleteChat = selected_group
-                ? () => deleteGroupChat(selected_group, chatToDelete)
-                : () =>
-                      fetch("/api/chats/delete", {
-                          method: "POST",
-                          headers: getRequestHeaders(),
-                          body: JSON.stringify({
-                              chatfile: chatToDelete,
-                              avatar_url: characters[this_chid].avatar,
-                          }),
-                      });
-
-            const response = await deleteChat().catch((error) => {
-                console.error(`Error deleting ${chatToDelete}:`, error);
-                toastr.error("An error occurred. Chat was not deleted.");
-                return null;
-            });
-
-            if (response) {
-                if (!selected_group) {
-                    const name = chatToDelete.replace(".jsonl", "");
-
-                    if (name === characters[this_chid].chat) {
-                        chat_metadata = {};
-                        await replaceCurrentChat();
-                    }
-
-                    await eventSource.emit(event_types.CHAT_DELETED, name);
-                }
-
-                chatBlock.remove();
-            }
-        } else {
+        if (!confirmed) {
+            console.error(`Error deleting ${chatBlock}: User did not confirm.`);
             return;
         }
+
+        const deleteChat = selected_group
+            ? () => deleteGroupChat(selected_group, chatToDelete)
+            : () =>
+                  fetch("/api/chats/delete", {
+                      method: "POST",
+                      headers: getRequestHeaders(),
+                      body: JSON.stringify({
+                          chatfile: chatToDelete,
+                          avatar_url: characters[this_chid].avatar,
+                      }),
+                  });
+
+        const response = await deleteChat().catch((error) => {
+            console.error(`Error deleting ${chatToDelete}:`, error);
+            toastr.error("An error occurred. Chat was not deleted.");
+            return null;
+        });
+
+        if (!response) return;
+
+        if (!selected_group) {
+            const name = chatToDelete.replace(".jsonl", "");
+
+            if (name === characters[this_chid].chat) {
+                chat_metadata = {};
+                await replaceCurrentChat();
+            }
+
+            await eventSource.emit(event_types.CHAT_DELETED, name);
+        }
+
+        chatBlock.remove();
     }
 }
 
@@ -307,44 +308,48 @@ async function renameChat(auto = false, chatBlock = null) {
         );
     }
 
-    if (newFilename) {
-        const response = await fetch("/api/chats/rename", {
-            method: "POST",
-            headers: getRequestHeaders(),
-            body: JSON.stringify({
-                is_group: !!selected_group,
-                avatar_url: characters[this_chid]?.avatar,
-                original_file: `${oldFilename}.jsonl`,
-                renamed_file: `${newFilename}.jsonl`,
-            }),
-        }).catch((error) => {
-            console.error(`Error renaming ${oldFilename}:`, error);
-            toastr.error("An error occurred. Chat was not renamed.");
-            return null;
-        });
+    if (!newFilename) {
+        console.error(`Error renaming ${oldFilename}: No new filename given.`);
+        toastr.error("An error occurred. Chat was not renamed.");
+        return;
+    }
 
-        if (response) {
-            if (selected_group) {
-                await renameGroupChat(selected_group, oldFilename, newFilename);
-            } else {
-                if (characters[this_chid].chat == oldFilename) {
-                    characters[this_chid].chat = newFilename;
-                    document.querySelector("#selected_chat_pole").value =
-                        characters[this_chid].chat;
-                    saveCharacterDebounced();
-                }
-            }
+    const response = await fetch("/api/chats/rename", {
+        method: "POST",
+        headers: getRequestHeaders(),
+        body: JSON.stringify({
+            is_group: !!selected_group,
+            avatar_url: characters[this_chid]?.avatar,
+            original_file: `${oldFilename}.jsonl`,
+            renamed_file: `${newFilename}.jsonl`,
+        }),
+    }).catch((error) => {
+        console.error(`Error renaming ${oldFilename}:`, error);
+        toastr.error("An error occurred. Chat was not renamed.");
+        return null;
+    });
 
-            const filenameElement = chatBlock
-                ? chatBlock.querySelector(
-                      ".select_chat_block_filename.select_chat_block_filename_item",
-                  )
-                : document.querySelector(
-                      `.select_chat_block[highlight="true"] .select_chat_block_filename.select_chat_block_filename_item`,
-                  );
-            if (filenameElement) filenameElement.textContent = newFilename;
+    if (!response) return;
+
+    if (selected_group) {
+        await renameGroupChat(selected_group, oldFilename, newFilename);
+    } else {
+        if (characters[this_chid].chat == oldFilename) {
+            characters[this_chid].chat = newFilename;
+            document.querySelector("#selected_chat_pole").value =
+                characters[this_chid].chat;
+            saveCharacterDebounced();
         }
     }
+
+    const filenameElement = chatBlock
+        ? chatBlock.querySelector(
+              ".select_chat_block_filename.select_chat_block_filename_item",
+          )
+        : document.querySelector(
+              `.select_chat_block[highlight="true"] .select_chat_block_filename.select_chat_block_filename_item`,
+          );
+    if (filenameElement) filenameElement.textContent = newFilename;
 }
 
 export async function loadChatHistory() {
