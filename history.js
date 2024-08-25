@@ -112,10 +112,12 @@ async function displayChats(searchQuery) {
             return sortTimeCategories(a, b);
         })
         .forEach(([category, chats]) => {
-            $selectChat.insertAdjacentHTML(
-                "beforeend",
-                `<h5 class=chat-category>${category}</h5>`,
-            );
+            if (chats.length > 0) {
+                $selectChat.insertAdjacentHTML(
+                    "beforeend",
+                    `<h5 class=chat-category>${category}</h5>`,
+                );
+            }
 
             const filteredData = chats.filter((chat) => {
                 const chatContent = rawChats[chat["file_name"]];
@@ -211,7 +213,7 @@ async function overrideChatButtons(event) {
         chatBlock.setAttribute("highlight", true);
     } else if (chatBlock && event.target.matches(".renameChatButton")) {
         stopEvent(event);
-        renameChat(true, chatBlock);
+        renameChat(false, chatBlock);
     } else if (chatBlock && event.target.matches(".PastChat_cross")) {
         stopEvent(event);
 
@@ -284,22 +286,26 @@ async function renameChat(auto = false, chatBlock = null) {
             .replace(/^'((?:\\'|[^'])*)'$/, "$1")
             .substring(0, 90);
     } else if (auto && matchesTimePattern(oldFilename)) {
-        eventSource.once(event_types.GENERATE_AFTER_DATA, () => {
+        eventSource.once(
+            event_types.MESSAGE_SENT,
             debounce(() => {
                 renameChat(true);
-            }, debounce_timeout.relaxed);
-        });
+            }, debounce_timeout.extended),
+        );
+        return;
     } else if (!auto && chatBlock) {
         oldFilename = chatBlock.getAttribute("file_name");
         newFilename = await callGenericPopup(
             "Enter a new name for this chat:",
             POPUP_TYPE.INPUT,
         );
+    } else {
+        return;
     }
 
     if (!newFilename) {
         console.error(`Error renaming ${oldFilename}: No new filename given.`);
-        toastr.error("An error occurred. Chat was not renamed.");
+        toastr.error("Chat was not renamed.");
         return;
     }
 
