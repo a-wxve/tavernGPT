@@ -164,7 +164,7 @@ async function displayChats(searchQuery) {
                         .setAttribute("file_name", fileName);
                     template.querySelector(
                         ".select_chat_block_filename",
-                    ).textContent = fileName;
+                    ).textContent = fileName.replace(".jsonl", "");
                     template
                         .querySelector(".PastChat_cross")
                         .setAttribute("file_name", fileName);
@@ -177,17 +177,6 @@ async function displayChats(searchQuery) {
                     }
 
                     $selectChat.append(template);
-
-                    $selectChat
-                        .querySelectorAll(
-                            ".select_chat_block_filename.select_chat_block_filename_item",
-                        )
-                        .forEach((filename) => {
-                            filename.textContent = filename.textContent.replace(
-                                ".jsonl",
-                                "",
-                            );
-                        });
                 }
             }
         });
