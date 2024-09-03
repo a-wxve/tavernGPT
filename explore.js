@@ -461,12 +461,14 @@ async function setupExplorePanel() {
                 $searchWrapper.querySelector("#creatorSearch");
             const $tags = $searchWrapper.querySelector("#includeTags");
             const $excludedTags = $searchWrapper.querySelector("#excludeTags");
+            const $sortOrder = $searchWrapper.querySelector("#sortOrder");
 
             $searchTerm.value = "";
             $creatorSearch.value = `${username}`;
             $tags.value = "";
             $excludedTags.value = "";
             $pageNumber.value = 1;
+            $sortOrder.value = "download_count";
             search(event, true);
         }
     }
