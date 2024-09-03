@@ -102,10 +102,6 @@ async function setupExplorePanel() {
             return starsHTML;
         };
 
-        const formatForURL = (name) => {
-            return name.replace(/\s+/g, "-").toLowerCase();
-        };
-
         const popupHTML = `<div class="flex-container chub-popup">
                 <div>
                     <img src="${character.url}" alt="${character.name}">
@@ -190,6 +186,7 @@ async function setupExplorePanel() {
             sort,
             findCount,
             page = 1,
+            venus,
         },
         reset,
         callback,
@@ -223,7 +220,7 @@ async function setupExplorePanel() {
         url += `&sort=${sort}`;
         url += `&asc=false`;
         url += `&include_forks=true`;
-        url += `&venus=true&chub=true`;
+        url += `&venus=${venus}&chub=true`;
         url += `&nsfw=${nsfw}&nsfl=${nsfw}`;
         url += `&nsfw_only=false`;
         url += `&require_images=false`;
@@ -376,7 +373,8 @@ async function setupExplorePanel() {
         const nsfw = $searchWrapper.querySelector("#nsfwCheckbox").checked;
         const findCount = $searchWrapper.querySelector("#findCount").value;
         const sort = $searchWrapper.querySelector("#sortOrder").value;
-        let page = $searchWrapper.querySelector("#pageNumber").value;
+        const page = $searchWrapper.querySelector("#pageNumber").value;
+        const venus = $searchWrapper.querySelector("#venusCheckbox").checked;
 
         fetchCharactersDebounced(
             {
@@ -389,6 +387,7 @@ async function setupExplorePanel() {
                 findCount,
                 sort,
                 page,
+                venus,
             },
             reset,
             callback,
@@ -483,7 +482,7 @@ async function setupExplorePanel() {
 
     $searchWrapper
         .querySelectorAll(
-            "#characterSearchInput, #creatorSearch, #namespace, #includeTags, #excludeTags, #findCount, #sortOrder, #nsfwCheckbox",
+            "#characterSearchInput, #creatorSearch, #namespace, #includeTags, #excludeTags, #findCount, #sortOrder, #nsfwCheckbox, #venusCheckbox",
         )
         .forEach((element) => {
             element.addEventListener("change", (event) => {
