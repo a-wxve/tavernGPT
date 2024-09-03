@@ -500,6 +500,30 @@ async function setupExplorePanel() {
             search(event, true);
         });
 
+    $searchWrapper
+        .querySelector("#resetSearchButton")
+        .addEventListener("click", (event) => {
+            $searchWrapper
+                .querySelectorAll("input, select")
+                .forEach((element) => {
+                    switch (element.type) {
+                        case "checkbox":
+                            element.checked = element.defaultChecked;
+                            break;
+                        case "select-one":
+                            let defaultOption =
+                                Array.from(element.options).find(
+                                    (option) => option.defaultSelected,
+                                ) || element.options[0];
+                            element.value = defaultOption.value;
+                            break;
+                        default:
+                            element.value = element.defaultValue;
+                    }
+                });
+            search(event, true);
+        });
+
     $characterList.addEventListener("scroll", infiniteScrollDebounced);
     $characterList.addEventListener("click", handleCharacterClick);
 }
