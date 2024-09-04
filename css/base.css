@@ -238,7 +238,7 @@ body.waifuMode .expression-holder {
 }
 
 #sys-settings-button .drawer-icon::after {
-    content: " API Settings";
+    content: " API";
 }
 
 #sys-settings-button:has(.openIcon) ~ #advanced-formatting-button,
@@ -299,7 +299,7 @@ body.waifuMode .expression-holder {
 }
 
 #user-settings-button .drawer-icon::after {
-    content: " User Settings";
+    content: " Interface";
 }
 
 #user-settings-button:has(.openIcon) ~ #extensions-settings-button,
