@@ -51,7 +51,10 @@ body.bubblechat {
         }
     }
     .mes[is_user="false"] .mes_text {
-        border-top-left-radius: var(--borderRadiusSmol);
+        border-top-left-radius: 0px;
+    }
+    .mes[is_user="true"] .mes_text {
+        border-bottom-right-radius: 0px;
     }
     .mes_text {
         border-radius: var(--borderRadius);
