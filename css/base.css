@@ -52,9 +52,6 @@ body.bubblechat {
     .mes[is_user="false"] .mes_text {
         border-top-left-radius: 3px;
     }
-    .mes[is_user="true"] .mes_text {
-        border-bottom-right-radius: 3px;
-    }
     .mes_text {
         border-radius: var(--borderRadius);
         background-color: var(--SmartThemeBotMesBlurTintColor);
