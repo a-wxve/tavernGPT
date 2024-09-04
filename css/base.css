@@ -4,7 +4,6 @@
         "Helvetica Neue", Helvetica, Arial, sans-serif;
     --monoFontFamily: "SF Mono", SFMono-Regular, ui-monospace,
         "DejaVu Sans Mono", Menlo, Consolas, monospace;
-    /* --lineHeight: calc(var(--mainFontSize) * 1.5); */
     --barSize: 20%;
     --panelSize: 42.5%;
     --insidePadding: 10px;
@@ -726,41 +725,12 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
 }
 
 .mes_text {
-    /* line-height: var(--lineHeight); */
     padding: 0;
 }
 
 .mes .mes_block .mes_text > :last-child {
     margin-bottom: 0;
 }
-
-/* .mes .mes_block .mes_text p {
-    margin-bottom: var(--lineHeight);
-}
-
-.mes .mes_block .mes_text p:has(+ ol),
-.mes .mes_block .mes_text p:has(+ ul) {
-    margin-bottom: calc(var(--lineHeight) / 2);
-}
-
-.mes .mes_block .mes_text h1,
-.mes .mes_block .mes_text h2,
-.mes .mes_block .mes_text h3,
-.mes .mes_block .mes_text h4,
-.mes .mes_block .mes_text a:not(.fa-solid) {
-    margin: 0 0 calc(var(--lineHeight) / 2) 0;
-}
-
-.mes .mes_block .mes_text ol,
-.mes .mes_block .mes_text ul {
-    margin-block: calc(var(--lineHeight) / 2);
-    padding-inline-start: 2rem;
-}
-
-.mes .mes_block .mes_text ol:has(+ p),
-.mes .mes_block .mes_text ul:has(+ p) {
-    margin-block-end: var(--lineHeight);
-} */
 
 .mes .mes_block .mes_text #curEditTextarea {
     resize: none;
