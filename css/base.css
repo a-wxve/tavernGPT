@@ -553,7 +553,7 @@ body.waifuMode .expression-holder {
 }
 
 #right-nav-panel {
-    width: -webkit-fill-available;
+    width: calc(100% - var(--barSize));
 }
 
 #sheld {
