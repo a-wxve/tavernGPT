@@ -166,3 +166,11 @@ body.waifuMode .expression-holder {
 #splash {
     left: 45px;
 }
+
+#rm_print_characters_block {
+    flex-wrap: wrap;
+    .bogus_folder_select,
+    .character_select {
+        width: 100%;
+    }
+}

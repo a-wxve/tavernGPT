@@ -4,12 +4,17 @@
         "Helvetica Neue", Helvetica, Arial, sans-serif;
     --monoFontFamily: "SF Mono", SFMono-Regular, ui-monospace,
         "DejaVu Sans Mono", Menlo, Consolas, monospace;
-    --barSize: 20%;
+    --lineHeight: calc(var(--mainFontSize) * 1.25);
+    --barSize: 270px;
     --panelSize: 42.5%;
     --insidePadding: 10px;
     --borderRadius: 1.5rem;
     --borderRadiusSmol: 0.625rem;
     --transition: all 0.1s ease-in-out;
+}
+
+body {
+    background-color: var(--SmartThemeChatTintColor);
 }
 
 body.bubblechat {
@@ -49,8 +54,13 @@ body.bubblechat {
             align-self: end;
         }
     }
+    .smallSysMes .mes_text {
+        padding: 3px !important;
+        border-radius: 9px;
+        width: unset;
+    }
     .mes[is_user="false"] .mes_text {
-        border-top-left-radius: 3px;
+        border-top-left-radius: 2px;
     }
     .mes_text {
         border-radius: var(--borderRadius);
@@ -158,6 +168,7 @@ body.waifuMode .expression-holder {
 .drawer-icon {
     padding: 0.36rem;
     font-size: 1.5rem;
+    text-align: left;
 }
 
 .drawer-icon::before {
@@ -434,6 +445,14 @@ body.waifuMode .expression-holder {
     font-weight: 900;
 }
 
+#rm_print_characters_block {
+    flex-flow: row wrap;
+    .bogus_folder_select,
+    .character_select {
+        width: 50%;
+    }
+}
+
 #form_create:has(#firstMessageWrapper[style*="display: none"])
     #exampleMesWrapper {
     display: none;
@@ -533,6 +552,10 @@ body.waifuMode .expression-holder {
     max-height: 100dvh !important;
 }
 
+#right-nav-panel {
+    width: -webkit-fill-available;
+}
+
 #sheld {
     max-width: calc(100% - var(--barSize));
     top: 0;
@@ -545,8 +568,8 @@ body.waifuMode .expression-holder {
 }
 
 #top-settings-holder:has(.drawer-content.openDrawer):not(
-        :has(#explore-button .drawer-content.openDrawer)
-    )
+        :has(#rightNavHolder .drawer-content.openDrawer)
+    ):not(:has(#explore-button .drawer-content.openDrawer))
     ~ #sheld,
 #top-settings-holder:has(.drawer-content.pinnedOpen) ~ #sheld,
 body:has(#character_popup[style*="display: flex"]) > #sheld {
@@ -662,7 +685,8 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
     visibility: hidden;
 }
 
-.mes:not(.last_mes) {
+.mes:not(.last_mes),
+.mes[is_user="true"] {
     .swipes-counter,
     .mes_swipe_left,
     .mes_swipe_right {
@@ -729,11 +753,35 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
     margin-bottom: 0;
 }
 
+.mes .mes_block .mes_text p {
+    margin-bottom: var(--lineHeight);
+}
+.mes .mes_block .mes_text p:has(+ ol),
+.mes .mes_block .mes_text p:has(+ ul) {
+    margin-bottom: calc(var(--lineHeight) / 2);
+}
+.mes .mes_block .mes_text h1,
+.mes .mes_block .mes_text h2,
+.mes .mes_block .mes_text h3,
+.mes .mes_block .mes_text h4,
+.mes .mes_block .mes_text a:not(.fa-solid) {
+    margin: 0 0 calc(var(--lineHeight) / 2) 0;
+}
+.mes .mes_block .mes_text ol,
+.mes .mes_block .mes_text ul {
+    margin-block: calc(var(--lineHeight) / 2);
+    padding-inline-start: 2rem;
+}
+.mes .mes_block .mes_text ol:has(+ p),
+.mes .mes_block .mes_text ul:has(+ p) {
+    margin-block-end: var(--lineHeight);
+}
+
 .mes .mes_block .mes_text #curEditTextarea {
     resize: none;
     font-family: inherit;
     font-weight: inherit;
-    line-height: calc(var(--mainFontSize) + 0.5rem);
+    line-height: calc(var(--mainFontSize) + 0.25rem);
     background-color: #0000;
     border: none;
     padding: 0;
