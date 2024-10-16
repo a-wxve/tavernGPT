@@ -617,10 +617,6 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
     bottom: 0;
 }
 
-#form_sheld:has(#send_form.no-connection) {
-    background-color: var(--crimson70a);
-}
-
 #hypeBotBar {
     padding: 0 0 10px 10px;
 }
@@ -680,8 +676,8 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
     padding-bottom: 4.5rem !important;
 }
 
-.mes.last_mes > .swipe_left,
-.mes.last_mes > .swipe_right {
+.mes.last_mes .swipe_left,
+.mes.last_mes .swipeRightBlock {
     visibility: hidden;
 }
 
@@ -706,6 +702,9 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
     opacity: 0;
     transition: var(--transition);
     font-weight: 500;
+    padding: 0;
+    margin: 0;
+    min-width: auto;
 }
 
 .mes .swipes .mes_swipe_left,
