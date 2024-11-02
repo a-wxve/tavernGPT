@@ -603,10 +603,9 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
     backdrop-filter: none;
     background-color: #0000;
     max-height: 100dvh;
-}
-
-#chat::-webkit-scrollbar {
-    width: 0;
+    &:not(:hover)::-webkit-scrollbar {
+        opacity: 0;
+    }
 }
 
 #form_sheld {
