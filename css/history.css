@@ -3,6 +3,12 @@
     justify-content: space-around;
 }
 
+#select_chat_search {
+    border-radius: var(--borderRadiusSmol);
+    order: 11;
+    max-height: 36px;
+}
+
 .historyButton {
     &:hover {
         opacity: 1;
@@ -24,12 +30,6 @@
     padding-left: 3px;
 }
 
-#select_chat_search {
-    border-radius: var(--borderRadiusSmol);
-    order: 11;
-    max-height: 36px;
-}
-
 #select_chat_div:empty ~ #select_chat_search {
     display: none;
 }
@@ -47,7 +47,7 @@
 
 #select_chat_div {
     &:not(:hover)::-webkit-scrollbar {
-        width: 0;
+        opacity: 0;
     }
     .select_chat_block:not(:hover) {
         .fa-solid {
@@ -70,16 +70,13 @@
 
 #select_chat_div .select_chat_block {
     border-radius: var(--borderRadiusSmol);
+    gap: 0px;
 }
 
 #select_chat_div #select_chat_name_wrapper {
     text-wrap: nowrap;
     flex-wrap: nowrap;
     overflow: hidden;
-}
-
-#select_chat_div #select_chat_name_wrapper > div:first-child {
-    max-width: 100%;
 }
 
 #select_chat_div
@@ -96,27 +93,27 @@
 
 #select_chat_div
     #select_chat_name_wrapper
-    > .flex-container.gap10px
     > .flex-container.gap10px {
-    flex-wrap: nowrap;
-    gap: 5px !important;
+        gap: 0px !important;
+        & > .flex-container.gap10px {
+        flex-wrap: nowrap;
+        gap: 5px !important;
+        }
+    }
 }
 
-#select_chat_div
-    #select_chat_name_wrapper
-    > .flex-container.gap10px
-    > .flex-container.gap10px
-    .exportRawChatButton.fa-solid.fa-file-export:before {
-    content: "";
+#select_chat_div #select_chat_name_wrapper > div:first-child {
+    max-width: 100%;
 }
 
-#select_chat_div
-    .select_chat_block:hover
-    #select_chat_name_wrapper
-    > div:first-child {
+#select_chat_div .select_chat_block:hover #select_chat_name_wrapper > div:first-child {
     max-width: 60%;
 }
 
-#select_chat_div .PastChat_cross.opacity50p.hoverglow.fa-solid.fa-skull:before {
+.exportRawChatButton.fa-solid.fa-file-export:before {
+    content: "";
+}
+
+.PastChat_cross.opacity50p.hoverglow.fa-solid.fa-skull:before {
     content: "";
 }

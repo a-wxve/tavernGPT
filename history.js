@@ -77,102 +77,76 @@ function sortTimeCategories(a, b) {
 async function displayChats(searchQuery) {
     const $selectChat = document.querySelector("#select_chat_div");
 
-    const data = await (selected_group
-        ? getGroupPastChats(selected_group)
-        : getPastCharacterChats());
+    try {
+        const response = await fetch("/api/chats/search", {
+            method: "POST",
+            headers: getRequestHeaders(),
+            body: JSON.stringify({
+                query: searchQuery,
+                avatar_url: selected_group
+                    ? null
+                    : characters[this_chid].avatar,
+                group_id: selected_group || null,
+            }),
+        });
 
-    if (!data) {
-        toastr.error("Could not load chat data. Try reloading the page.");
-        return;
-    }
+        if (!response.ok) {
+            throw new Error("Search failed");
+        }
 
-    const rawChats = await getChatsFromFiles(data, selected_group);
+        const data = await response.json();
 
-    const chatCategories = {};
-    for (const [category, _] of timeCategories) {
-        chatCategories[category] = [];
-    }
-
-    data.forEach((chat) => {
-        const lastMesDate = timestampToMoment(chat.last_mes);
-        const category = getTimeCategory(lastMesDate);
-        if (!Array.isArray(chatCategories[category])) {
+        const chatCategories = {};
+        for (const [category, _] of timeCategories) {
             chatCategories[category] = [];
         }
-        chatCategories[category].push(chat);
-    });
 
-    $selectChat.replaceChildren();
-    Object.entries(chatCategories)
-        .filter(([, chats]) => chats.length > 0)
-        .sort(([, aChats], [, bChats]) => {
-            const a = aChats[0];
-            const b = bChats[0];
-            if (!a.last_mes || !b.last_mes) return 0;
-            return sortTimeCategories(a, b);
-        })
-        .forEach(([category, chats]) => {
-            if (chats.length > 0) {
-                $selectChat.insertAdjacentHTML(
-                    "beforeend",
-                    `<h5 class=chat-category>${category}</h5>`,
-                );
+        data.forEach((chat) => {
+            const lastMesDate = timestampToMoment(chat.last_mes);
+            const category = getTimeCategory(lastMesDate);
+            if (!Array.isArray(chatCategories[category])) {
+                chatCategories[category] = [];
             }
+            chatCategories[category].push(chat);
+        });
 
-            const filteredData = chats.filter((chat) => {
-                const chatContent = rawChats[chat["file_name"]];
+        $selectChat.replaceChildren();
 
-                const fragments = searchQuery
-                    .trim()
-                    .split(/\s+/)
-                    .map((str) => str.trim().toLowerCase())
-                    .filter(onlyUnique);
+        Object.entries(chatCategories)
+            .filter(([, chats]) => chats.length > 0)
+            .sort(([, aChats], [, bChats]) => {
+                const a = aChats[0];
+                const b = bChats[0];
+                if (!a.last_mes || !b.last_mes) return 0;
+                return sortTimeCategories(a, b);
+            })
+            .forEach(([category, chats]) => {
+                if (chats.length > 0) {
+                    $selectChat.insertAdjacentHTML(
+                        "beforeend",
+                        `<h5 class=chat-category>${category}</h5>`,
+                    );
+                }
 
-                return (
-                    chatContent &&
-                    Object.values(chatContent).some((message) =>
-                        fragments.every((item) =>
-                            message?.mes?.toLowerCase().includes(item),
-                        ),
-                    )
-                );
-            });
-
-            for (const value of filteredData.values()) {
-                const strlen = 300;
-                let mes = value["mes"];
-
-                if (mes !== undefined) {
-                    if (mes.length > strlen) {
-                        mes = "..." + mes.substring(mes.length - strlen);
-                    }
-                    const fileName = value["file_name"];
+                for (const chat of chats) {
                     const template = document
                         .querySelector(
                             "#past_chat_template .select_chat_block_wrapper",
                         )
                         .cloneNode(true);
-                    const selectChatInfo =
-                        template.querySelector(".select_chat_info");
-                    const selectChatBlockMes = template.querySelector(
-                        ".select_chat_block_mes",
-                    );
-                    selectChatInfo.parentNode.removeChild(selectChatInfo);
-                    selectChatBlockMes.parentNode.removeChild(
-                        selectChatBlockMes,
-                    );
+
                     template
                         .querySelector(".select_chat_block")
-                        .setAttribute("file_name", fileName);
+                        .setAttribute("file_name", chat.file_name);
                     template.querySelector(
                         ".select_chat_block_filename",
-                    ).textContent = fileName.replace(".jsonl", "");
+                    ).textContent = chat.file_name.replace(".jsonl", "");
                     template
                         .querySelector(".PastChat_cross")
-                        .setAttribute("file_name", fileName);
+                        .setAttribute("file_name", chat.file_name);
 
                     const selectedChatFileName = `${selected_group ? group?.chat_id : characters[this_chid].chat}.jsonl`;
-                    if (fileName === selectedChatFileName) {
+                    if (chat.file_name === selectedChatFileName) {
                         template
                             .querySelector(".select_chat_block")
                             .setAttribute("highlight", true);
@@ -180,8 +154,11 @@ async function displayChats(searchQuery) {
 
                     $selectChat.append(template);
                 }
-            }
-        });
+            });
+    } catch (error) {
+        console.error("Error loading chats:", error);
+        toastr.error("Could not load chat data. Try reloading the page.");
+    }
 }
 
 async function overrideChatButtons(event) {
