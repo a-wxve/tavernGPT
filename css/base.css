@@ -13,6 +13,10 @@
     --transition: all 0.1s ease-in-out;
 }
 
+a {
+    color: orange;
+}
+
 body {
     background-color: var(--SmartThemeChatTintColor);
 }
@@ -31,11 +35,9 @@ body.bubblechat {
             display: none;
         }
         .mes_block {
-            justify-content: end;
-            max-width: 90%;
+            max-width: 91.17%;
             margin-left: auto;
             padding-left: 0;
-            padding-right: 0;
             overflow-y: hidden;
         }
         .ch_name.flex-container.justifySpaceBetween {
@@ -60,7 +62,26 @@ body.bubblechat {
         width: unset;
     }
     .mes[is_user="false"] .mes_text {
-        border-top-left-radius: 2px;
+        border-top-left-radius: 3px;
+    }
+    .mes[is_user="false"] details {
+        border-top-left-radius: 3px;
+        border-top-right-radius: var(--borderRadius);
+        background-color: var(--SmartThemeBotMesBlurTintColor);
+        padding: 0 1rem 0;
+    }
+    .mes[is_user="false"] details:has(.mes_reasoning:not(:empty)) + .mes_text {
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+        padding-top: 0;
+        width: auto;
+    }
+    .mes[is_user="false"]
+        details:has(.mes_reasoning:not(:empty))[open]
+        + .mes_text {
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+        padding-top: 0.625rem;
     }
     .mes_text {
         border-radius: var(--borderRadius);
@@ -107,7 +128,8 @@ body.waifuMode .expression-holder {
 .mes_edit_down,
 #option_select_chat,
 #option_start_new_chat,
-#load_select_chat_div {
+#load_select_chat_div,
+details summary::-webkit-details-marker {
     display: none !important;
 }
 
@@ -480,6 +502,10 @@ body.waifuMode .expression-holder {
     gap: 0;
 }
 
+#creator_notes_spoiler img {
+    max-width: 100%;
+}
+
 #sidebarToggle {
     cursor: pointer;
     transition: var(--transition);
@@ -550,9 +576,11 @@ body.waifuMode .expression-holder {
     padding-bottom: 0;
     position: fixed;
     max-height: 100dvh !important;
+    max-width: 100dvw;
 }
 
-#right-nav-panel {
+#right-nav-panel,
+#character_popup {
     width: calc(100% - var(--barSize));
 }
 
@@ -571,8 +599,7 @@ body.waifuMode .expression-holder {
         :has(#rightNavHolder .drawer-content.openDrawer)
     ):not(:has(#explore-button .drawer-content.openDrawer))
     ~ #sheld,
-#top-settings-holder:has(.drawer-content.pinnedOpen) ~ #sheld,
-body:has(#character_popup[style*="display: flex"]) > #sheld {
+#top-settings-holder:has(.drawer-content.pinnedOpen) ~ #sheld {
     left: initial;
     width: calc(100% - var(--barSize) - var(--panelSize));
 }
@@ -614,6 +641,8 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
     padding: 10px;
     position: absolute;
     bottom: 0;
+    border-top-left-radius: var(--borderRadius);
+    border-top-right-radius: var(--borderRadius);
 }
 
 #hypeBotBar {
@@ -785,6 +814,28 @@ body:has(#character_popup[style*="display: flex"]) > #sheld {
     padding: 0;
 }
 
+/* Reasoning */
+.mes_reasoning_header {
+    margin: 0.5rem 0;
+    background-color: transparent;
+    padding-left: 0;
+    &:not(:hover) {
+        color: var(--SmartThemeEmColor);
+    }
+}
+
+.mes .mes_block details .mes_reasoning {
+    border-radius: 0;
+    border-left: 3px solid var(--SmartThemeEmColor);
+    background-color: transparent;
+    margin-bottom: 0;
+}
+
+.mes_reasoning_details,
+.mes_reasoning_details .mes_reasoning_summary {
+    margin-right: 0;
+}
+
 body:not(.bubblechat) .mes[is_user="true"] .name_text {
     visibility: hidden;
     text-indent: -999px;
@@ -892,4 +943,22 @@ body:not(.bubblechat) .mes[is_user="true"] .name_text::after {
 
 body #toast-container {
     top: 0;
+    left: calc(var(--barSize) / 2);
+}
+
+#scrollToBottom {
+    position: fixed;
+    color: var(--SmartThemeBodyColor);
+    bottom: 4.5rem;
+    align-self: center;
+    z-index: 100;
+    padding: 0.69rem 0.25rem;
+    backdrop-filter: contrast(0.1);
+    border-radius: 100%;
+    cursor: pointer;
+
+    & i {
+        position: relative;
+        top: 1px;
+    }
 }

@@ -1,45 +1,40 @@
 .chat-flex {
     order: 10;
     justify-content: space-around;
+    border-radius: var(--borderRadiusSmol);
+    background-color: var(--black30a);
+    margin: 0.5rem 0 0;
+    transition: var(--transition);
 }
 
 #select_chat_search {
     border-radius: var(--borderRadiusSmol);
-    order: 11;
     max-height: 36px;
 }
 
 .historyButton {
     &:hover {
         opacity: 1;
-        background-color: var(--white30a);
     }
-    border-radius: var(--borderRadiusSmol);
+    background-color: transparent;
     opacity: 0.54;
-    padding: 5px 0;
-}
-
-.historyButton,
-.historyButton > span {
     font-size: var(--mainFontSize);
-    padding: 3px 5px 3px 0;
+    padding: 3px 5px;
+    margin: 5px;
     font-weight: 600;
 }
 
-.chat-flex .historyButton .fa-solid {
-    padding-left: 3px;
+#new_chat {
+    padding: 5px;
+    cursor: pointer;
 }
 
 #select_chat_div:empty ~ #select_chat_search {
     display: none;
 }
 
-#select_chat_search .fa-magnifying-glass {
-    color: #a9a9a9;
-}
-
 #select_chat_search input {
-    background-color: #0000;
+    background-color: transparent;
     border: none;
     outline: none;
     width: 87%;
@@ -79,15 +74,16 @@
     overflow: hidden;
 }
 
+#select_chat_div #select_chat_name_wrapper > .flex-container.alignItemsCenter {
+    flex-wrap: nowrap;
+}
+
 #select_chat_div
     #select_chat_name_wrapper
     > div:first-child
     .select_chat_block_filename.select_chat_block_filename_item {
     opacity: 0.9;
     text-overflow: ellipsis;
-    color: var(--SmartThemeBodyColor);
-    max-width: 100%;
-    display: inline-block;
     overflow: hidden;
 }
 
