@@ -120,14 +120,12 @@
 
 .chub-popup {
     flex-wrap: nowrap;
-    justify-content: center;
 
     @media screen and (width<=1024px) {
         flex-wrap: wrap;
     }
 
     img {
-        max-width: 200px;
         border-radius: var(--borderRadiusSmol);
     }
 
@@ -155,4 +153,8 @@
     .tags {
         justify-content: center;
     }
+}
+
+.popup:has(.chub-popup) {
+    width: auto;
 }

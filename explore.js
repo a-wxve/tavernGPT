@@ -104,7 +104,7 @@ async function setupExplorePanel() {
 
         const popupHTML = `<div class="flex-container chub-popup">
                 <div>
-                    <img src="${character.url}" alt="${character.name}">
+                    <img src="${character.url}" alt="${character.name}" width="360">
                     <div data-path="${character.fullPath}" class="menu_button menu_button_icon download-btn wide100p">
                         <i class="fa-solid fa-cloud-arrow-down"></i>
                         <span data-i18n="Download">Download</span>
