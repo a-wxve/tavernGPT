@@ -65,7 +65,7 @@ async function setupExplorePanel() {
                     </div>
                 </div>
                 <div class="info">
-                    <div class="name">${character.name || "Default Name"}
+                    <div class="name">${character.name}
                     <span class="creator">by ${character.creator}</span>
                 </div>
                 <div class="tagline">${character.tagline}</div>
@@ -279,13 +279,23 @@ async function setupExplorePanel() {
         );
         let characterBlobs = await Promise.all(characterPromises);
 
+        const sanitize = (text) => {
+            if (!text) return "";
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        };
+
         characterBlobs.forEach((character, i) => {
             let imageUrl = URL.createObjectURL(character);
             newCharacters.push({
                 url: imageUrl,
                 avatar: searchData.nodes[i].avatar_url,
                 description: searchData.nodes[i].description,
-                tagline: searchData.nodes[i].tagline || "No tagline found.",
+                tagline: sanitize(searchData.nodes[i].tagline),
                 name: searchData.nodes[i].name,
                 fullPath: searchData.nodes[i].fullPath,
                 tags: searchData.nodes[i].topics,
