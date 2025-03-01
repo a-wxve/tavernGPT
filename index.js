@@ -16,6 +16,7 @@ export const extensionName = "tavernGPT";
 export const extensionFolderPath = `scripts/extensions/third-party/${extensionName}`;
 const default_settings = {
     rename_chats: true,
+    rename_method: "function",
     enable_nudges: false,
     api_key_chub: "",
     background_list: [],
@@ -101,12 +102,34 @@ async function initSettings() {
             $settings.insertAdjacentHTML("beforeend", data);
         });
 
-    const $rename_chats = document.querySelector("#rename_chats");
-    const $enable_nudges = document.querySelector("#enable_nudges");
-    const $api_key_chub = document.querySelector("#api_key_chub");
+    const $rename_chats = $settings.querySelector("#rename_chats");
+    const $rename_method_container = $settings.querySelector(
+        ".rename_method_container",
+    );
+    const $rename_method_function = $settings.querySelector(
+        "#rename_method_function",
+    );
+    const $rename_method_system = $settings.querySelector(
+        "#rename_method_system",
+    );
+    const $enable_nudges = $settings.querySelector("#enable_nudges");
+    const $api_key_chub = $settings.querySelector("#api_key_chub");
 
     $rename_chats.addEventListener("click", () => {
         extension_settings[extensionName].rename_chats = $rename_chats.checked;
+        $rename_method_container.style.display = $rename_chats.checked
+            ? "block"
+            : "none";
+        saveSettingsDebounced();
+    });
+
+    $rename_method_function.addEventListener("click", () => {
+        extension_settings[extensionName].rename_method = "function";
+        saveSettingsDebounced();
+    });
+
+    $rename_method_system.addEventListener("click", () => {
+        extension_settings[extensionName].rename_method = "system";
         saveSettingsDebounced();
     });
 
@@ -140,8 +163,19 @@ async function initSettings() {
 
     if (settingsChanged) saveSettingsDebounced();
 
-    if (extension_settings[extensionName].rename_chats) $rename_chats.click();
-    if (extension_settings[extensionName].enable_nudges) $enable_nudges.click();
+    if (extension_settings[extensionName].rename_chats) {
+        $rename_chats.checked = true;
+        $rename_method_container.style.display = "block";
+    }
+
+    if (extension_settings[extensionName].rename_method === "function") {
+        $rename_method_function.checked = true;
+    } else {
+        $rename_method_system.checked = true;
+    }
+
+    if (extension_settings[extensionName].enable_nudges)
+        $enable_nudges.checked = true;
 }
 
 function loadSplashText() {

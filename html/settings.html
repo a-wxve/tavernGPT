@@ -13,8 +13,44 @@
                     Automatically Rename Chats
                 </label>
                 <small class="flexBasis100p m-b-1">
-                    ChatGPT-style automagic chat naming.
+                    ChatGPT-style automagic chat renaming.
                 </small>
+            </div>
+            <div
+                class="flex-container wide100p rename_method_container"
+                style="display: none"
+            >
+                <div class="flex-container wide100p">
+                    <label class="radio_label">
+                        <input
+                            type="radio"
+                            name="rename_method"
+                            id="rename_method_function"
+                            value="function"
+                            checked
+                        />
+                        Function Call
+                    </label>
+                    <small class="flexBasis100p m-b-1">
+                        Use function calling to rename chats (more efficient,
+                        but may not work with some reverse proxies).
+                    </small>
+                </div>
+                <div class="flex-container wide100p">
+                    <label class="radio_label">
+                        <input
+                            type="radio"
+                            name="rename_method"
+                            id="rename_method_system"
+                            value="system"
+                        />
+                        System Prompt
+                    </label>
+                    <small class="flexBasis100p m-b-1">
+                        Use system prompts to rename chats (more compatible, but
+                        uses extra tokens).
+                    </small>
+                </div>
             </div>
             <div class="flex-container wide100p">
                 <label class="checkbox_label flexBasis100p" for="enable_nudges">

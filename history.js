@@ -4,26 +4,25 @@ import {
     event_types,
     eventSource,
     generateQuietPrompt,
-    getChatsFromFiles,
-    getPastCharacterChats,
     getRequestHeaders,
     openCharacterChat,
     replaceCurrentChat,
     saveCharacterDebounced,
+    saveSettingsDebounced,
     this_chid,
 } from "../../../../script.js";
 import { debounce_timeout } from "../../../constants.js";
 import { extension_settings, getContext } from "../../../extensions.js";
 import {
     deleteGroupChat,
-    getGroupPastChats,
     groups,
     openGroupChat,
     renameGroupChat,
     selected_group,
 } from "../../../group-chats.js";
 import { callGenericPopup, POPUP_TYPE } from "../../../popup.js";
-import { debounce, onlyUnique, timestampToMoment } from "../../../utils.js";
+import { ToolManager } from "../../../tool-calling.js";
+import { debounce, timestampToMoment } from "../../../utils.js";
 import { extensionFolderPath, extensionName } from "./index.js";
 
 const group = selected_group
@@ -35,6 +34,7 @@ const timeCategories = new Map([
     ["This Week", 2],
     ["This Month", 3],
 ]);
+let renamePromptListeners = [];
 
 function getTimeCategory(date) {
     const today = moment().startOf("day");
@@ -190,7 +190,12 @@ async function overrideChatButtons(event) {
         chatBlock.setAttribute("highlight", true);
     } else if (chatBlock && event.target.matches(".renameChatButton")) {
         stopEvent(event);
-        renameChat(false, chatBlock);
+        const oldFilename = chatBlock.getAttribute("file_name");
+        const newFilename = await callGenericPopup(
+            "Enter a new name for this chat:",
+            POPUP_TYPE.INPUT,
+        );
+        renameChat(oldFilename, newFilename);
     } else if (chatBlock && event.target.matches(".PastChat_cross")) {
         stopEvent(event);
 
@@ -242,86 +247,179 @@ async function overrideChatButtons(event) {
     }
 }
 
-async function renameChat(auto = false, chatBlock = null) {
-    let oldFilename = selected_group
-        ? group?.chat_id
-        : characters[this_chid].chat;
-    let newFilename;
-    const context = getContext();
+async function renameChat(oldFilename, newFilename) {
+    try {
+        const response = await fetch("/api/chats/rename", {
+            method: "POST",
+            headers: getRequestHeaders(),
+            body: JSON.stringify({
+                is_group: !!selected_group,
+                avatar_url: characters[this_chid]?.avatar,
+                original_file: `${oldFilename}.jsonl`,
+                renamed_file: `${newFilename}.jsonl`,
+            }),
+        });
 
-    const matchesTimePattern = (string) => {
-        const regexPattern = /@\d\dh\s?\d\dm\s?\d\ds(\d{1,3}ms)?/;
-        return regexPattern.test(string);
-    };
+        if (!response.ok) {
+            throw new Error("Failed to rename chat.");
+        }
 
-    if (auto && matchesTimePattern(oldFilename) && context.chat.length > 2) {
-        const prompt =
-            'Generate a unique name for this chat in as few words as possible. Avoid including special characters, words like "chat", or the user\'s name. Only output the chat name.';
-        newFilename = await generateQuietPrompt(prompt, false, false);
-        newFilename = newFilename
-            .toString()
-            .replace(/^'((?:\\'|[^'])*)'$/, "$1")
-            .substring(0, 90);
-    } else if (auto && matchesTimePattern(oldFilename)) {
-        eventSource.once(
-            event_types.MESSAGE_SENT,
-            debounce(() => {
-                renameChat(true);
-            }, debounce_timeout.extended),
+        if (selected_group) {
+            await renameGroupChat(selected_group, oldFilename, newFilename);
+        } else {
+            if (characters[this_chid].chat == oldFilename) {
+                characters[this_chid].chat = newFilename;
+                document.querySelector("#selected_chat_pole").value =
+                    characters[this_chid].chat;
+                saveCharacterDebounced();
+            }
+        }
+
+        const filenameElement = document.querySelector(
+            `.select_chat_block[highlight="true"] .select_chat_block_filename.select_chat_block_filename_item`,
         );
-        return;
-    } else if (!auto && chatBlock) {
-        oldFilename = chatBlock.getAttribute("file_name");
-        newFilename = await callGenericPopup(
-            "Enter a new name for this chat:",
-            POPUP_TYPE.INPUT,
-        );
-    } else {
-        return;
-    }
+        if (filenameElement) filenameElement.textContent = newFilename;
 
-    if (!newFilename) {
-        console.error(`Error renaming ${oldFilename}: No new filename given.`);
-        toastr.error("Chat was not renamed.");
-        return;
-    }
-
-    const response = await fetch("/api/chats/rename", {
-        method: "POST",
-        headers: getRequestHeaders(),
-        body: JSON.stringify({
-            is_group: !!selected_group,
-            avatar_url: characters[this_chid]?.avatar,
-            original_file: `${oldFilename}.jsonl`,
-            renamed_file: `${newFilename}.jsonl`,
-        }),
-    }).catch((error) => {
+        return true;
+    } catch (error) {
         console.error(`Error renaming ${oldFilename}:`, error);
         toastr.error("An error occurred. Chat was not renamed.");
-        return null;
-    });
+        return false;
+    }
+}
 
-    if (!response) return;
+function registerRenameChatTool() {
+    cleanupRenamePromptListeners();
+    ToolManager.unregisterTool("renameChat");
 
-    if (selected_group) {
-        await renameGroupChat(selected_group, oldFilename, newFilename);
-    } else {
-        if (characters[this_chid].chat == oldFilename) {
-            characters[this_chid].chat = newFilename;
-            document.querySelector("#selected_chat_pole").value =
-                characters[this_chid].chat;
-            saveCharacterDebounced();
-        }
+    if (!ToolManager.isToolCallingSupported()) {
+        console.log(
+            "Tool calling not supported, falling back to system prompt method.",
+        );
+        extension_settings[extensionName].rename_method = "system";
+        saveSettingsDebounced();
+        return setupSystemPromptRename();
     }
 
-    const filenameElement = chatBlock
-        ? chatBlock.querySelector(
-              ".select_chat_block_filename.select_chat_block_filename_item",
-          )
-        : document.querySelector(
-              `.select_chat_block[highlight="true"] .select_chat_block_filename.select_chat_block_filename_item`,
-          );
-    if (filenameElement) filenameElement.textContent = newFilename;
+    ToolManager.registerFunctionTool({
+        name: "renameChat",
+        displayName: "Rename Chat",
+        description:
+            "Rename the current chat to a more descriptive title. Use this to change or create a name for the current conversation. If you see this tool, that means the chat needs to be renamed, so use it!",
+        parameters: Object.freeze({
+            $schema: "https://json-schema.org/draft/2020-12/schema",
+            type: "object",
+            properties: {
+                newName: {
+                    type: "string",
+                    description:
+                        "The new name for the chat. Should be concise, descriptive, and avoid special characters.",
+                },
+            },
+            required: ["newName"],
+        }),
+        action: async ({ newName }) => {
+            const oldFilename = selected_group
+                ? group?.chat_id
+                : characters[this_chid].chat;
+            newName = newName
+                .toString()
+                .replace(/^'((?:\\'|[^'])*)'$/, "$1")
+                .substring(0, 90);
+
+            const success = await renameChat(oldFilename, newName);
+
+            return success
+                ? `Chat successfully renamed to "${newName}".`
+                : "Failed to rename the chat. Please try again with a different name.";
+        },
+        shouldRegister: () => {
+            const context = getContext();
+            const currentFilename = selected_group
+                ? group?.chat_id
+                : characters[this_chid]?.chat;
+
+            const matchesTimePattern = (string) => {
+                const regexPattern = /@\d\dh\s?\d\dm\s?\d\ds(\d{1,3}ms)?/;
+                return regexPattern.test(string);
+            };
+
+            return (
+                matchesTimePattern(currentFilename) && context.chat.length > 2
+            );
+        },
+        stealth: true,
+    });
+}
+
+function cleanupRenamePromptListeners() {
+    renamePromptListeners.forEach((listener) => {
+        const { event, callback } = listener;
+        eventSource.off(event, callback);
+    });
+    renamePromptListeners = [];
+}
+
+async function setupSystemPromptRename() {
+    cleanupRenamePromptListeners();
+
+    const checkIfRenameNeeded = async () => {
+        const context = getContext();
+        const oldFilename = selected_group
+            ? group?.chat_id
+            : characters[this_chid]?.chat;
+
+        const matchesTimePattern = (string) => {
+            const regexPattern = /@\d\dh\s?\d\dm\s?\d\ds(\d{1,3}ms)?/;
+            return regexPattern.test(string);
+        };
+
+        if (matchesTimePattern(oldFilename) && context.chat.length > 2) {
+            const prompt =
+                'Generate a unique name for this chat in as few words as possible. Avoid including special characters, words like "chat", or the user\'s name. Only output the chat name.';
+            try {
+                let newFilename = await generateQuietPrompt(
+                    prompt,
+                    false,
+                    false,
+                );
+                newFilename = newFilename
+                    .toString()
+                    .replace(/^'((?:\\'|[^'])*)'$/, "$1")
+                    .substring(0, 90);
+
+                if (newFilename) {
+                    await renameChat(oldFilename, newFilename);
+                }
+            } catch (error) {
+                console.error(`Error generating new filename: ${error}`);
+            }
+        }
+    };
+
+    const chatChangedCallback = debounce(
+        () => checkIfRenameNeeded(),
+        debounce_timeout.short,
+    );
+    const messageReceivedCallback = debounce(
+        () => checkIfRenameNeeded(),
+        debounce_timeout.short,
+    );
+
+    renamePromptListeners.push(
+        { event: event_types.CHAT_CHANGED, callback: chatChangedCallback },
+        {
+            event: event_types.MESSAGE_RECEIVED,
+            callback: messageReceivedCallback,
+        },
+    );
+
+    eventSource.on(event_types.CHAT_CHANGED, chatChangedCallback);
+    eventSource.on(event_types.MESSAGE_RECEIVED, messageReceivedCallback);
+
+    checkIfRenameNeeded();
+
+    return true;
 }
 
 export async function loadChatHistory() {
@@ -355,11 +453,18 @@ export async function loadChatHistory() {
             searchChats(event.target.value);
         });
 
+    if (extension_settings[extensionName].rename_chats) {
+        if (extension_settings[extensionName].rename_method === "function") {
+            registerRenameChatTool();
+        } else {
+            setupSystemPromptRename();
+        }
+    }
+
     eventSource.on(event_types.CHAT_CHANGED, () => {
         if (characters[this_chid] !== lastCharacterLoaded) {
             lastCharacterLoaded = characters[this_chid];
             displayChats("");
         }
-        if (extension_settings[extensionName].rename_chats) renameChat(true);
     });
 }
