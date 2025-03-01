@@ -58,7 +58,7 @@ body.bubblechat {
     }
     .smallSysMes .mes_text {
         padding: 3px !important;
-        border-radius: 9px;
+        border-radius: 9px !important;
         width: unset;
     }
     .mes[is_user="false"] .mes_text {
@@ -495,11 +495,6 @@ details summary::-webkit-details-marker {
 
 .hotswap.avatars_inline.flex-container.expander {
     max-height: fit-content;
-}
-
-.character_name_block {
-    flex-direction: column;
-    gap: 0;
 }
 
 #creator_notes_spoiler img {
@@ -961,4 +956,12 @@ body #toast-container {
         position: relative;
         top: 1px;
     }
+}
+
+.icon-svg {
+    height: 1em;
+}
+
+#rawPromptPopup {
+    height: 100%;
 }

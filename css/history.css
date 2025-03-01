@@ -2,7 +2,7 @@
     order: 10;
     justify-content: space-around;
     border-radius: var(--borderRadiusSmol);
-    background-color: var(--black30a);
+    background-color: var(--grey5020a);
     margin: 0.5rem 0 0;
     transition: var(--transition);
 }
@@ -13,7 +13,7 @@
 }
 
 .historyButton {
-    &:hover {
+    &:hover, &:has(:focus) {
         opacity: 1;
     }
     background-color: transparent;
