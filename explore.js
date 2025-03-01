@@ -1,8 +1,13 @@
-import { getRequestHeaders, processDroppedFiles } from "../../../../script.js";
+import { slideToggle } from "../../../../lib.js";
+import {
+    animation_duration,
+    getRequestHeaders,
+    processDroppedFiles,
+} from "../../../../script.js";
 import { debounce_timeout } from "../../../constants.js";
 import { extension_settings } from "../../../extensions.js";
 import { POPUP_TYPE, callGenericPopup } from "../../../popup.js";
-import { debounce, delay } from "../../../utils.js";
+import { debounce } from "../../../utils.js";
 import { extensionFolderPath, extensionName } from "./index.js";
 
 async function setupExplorePanel() {
@@ -558,14 +563,20 @@ export async function loadExplorePanel() {
         if (drawer.classList.contains("resizing")) return;
 
         if (!drawerOpen) {
-            //need jQuery here for .slideToggle(), otherwise panel breaks
-            $(".openDrawer")
-                .not(".pinnedOpen")
-                .addClass("resizing")
-                .slideToggle(200, "swing", async () => {
-                    await delay(50);
-                    $(".drawer-content.resizing").removeClass("resizing");
+            document.querySelectorAll(".openDrawer").forEach((element) => {
+                if (!element.classList.contains("pinnedOpen")) {
+                    element.classList.add("resizing");
+                }
+                slideToggle(element, {
+                    miliseconds: animation_duration * 1.5,
+                    transitionFunction: "ease-in",
+                    onAnimationEnd: (element) => {
+                        element
+                            .closest(".drawer-content")
+                            .classList.remove("resizing");
+                    },
                 });
+            });
 
             if (
                 document.querySelector(
@@ -580,12 +591,14 @@ export async function loadExplorePanel() {
                     .classList.replace("openDrawer", "closedDrawer");
             }
 
-            $(drawer)
-                .addClass("resizing")
-                .slideToggle(200, "swing", async () => {
-                    await delay(50);
-                    $(drawer).removeClass("resizing");
-                });
+            drawer.classList.add("resizing");
+            slideToggle(drawer, {
+                miliseconds: animation_duration * 1.5,
+                transitionFunction: "ease-in",
+                onAnimationEnd: (element) => {
+                    element.classList.remove("resizing");
+                },
+            });
 
             icon.classList.replace("closedIcon", "openIcon");
             drawer.classList.replace("closedDrawer", "openDrawer");
@@ -597,12 +610,14 @@ export async function loadExplorePanel() {
         } else if (drawerOpen) {
             icon.classList.replace("openIcon", "closedIcon");
 
-            $(drawer)
-                .addClass("resizing")
-                .slideToggle(200, "swing", async () => {
-                    await delay(50);
-                    $(drawer).removeClass("resizing");
-                });
+            drawer.classList.add("resizing");
+            slideToggle(drawer, {
+                miliseconds: animation_duration * 1.5,
+                transitionFunction: "ease-in",
+                onAnimationEnd: (element) => {
+                    element.classList.remove("resizing");
+                },
+            });
 
             drawer.classList.replace("openDrawer", "closedDrawer");
         }
