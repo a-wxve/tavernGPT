@@ -7,9 +7,7 @@ import {
     saveSettingsDebounced,
     user_avatar,
 } from '../../../../script.js';
-import { debounce_timeout } from '../../../constants.js';
 import { extension_settings } from '../../../extensions.js';
-import { debounce } from '../../../utils.js';
 import { loadExplorePanel } from './explore.js';
 import { loadChatHistory } from './history.js';
 import { splashes } from './splashes.js';
@@ -19,7 +17,6 @@ export const extensionFolderPath = `scripts/extensions/third-party/${extensionNa
 const default_settings = {
     rename_chats: true,
     rename_method: 'function',
-    enable_nudges: false,
     api_key_chub: '',
     background_list: [],
 };
@@ -123,7 +120,6 @@ async function initSettings() {
     const $rename_method_system = $settings.querySelector(
         '#rename_method_system',
     );
-    const $enable_nudges = $settings.querySelector('#enable_nudges');
     const $api_key_chub = $settings.querySelector('#api_key_chub');
 
     $rename_chats.addEventListener('click', () => {
@@ -141,19 +137,6 @@ async function initSettings() {
 
     $rename_method_system.addEventListener('click', () => {
         extension_settings[extensionName].rename_method = 'system';
-        saveSettingsDebounced();
-    });
-
-    $enable_nudges.addEventListener('click', () => {
-        extension_settings[extensionName].enable_nudges =
-            $enable_nudges.checked;
-
-        if (extension_settings[extensionName].enable_nudges) {
-            initNudgeUI();
-        } else {
-            document.querySelector('#nudges').style.display = 'none';
-        }
-
         saveSettingsDebounced();
     });
 
@@ -184,9 +167,6 @@ async function initSettings() {
     } else {
         $rename_method_system.checked = true;
     }
-
-    if (extension_settings[extensionName].enable_nudges)
-        $enable_nudges.checked = true;
 }
 
 function loadSplashText() {
@@ -209,43 +189,6 @@ function loadSplashText() {
     }
 
     setSplashText();
-}
-
-async function initNudgeUI() {
-    await fetch(`${extensionFolderPath}/html/nudges.html`)
-        .then((data) => data.text())
-        .then((data) => {
-            document
-                .querySelector('#form_sheld')
-                .insertAdjacentHTML('afterbegin', data);
-        });
-    const $nudges = document.querySelector('#nudges');
-
-    eventSource.on(event_types.CHARACTER_MESSAGE_RENDERED, async () => {
-        const prompt = 'Generate 4 one line replies from {{user}}\'s point of view using the chat history so far as a guideline for {{user}}\'s writing style in JSON format with the keys "prompt1", "prompt2", "prompt3", and "prompt4". Be sure to "quote" dialogue. Output only the JSON without any additional commentary.';
-        let nudges = await generateQuietPrompt(prompt, false, false).then(
-            (data) => JSON.parse(data),
-        );
-
-        $nudges.style.display = 'grid';
-
-        $nudges.querySelectorAll('.nudge_button').forEach((button, index) => {
-            if (nudges[`prompt${index + 1}`]) {
-                let prompt = nudges[`prompt${index + 1}`];
-                button.insertAdjacentHTML(
-                    'beforeend',
-                    `<span id="nudge_prompt">${prompt}</span>`,
-                );
-                button
-                    .querySelector('#nudge_prompt')
-                    .addEventListener('click', (event) => {
-                        document.querySelector('#send_textarea').value =
-                            event.target.textContent;
-                        $nudges.style.display = 'none';
-                    });
-            }
-        });
-    });
 }
 
 function setMobileUI() {
