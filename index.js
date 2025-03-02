@@ -16,7 +16,7 @@ export const extensionName = 'tavernGPT';
 export const extensionFolderPath = `scripts/extensions/third-party/${extensionName}`;
 const default_settings = {
     rename_chats: true,
-    rename_method: 'function',
+    rename_method: 'system',
     api_key_chub: '',
     background_list: [],
 };
