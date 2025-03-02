@@ -2,13 +2,14 @@ import {
     eventSource,
     event_types,
     generateQuietPrompt,
-    user_avatar,
     getUserAvatar,
     name1,
     saveSettingsDebounced,
+    user_avatar,
 } from '../../../../script.js';
-import { debounce, debounce_timeout } from '../../../constants.js';
+import { debounce_timeout } from '../../../constants.js';
 import { extension_settings } from '../../../extensions.js';
+import { debounce } from '../../../utils.js';
 import { loadExplorePanel } from './explore.js';
 import { loadChatHistory } from './history.js';
 import { splashes } from './splashes.js';
