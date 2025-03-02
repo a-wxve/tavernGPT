@@ -122,6 +122,37 @@ async function initSettings() {
     );
     const $api_key_chub = $settings.querySelector('#api_key_chub');
 
+    extension_settings[extensionName] = extension_settings[extensionName] || {};
+
+    let settingsChanged = false;
+    for (const key in default_settings) {
+        if (!(key in extension_settings[extensionName])) {
+            extension_settings[extensionName][key] = default_settings[key];
+            settingsChanged = true;
+        }
+    }
+
+    for (const key in extension_settings[extensionName]) {
+        if (!(key in default_settings)) {
+            delete extension_settings[extensionName][key];
+            settingsChanged = true;
+            console.log(`Removed obsolete setting: ${key} from ${extensionName}`);
+        }
+    }
+
+    if (settingsChanged) saveSettingsDebounced();
+
+    if (extension_settings[extensionName].rename_chats) {
+        $rename_chats.checked = true;
+        $rename_method_container.style.display = 'block';
+    }
+
+    if (extension_settings[extensionName].rename_method === 'function') {
+        $rename_method_function.checked = true;
+    } else {
+        $rename_method_system.checked = true;
+    }
+
     $rename_chats.addEventListener('click', () => {
         extension_settings[extensionName].rename_chats = $rename_chats.checked;
         $rename_method_container.style.display = $rename_chats.checked
@@ -144,29 +175,6 @@ async function initSettings() {
         extension_settings[extensionName].api_key_chub = $api_key_chub.value;
         saveSettingsDebounced();
     });
-
-    extension_settings[extensionName] = extension_settings[extensionName] || {};
-    let settingsChanged = false;
-
-    for (const key in default_settings) {
-        if (!(key in extension_settings[extensionName])) {
-            extension_settings[extensionName][key] = default_settings[key];
-            settingsChanged = true;
-        }
-    }
-
-    if (settingsChanged) saveSettingsDebounced();
-
-    if (extension_settings[extensionName].rename_chats) {
-        $rename_chats.checked = true;
-        $rename_method_container.style.display = 'block';
-    }
-
-    if (extension_settings[extensionName].rename_method === 'function') {
-        $rename_method_function.checked = true;
-    } else {
-        $rename_method_system.checked = true;
-    }
 }
 
 function loadSplashText() {
