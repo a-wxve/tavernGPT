@@ -89,12 +89,11 @@ function scrollToBottom() {
     scrollButton.appendChild(icon);
     scrollButton.style.display = 'none';
 
+    $chat.after(scrollButton);
+
     const checkScroll = () => {
-        debounce(() => {
-            const atBottom =
-                $chat.scrollHeight - $chat.scrollTop - $chat.clientHeight < 50;
-            scrollButton.style.display = atBottom ? 'none' : 'block';
-        }, debounce_timeout.quick);
+        const atBottom = $chat.scrollHeight - $chat.scrollTop - $chat.clientHeight < 50;
+        scrollButton.style.display = atBottom ? 'none' : 'block';
     };
 
     $chat.addEventListener('scroll', checkScroll);
