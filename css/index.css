@@ -2,5 +2,4 @@
 @import "base.css";
 @import "history.css";
 @import "explore.css";
-@import "nudges.css";
 @import "mobile.css" screen and (width <= 1000px);
