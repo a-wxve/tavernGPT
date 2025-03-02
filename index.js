@@ -7,6 +7,7 @@ import {
     name1,
     saveSettingsDebounced,
 } from '../../../../script.js';
+import { debounce, debounce_timeout } from '../../../constants.js';
 import { extension_settings } from '../../../extensions.js';
 import { loadExplorePanel } from './explore.js';
 import { loadChatHistory } from './history.js';
@@ -29,64 +30,72 @@ function getPersona() {
 
     let lastAvatar = '';
     let lastName = '';
+
     const updatePersona = (avatar, name) => {
-        if (avatar !== lastAvatar || name !== lastName) {
-            const newHTML = `<img class='persona_avatar' src='${avatar}'/><span>${name}</span>`;
-            if ($persona_icon.innerHTML !== newHTML) {
-                $persona_icon.innerHTML = newHTML;
-                lastAvatar = avatar;
-                lastName = name;
-            }
-            $persona_icon.childNodes.forEach((element) => {
-                element.style.pointerEvents = 'none';
-            });
+        if (avatar === lastAvatar && name === lastName) return;
+
+        const newHTML = `<img class='persona_avatar' src='${avatar}'/><span>${name}</span>`;
+        if ($persona_icon.innerHTML !== newHTML) {
+            $persona_icon.innerHTML = newHTML;
+            lastAvatar = avatar;
+            lastName = name;
         }
+
+        $persona_icon.style.pointerEvents = 'none';
     };
+
+    updatePersona(getUserAvatar(user_avatar), name1);
 
     eventSource.on(event_types.SETTINGS_UPDATED, () => {
         updatePersona(getUserAvatar(user_avatar), name1);
     });
-
-    updatePersona(getUserAvatar(user_avatar), name1);
 }
 
 function toggleSidebar() {
     const $settings_holder = document.querySelector('#top-settings-holder');
-    $settings_holder.insertAdjacentHTML(
-        'beforeend',
-        `<button id='sidebarToggle'>
-            <div class='arrow1'></div>
-            <div class='arrow2'></div>
-        </button>`,
-    );
+    const $sheld = document.querySelector('#sheld');
 
-    document.querySelector('#sidebarToggle').addEventListener('click', () => {
+    const toggleButton = document.createElement('button');
+    toggleButton.id = 'sidebarToggle';
+
+    const arrow1 = document.createElement('div');
+    arrow1.className = 'arrow1';
+    const arrow2 = document.createElement('div');
+    arrow2.className = 'arrow2';
+
+    toggleButton.appendChild(arrow1);
+    toggleButton.appendChild(arrow2);
+
+    toggleButton.addEventListener('click', () => {
         $settings_holder.classList.toggle('collapsed');
-        document.querySelector('#sheld').classList.toggle('collapsed');
+        $sheld.classList.toggle('collapsed');
     });
+
+    $settings_holder.appendChild(toggleButton);
 }
 
 function scrollToBottom() {
     const $chat = document.querySelector('#chat');
 
-    $chat.insertAdjacentHTML(
-        'afterend',
-        `<div id="scrollToBottom">
-            <i class="fa-2xl fa-solid fa-circle-arrow-down"></i>
-        </div>`,
-    );
+    const scrollButton = document.createElement('div');
+    scrollButton.id = 'scrollToBottom';
 
-    const $scrollButton = document.querySelector('#scrollToBottom');
-    $scrollButton.style.display = 'none';
+    const icon = document.createElement('i');
+    icon.className = 'fa-2xl fa-solid fa-circle-arrow-down';
+
+    scrollButton.appendChild(icon);
+    scrollButton.style.display = 'none';
 
     const checkScroll = () => {
-        const atBottom =
-            $chat.scrollHeight - $chat.scrollTop - $chat.clientHeight < 50;
-        $scrollButton.style.display = atBottom ? 'none' : 'block';
+        debounce(() => {
+            const atBottom =
+                $chat.scrollHeight - $chat.scrollTop - $chat.clientHeight < 50;
+            scrollButton.style.display = atBottom ? 'none' : 'block';
+        }, debounce_timeout.quick);
     };
 
     $chat.addEventListener('scroll', checkScroll);
-    $scrollButton.addEventListener('click', () => {
+    scrollButton.addEventListener('click', () => {
         $chat.scrollTo({
             top: $chat.scrollHeight,
             behavior: 'smooth',
