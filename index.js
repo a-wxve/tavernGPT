@@ -41,7 +41,9 @@ function getPersona() {
             lastName = name;
         }
 
-        $persona_icon.style.pointerEvents = 'none';
+        Array.from($persona_icon.children).forEach(child => {
+            child.style.pointerEvents = 'none';
+        });
     };
 
     updatePersona(getUserAvatar(user_avatar), name1);
