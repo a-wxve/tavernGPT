@@ -178,25 +178,31 @@ async function initSettings() {
 }
 
 function loadSplashText() {
-    function setSplashText() {
-        if (document.querySelector('#version_display_welcome')) {
-            document
-                .querySelector('#version_display_welcome')
-                .insertAdjacentHTML('afterend', '<p id="splash"></p>');
+    const getRandomSplash = () => {
+        return splashes[Math.floor(Math.random() * splashes.length)];
+    };
 
-            const $splash = document.querySelector('#splash');
-            $splash.innerHTML =
-                splashes[Math.floor(Math.random() * splashes.length)];
-            $splash.addEventListener('click', () => {
-                $splash.innerHTML =
-                    splashes[Math.floor(Math.random() * splashes.length)];
+    const observer = new MutationObserver((_, observer) => {
+        const welcomeElement = document.querySelector('#version_display_welcome');
+        if (welcomeElement) {
+            observer.disconnect();
+
+            const splashText = document.createElement('p');
+            splashText.id = 'splash';
+
+            splashText.textContent = getRandomSplash();
+
+            welcomeElement.after(splashText);
+
+            splashText.addEventListener('click', () => {
+                splashText.textContent = getRandomSplash();
             });
-        } else {
-            setTimeout(setSplashText, 500);
         }
-    }
+    });
 
-    setSplashText();
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    setTimeout(() => observer.disconnect(), 10000);
 }
 
 function setMobileUI() {
