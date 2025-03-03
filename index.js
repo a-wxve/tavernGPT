@@ -1,7 +1,6 @@
 import {
     eventSource,
     event_types,
-    generateQuietPrompt,
     getUserAvatar,
     name1,
     saveSettingsDebounced,
@@ -14,6 +13,8 @@ import { splashes } from './splashes.js';
 
 export const extensionName = 'tavernGPT';
 export const extensionFolderPath = `scripts/extensions/third-party/${extensionName}`;
+export var tavernGPT_settings = extension_settings[extensionName];
+
 const default_settings = {
     rename_chats: true,
     rename_method: 'system',
@@ -39,7 +40,7 @@ function getPersona() {
             lastName = name;
         }
 
-        Array.from($persona_icon.children).forEach(child => {
+        Array.from($persona_icon.children).forEach((child) => {
             child.style.pointerEvents = 'none';
         });
     };
@@ -89,7 +90,8 @@ function scrollToBottom() {
     $chat.after(scrollButton);
 
     const checkScroll = () => {
-        const atBottom = $chat.scrollHeight - $chat.scrollTop - $chat.clientHeight < 50;
+        const atBottom =
+            $chat.scrollHeight - $chat.scrollTop - $chat.clientHeight < 50;
         scrollButton.style.display = atBottom ? 'none' : 'block';
     };
 
@@ -122,39 +124,41 @@ async function initSettings() {
     );
     const $api_key_chub = $settings.querySelector('#api_key_chub');
 
-    extension_settings[extensionName] = extension_settings[extensionName] || {};
+    tavernGPT_settings = tavernGPT_settings || {};
 
     let settingsChanged = false;
     for (const key in default_settings) {
-        if (!(key in extension_settings[extensionName])) {
-            extension_settings[extensionName][key] = default_settings[key];
+        if (!(key in tavernGPT_settings)) {
+            tavernGPT_settings[key] = default_settings[key];
             settingsChanged = true;
         }
     }
 
-    for (const key in extension_settings[extensionName]) {
+    for (const key in tavernGPT_settings) {
         if (!(key in default_settings)) {
-            delete extension_settings[extensionName][key];
+            delete tavernGPT_settings[key];
             settingsChanged = true;
-            console.log(`Removed obsolete setting: ${key} from ${extensionName}`);
+            console.log(
+                `Removed obsolete setting: ${key} from ${extensionName}`,
+            );
         }
     }
 
     if (settingsChanged) saveSettingsDebounced();
 
-    if (extension_settings[extensionName].rename_chats) {
+    if (tavernGPT_settings.rename_chats) {
         $rename_chats.checked = true;
         $rename_method_container.style.display = 'block';
     }
 
-    if (extension_settings[extensionName].rename_method === 'function') {
+    if (tavernGPT_settings.rename_method === 'function') {
         $rename_method_function.checked = true;
     } else {
         $rename_method_system.checked = true;
     }
 
     $rename_chats.addEventListener('click', () => {
-        extension_settings[extensionName].rename_chats = $rename_chats.checked;
+        tavernGPT_settings.rename_chats = $rename_chats.checked;
         $rename_method_container.style.display = $rename_chats.checked
             ? 'block'
             : 'none';
@@ -162,17 +166,17 @@ async function initSettings() {
     });
 
     $rename_method_function.addEventListener('click', () => {
-        extension_settings[extensionName].rename_method = 'function';
+        tavernGPT_settings.rename_method = 'function';
         saveSettingsDebounced();
     });
 
     $rename_method_system.addEventListener('click', () => {
-        extension_settings[extensionName].rename_method = 'system';
+        tavernGPT_settings.rename_method = 'system';
         saveSettingsDebounced();
     });
 
     $api_key_chub.addEventListener('change', () => {
-        extension_settings[extensionName].api_key_chub = $api_key_chub.value;
+        tavernGPT_settings.api_key_chub = $api_key_chub.value;
         saveSettingsDebounced();
     });
 }
@@ -183,7 +187,9 @@ function loadSplashText() {
     };
 
     const observer = new MutationObserver((_, observer) => {
-        const welcomeElement = document.querySelector('#version_display_welcome');
+        const welcomeElement = document.querySelector(
+            '#version_display_welcome',
+        );
         if (welcomeElement) {
             observer.disconnect();
 
@@ -306,8 +312,7 @@ function randomizeBackground() {
         );
 
     $background_menu.addEventListener('click', () => {
-        const backgroundList =
-            extension_settings[extensionName].background_list;
+        const backgroundList = tavernGPT_settings.background_list;
         $background_menu
             .querySelectorAll('.bg_randomizer')
             .forEach((background) => {
@@ -322,8 +327,7 @@ function randomizeBackground() {
     });
 
     $background_menu.addEventListener('click', (event) => {
-        const backgroundList =
-            extension_settings[extensionName].background_list;
+        const backgroundList = tavernGPT_settings.background_list;
         if (event.target.matches('.bg_randomizer')) {
             event.stopPropagation();
             const filename = event.target.parentNode.getAttribute('bgfile');
@@ -334,9 +338,9 @@ function randomizeBackground() {
         }
     });
 
-    if (!extension_settings[extensionName].background_list) return;
+    if (!tavernGPT_settings.background_list) return;
 
-    const backgroundList = extension_settings[extensionName].background_list;
+    const backgroundList = tavernGPT_settings.background_list;
     const idx = Math.floor(Math.random() * backgroundList.length) || 0;
     const backgroundURL = `backgrounds/${backgroundList[idx]}`;
     fetch(backgroundURL)
@@ -349,21 +353,21 @@ function randomizeBackground() {
         });
 }
 
-function main() {
-    function checkWaifuVisibility() {
-        const $waifuImage = document.querySelector('#expression-image');
-        const $sheld = document.querySelector('#sheld');
+function checkWaifuVisibility() {
+    const $waifuImage = document.querySelector('#expression-image');
+    const $sheld = document.querySelector('#sheld');
 
-        if (
-            $waifuImage.getAttribute('src') !== '' &&
-            !document.querySelector('body').classList.contains('waifuMode')
-        ) {
-            $sheld.classList.add('shifted');
-        } else if ($sheld.classList.contains('shifted')) {
-            $sheld.classList.remove('shifted');
-        }
+    if (
+        $waifuImage.getAttribute('src') !== '' &&
+        !document.querySelector('body').classList.contains('waifuMode')
+    ) {
+        $sheld.classList.add('shifted');
+    } else if ($sheld.classList.contains('shifted')) {
+        $sheld.classList.remove('shifted');
     }
+}
 
+function main() {
     initSettings();
     randomizeBackground();
     getPersona();

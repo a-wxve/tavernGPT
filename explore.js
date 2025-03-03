@@ -5,10 +5,9 @@ import {
     processDroppedFiles,
 } from '../../../../script.js';
 import { debounce_timeout } from '../../../constants.js';
-import { extension_settings } from '../../../extensions.js';
 import { POPUP_TYPE, callGenericPopup } from '../../../popup.js';
 import { debounce } from '../../../utils.js';
-import { extensionFolderPath, extensionName } from './index.js';
+import { extensionFolderPath, tavernGPT_settings } from './index.js';
 
 async function setupExplorePanel() {
     let characters = [];
@@ -19,8 +18,7 @@ async function setupExplorePanel() {
         const url = `https://www.chub.ai/characters/${input.trim()}`;
         toastr.info(`Downloading ${input}...`);
 
-        let request = null;
-        request = await fetch('/api/content/importURL', {
+        const request = await fetch('/api/content/importURL', {
             method: 'POST',
             headers: getRequestHeaders(),
             body: JSON.stringify({ url }),
@@ -91,16 +89,13 @@ async function setupExplorePanel() {
     }
 
     async function generateCharacterPopup(character) {
-        const generateStarRating = (rating) => {
-            const fullStars = Math.floor(rating);
-            const halfStar = rating % 1 >= 0.5 ? 1 : 0;
-
+        const generateStarHTML = (rating) => {
             let starsHTML = '';
-            for (let i = 0; i < fullStars; i++) {
+            for (let i = 0; i < Math.floor(rating); i++) {
                 starsHTML += '<i class="fa-solid fa-star"></i>';
             }
 
-            if (halfStar) {
+            if (rating % 1 >= 0.5) {
                 starsHTML += '<i class="fa-solid fa-star-half-stroke"></i>';
             }
 
@@ -115,7 +110,7 @@ async function setupExplorePanel() {
                         <span data-i18n="Download">Download</span>
                     </div>
                     <div class="chub-text-align">
-                        ${generateStarRating(character.rating)} ${character.rating}/5
+                        ${generateStarHTML(character.rating)} ${character.rating}/5
                     </div>
                     <div class="chub-text-align">
                         <i class="fa-solid ${character.rating > 3 ? 'fa-thumbs-up' : 'fa-thumbs-down'}"></i>
@@ -244,7 +239,7 @@ async function setupExplorePanel() {
             url += `&excludetopics=${encodeURIComponent(excludeTags.join(',').slice(0, 100))}`;
         }
 
-        const chubApiKey = extension_settings[extensionName].api_key_chub;
+        const chubApiKey = tavernGPT_settings.api_key_chub;
         let searchData = await fetch(url, {
             headers: {
                 'CH-API-KEY': chubApiKey,
@@ -282,7 +277,6 @@ async function setupExplorePanel() {
                     })
                     .then((response) => response.blob()),
         );
-        let characterBlobs = await Promise.all(characterPromises);
 
         const sanitize = (text) => {
             if (!text) return '';
@@ -294,6 +288,7 @@ async function setupExplorePanel() {
                 .replace(/'/g, '&#039;');
         };
 
+        let characterBlobs = await Promise.all(characterPromises);
         characterBlobs.forEach((character, i) => {
             let imageUrl = URL.createObjectURL(character);
             newCharacters.push({
@@ -485,10 +480,9 @@ async function setupExplorePanel() {
         }
     }
 
-    const infiniteScrollDebounced = debounce(
-        (event) => infiniteScroll(event),
-        debounce_timeout.quick,
-    );
+    const infiniteScrollDebounced = (event) => {
+        debounce(() => infiniteScroll(event), debounce_timeout.quick);
+    };
 
     const $searchWrapper = document.querySelector('#list-and-search-wrapper');
     const $characterList = $searchWrapper.querySelector('.character-list');
@@ -542,12 +536,12 @@ async function setupExplorePanel() {
 
 export async function loadExplorePanel() {
     let exploreFirstOpen = true;
+    const $top_settings_holder = document.querySelector('#top-settings-holder');
+
     await fetch(`${extensionFolderPath}/html/explore.html`)
         .then((data) => data.text())
         .then((data) => {
-            document
-                .querySelector('#top-settings-holder')
-                .insertAdjacentHTML('beforeend', data);
+            $top_settings_holder.insertAdjacentHTML('beforeend', data);
         });
     setupExplorePanel();
 
@@ -563,30 +557,32 @@ export async function loadExplorePanel() {
         if (drawer.classList.contains('resizing')) return;
 
         if (!drawerOpen) {
-            document.querySelectorAll('.openDrawer').forEach((element) => {
-                if (!element.classList.contains('pinnedOpen')) {
-                    element.classList.add('resizing');
-                }
-                slideToggle(element, {
-                    miliseconds: animation_duration * 1.5,
-                    transitionFunction: 'ease-in',
-                    onAnimationEnd: (element) => {
-                        element
-                            .closest('.drawer-content')
-                            .classList.remove('resizing');
-                    },
+            $top_settings_holder
+                .querySelectorAll('.openDrawer')
+                .forEach((element) => {
+                    if (!element.classList.contains('pinnedOpen')) {
+                        element.classList.add('resizing');
+                    }
+                    slideToggle(element, {
+                        miliseconds: animation_duration * 1.5,
+                        transitionFunction: 'ease-in',
+                        onAnimationEnd: (element) => {
+                            element
+                                .closest('.drawer-content')
+                                .classList.remove('resizing');
+                        },
+                    });
                 });
-            });
 
             if (
-                document.querySelector(
+                $top_settings_holder.querySelector(
                     '.drawer:has(.openIcon):has(.openDrawer)',
                 )
             ) {
-                document
+                $top_settings_holder
                     .querySelector('.openIcon')
                     .classList.replace('openIcon', 'closedIcon');
-                document
+                $top_settings_holder
                     .querySelector('.openDrawer')
                     .classList.replace('openDrawer', 'closedDrawer');
             }

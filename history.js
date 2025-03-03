@@ -12,7 +12,7 @@ import {
     this_chid,
 } from '../../../../script.js';
 import { debounce_timeout } from '../../../constants.js';
-import { extension_settings, getContext } from '../../../extensions.js';
+import { getContext } from '../../../extensions.js';
 import {
     deleteGroupChat,
     groups,
@@ -23,7 +23,7 @@ import {
 import { callGenericPopup, POPUP_TYPE } from '../../../popup.js';
 import { ToolManager } from '../../../tool-calling.js';
 import { debounce, timestampToMoment } from '../../../utils.js';
-import { extensionFolderPath, extensionName } from './index.js';
+import { extensionFolderPath, tavernGPT_settings } from './index.js';
 
 const group = selected_group
     ? groups.find((x) => x.id === selected_group)
@@ -236,7 +236,6 @@ async function overrideChatButtons(event) {
             const name = chatToDelete.replace('.jsonl', '');
 
             if (name === characters[this_chid].chat) {
-                chat_metadata = {};
                 await replaceCurrentChat();
             }
 
@@ -296,7 +295,7 @@ function registerRenameChatTool() {
         console.log(
             'Tool calling not supported, falling back to system prompt method.',
         );
-        extension_settings[extensionName].rename_method = 'system';
+        tavernGPT_settings.rename_method = 'system';
         saveSettingsDebounced();
         return setupSystemPromptRename();
     }
@@ -453,8 +452,8 @@ export async function loadChatHistory() {
             searchChats(event.target.value);
         });
 
-    if (extension_settings[extensionName].rename_chats) {
-        if (extension_settings[extensionName].rename_method === 'function') {
+    if (tavernGPT_settings.rename_chats) {
+        if (tavernGPT_settings.rename_method === 'function') {
             registerRenameChatTool();
         } else {
             setupSystemPromptRename();
