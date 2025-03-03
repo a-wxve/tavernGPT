@@ -85,17 +85,25 @@ function scrollToBottom() {
     icon.className = 'fa-2xl fa-solid fa-circle-arrow-down';
 
     scrollButton.appendChild(icon);
-    scrollButton.style.display = 'none';
+    scrollButton.style.visibility = 'hidden';
 
     $chat.after(scrollButton);
 
-    const checkScroll = () => {
+    let checking = false;
+    const checkScrollPosition = () => {
         const atBottom =
             $chat.scrollHeight - $chat.scrollTop - $chat.clientHeight < 50;
-        scrollButton.style.display = atBottom ? 'none' : 'block';
+        scrollButton.style.visibility = atBottom ? 'hidden' : 'visible';
+        checking = false;
     };
 
-    $chat.addEventListener('scroll', checkScroll);
+    $chat.addEventListener('scroll', () => {
+        if (!checking) {
+            checking = true;
+            requestAnimationFrame(checkScrollPosition);
+        }
+    });
+
     scrollButton.addEventListener('click', () => {
         $chat.scrollTo({
             top: $chat.scrollHeight,
