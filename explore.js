@@ -58,7 +58,15 @@ async function setupExplorePanel() {
     }
 
     function generateCharacterListItem(character, index) {
-        return `
+        const generateTagsHTML = character.tags.map(tag => {
+            const isIncluded = character.tags.includes(tag => tag.toLowerCase());
+            const tagClass = isIncluded ? 'tag included' : 'tag';
+            return `<span class="${tagClass}">${tag}</span>`;
+        }).join('');
+
+        const template = document.createElement('template');
+
+        template.innerHTML = `
             <div class="character-list-item" data-index="${index}">
                 <div class="thumbnail">
                     <img src="${character.avatar}">
@@ -69,26 +77,25 @@ async function setupExplorePanel() {
                 </div>
                 <div class="info">
                     <div class="name">${character.name}
-                    <span class="creator">by ${character.creator}</span>
-                </div>
-                <div class="tagline">${character.tagline}</div>
-                <div class="tags">
-                ${character.tags
-        .map((tag) =>
-            document
-                .querySelector('#includeTags')
-                .value.includes(tag.toLowerCase())
-                ? `<span class="tag included">${tag}</span>`
-                : `<span class="tag">${tag}</span>`,
-        )
-        .join('')}
-                </div>
+                        <span class="creator">by ${character.creator}</span>
+                    </div>
+                    <div class="tagline">${character.tagline}</div>
+                    <div class="tags">${generateTagsHTML}</div>
                 </div>
             </div>
         `;
+
+        return template.content;
     }
 
     async function generateCharacterPopup(character) {
+        const generateTagsHTML = character.tags.map(tag => {
+            const isIncluded = character.tags.includes(tag => tag.toLowerCase());
+            const tagClass = isIncluded ? 'tag included' : 'tag';
+            return `<span class="${tagClass}">${tag}</span>`;
+        }).join('');
+
+
         const generateStarHTML = (rating) => {
             let starsHTML = '';
             for (let i = 0; i < Math.floor(rating); i++) {
@@ -135,15 +142,7 @@ async function setupExplorePanel() {
                         <p>${character.description}</p>
                     </div>
                     <p class="tags">
-                    ${character.tags
-        .map((tag) =>
-            document
-                .querySelector('#includeTags')
-                .value.includes(tag.toLowerCase())
-                ? `<span class="tag included">${tag}</span>`
-                : `<span class="tag">${tag}</span>`,
-        )
-        .join('')}
+                    ${generateTagsHTML}
                     </p>
                     <p class="chub-nowrap">
                         <i class="fa-solid fa-book"></i>
@@ -173,6 +172,88 @@ async function setupExplorePanel() {
                     }
                 }),
         );
+    }
+
+    function updateCharacterList(characters, reset = false) {
+        const $characterList = document.querySelector(
+            '#list-and-search-wrapper .character-list',
+        );
+
+        if (reset) {
+            $characterList.innerHTML = '';
+            $characterList.scrollTop = 0;
+        }
+
+        const fragment = document.createDocumentFragment();
+        characters.forEach((character, index) => {
+            const characterElement = generateCharacterListItem(
+                character,
+                totalCharactersLoaded + index,
+            );
+            fragment.appendChild(characterElement);
+        });
+
+        $characterList.appendChild(fragment);
+
+        totalCharactersLoaded += characters.length;
+    }
+
+    /**
+    * Fetches a character from the primary API, falling back to the backup if needed
+    * @param {Object} node - Character node data from search results
+    * @returns {Promise<Blob>} - Promise resolving to character data blob
+    */
+    async function fetchCharacterData(node) {
+        const endpoint = 'https://api.chub.ai/api/characters/download';
+        const backupEndpoint = `https://avatars.charhub.io/avatars/${node.fullPath}/avatar.webp`;
+        const requestBody = {
+            fullPath: node.fullPath,
+            format: 'tavern',
+            version: 'main',
+        };
+
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Primary API returned status: ${response.status}`);
+            }
+
+            return await response.blob();
+        }
+        catch (error) {
+            console.warn(`Primary API failed for ${node.fullPath}:`, error);
+
+            toastr.warning(
+                `Using backup source for ${node.name || node.fullPath}`,
+                'API Fallback',
+            );
+
+            try {
+                const backupResponse = await fetch(backupEndpoint, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (!backupResponse.ok) {
+                    throw new Error(`Backup API returned status: ${backupResponse.status}`);
+                }
+
+                return await backupResponse.blob();
+            }
+            catch (backupError) {
+                console.error(`Both APIs failed for ${node.fullPath}:`, backupError);
+                throw new Error(`Failed to fetch character "${node.name || node.fullPath}" from both primary and backup sources`);
+            }
+        }
     }
 
     async function fetchCharacters(searchOptions, reset, callback) {
@@ -236,36 +317,8 @@ async function setupExplorePanel() {
             },
         }).then((data) => data.json());
 
-        const newCharacters = [];
-        let characterPromises = searchData.nodes.map(
-            async (node) =>
-                await fetch('https://api.chub.ai/api/characters/download', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        fullPath: node.fullPath,
-                        format: 'tavern',
-                        version: 'main',
-                    }),
-                })
-                    .catch(async () => {
-                        toastr.warning(
-                            'CHub API request failed, trying backup endpoint...',
-                        );
-                        return await fetch(
-                            `https://avatars.charhub.io/avatars/${node.fullPath}/avatar.webp`,
-                            {
-                                method: 'GET',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                            },
-                        );
-                    })
-                    .then((response) => response.blob()),
-        );
+        const characterPromises = searchData.nodes.map(node => fetchCharacterData(node));
+        const characterResults = await Promise.allSettled(characterPromises);
 
         const sanitize = (text) => {
             if (!text) return '';
@@ -277,49 +330,40 @@ async function setupExplorePanel() {
                 .replace(/'/g, '&#039;');
         };
 
-        let characterBlobs = await Promise.all(characterPromises);
-        characterBlobs.forEach((character, i) => {
-            let imageUrl = URL.createObjectURL(character);
-            newCharacters.push({
-                url: imageUrl,
-                avatar: searchData.nodes[i].avatar_url,
-                description: searchData.nodes[i].description,
-                tagline: sanitize(searchData.nodes[i].tagline),
-                name: searchData.nodes[i].name,
-                fullPath: searchData.nodes[i].fullPath,
-                tags: searchData.nodes[i].topics,
-                creator: searchData.nodes[i].fullPath.split('/')[0],
-                starCount: searchData.nodes[i].starCount,
-                lastActivityAt: searchData.nodes[i].lastActivityAt,
-                createdAt: searchData.nodes[i].createdAt,
-                numTokens: searchData.nodes[i].nTokens,
-                numfavorites: searchData.nodes[i].n_favorites,
-                rating: searchData.nodes[i].rating,
-                numRatings: searchData.nodes[i].ratingCount,
-            });
+        const newCharacters = [];
+        characterResults.forEach((result, index) => {
+            const node = searchData.nodes[index];
+
+            if (result.status === 'fulfilled') {
+                let imageUrl = URL.createObjectURL(result.value);
+                newCharacters.push({
+                    url: imageUrl,
+                    avatar: node.avatar_url,
+                    description: node.description,
+                    tagline: sanitize(node.tagline),
+                    name: node.name,
+                    fullPath: node.fullPath,
+                    tags: node.topics,
+                    creator: node.fullPath.split('/')[0],
+                    starCount: node.starCount,
+                    lastActivityAt: node.lastActivityAt,
+                    createdAt: node.createdAt,
+                    numTokens: node.nTokens,
+                    numfavorites: node.n_favorites,
+                    rating: node.rating,
+                    numRatings: node.ratingCount,
+                });
+            } else {
+                console.error(`Failed to load character ${node.fullPath}:`, result.reason);
+                toastr.error(`Could not load "${node.name || node.fullPath}"`, 'Character Load Error');
+            }
         });
         characters.push(...newCharacters);
 
         $characterList.classList.remove('searching');
 
         if (newCharacters && newCharacters.length > 0) {
-            const characterHTML = newCharacters
-                .map((character, index) =>
-                    generateCharacterListItem(
-                        character,
-                        totalCharactersLoaded + index,
-                    ),
-                )
-                .join('');
-
-            if (reset) {
-                $characterList.innerHTML = characterHTML;
-                $characterList.scrollTop = 0;
-            } else {
-                $characterList.insertAdjacentHTML('beforeend', characterHTML);
-            }
-
-            totalCharactersLoaded += newCharacters.length;
+            updateCharacterList(newCharacters, reset);
         } else {
             toastr.error('No characters found.');
         }
