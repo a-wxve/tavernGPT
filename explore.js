@@ -521,8 +521,6 @@ function handleCharacterClick(event) {
 }
 
 async function setupExplorePanel() {
-    const infiniteScrollDebounced = debounce(() => infiniteScroll(event), debounce_timeout.quick);
-
     const $searchWrapper = document.querySelector('#list-and-search-wrapper');
     const $characterList = $searchWrapper.querySelector('.character-list');
     const $pageNumber = $searchWrapper.querySelector('#pageNumber');
@@ -568,6 +566,8 @@ async function setupExplorePanel() {
                 });
             search(event, true);
         });
+
+    const infiniteScrollDebounced = debounce((event) => infiniteScroll(event), debounce_timeout.quick);
 
     $characterList.addEventListener('scroll', infiniteScrollDebounced);
     $characterList.addEventListener('click', handleCharacterClick);
