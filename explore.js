@@ -175,21 +175,7 @@ async function setupExplorePanel() {
         );
     }
 
-    async function fetchCharacters(
-        {
-            searchTerm,
-            namespace,
-            creator,
-            includeTags,
-            excludeTags,
-            nsfw,
-            sort,
-            findCount,
-            page = 1,
-        },
-        reset,
-        callback,
-    ) {
+    async function fetchCharacters(searchOptions, reset, callback) {
         if (reset) {
             characters = [];
             totalCharactersLoaded = 0;
@@ -201,43 +187,46 @@ async function setupExplorePanel() {
 
         $characterList.classList.add('searching');
 
-        console.log('Search options:', options);
+        console.log('Search options:', searchOptions);
         toastr.info('Searching...');
 
-        searchTerm = searchTerm
-            ? `search=${searchTerm.replace(/ /g, '+')}&`
-            : '';
-        creator = creator ? `&username=${creator}` : '';
-        sort = sort || 'download_count';
-
-        let url = `https://api.chub.ai/api/${namespace}/`;
-        url += `search?${searchTerm}`;
-        url += `&namespace=${namespace}`;
-        url += `${creator}`;
-        url += `&first=${findCount}`;
-        url += `&page=${page}`;
-        url += `&sort=${sort}`;
-        url += '&asc=false';
-        url += '&include_forks=true';
-        url += '&venus=true&chub=true';
-        url += `&nsfw=${nsfw}&nsfl=${nsfw}`;
-        url += '&nsfw_only=false';
-        url += '&require_images=false';
-        url += '&require_example_dialogues=false';
-        url += '&require_alternate_greetings=false';
-        url += '&require_custom_prompt=false';
-        url += '&require_lore=false';
-        url += '&require_lore_embedded=false';
-        url += '&require_lore_linked=false';
-
-        includeTags = includeTags.filter((tag) => tag.length > 0);
-        if (includeTags && includeTags.length > 0) {
-            url += `&topics=${encodeURIComponent(includeTags.join(',').slice(0, 100))}`;
+        const searchParams = new URLSearchParams();
+        if (searchOptions.searchTerm) {
+            searchParams.append('search', searchOptions.searchTerm);
         }
-        excludeTags = excludeTags.filter((tag) => tag.length > 0);
-        if (excludeTags && excludeTags.length > 0) {
-            url += `&excludetopics=${encodeURIComponent(excludeTags.join(',').slice(0, 100))}`;
+        if (searchOptions.creator) {
+            searchParams.append('username', searchOptions.creator);
         }
+        searchParams.append('sort', searchOptions.sort || 'download_count');
+        searchParams.append('namespace', searchOptions.namespace);
+        searchParams.append('first', searchOptions.findCount);
+        searchParams.append('page', searchOptions.page || 1);
+        searchParams.append('asc', 'false');
+        searchParams.append('include_forks', 'true');
+        searchParams.append('venus', 'true');
+        searchParams.append('chub', 'true');
+        searchParams.append('nsfw', searchOptions.nsfw);
+        searchParams.append('nsfl', searchOptions.nsfw);
+        searchParams.append('nsfw_only', 'false');
+        searchParams.append('require_images', 'false');
+        searchParams.append('require_example_dialogues', 'false');
+        searchParams.append('require_alternate_greetings', 'false');
+        searchParams.append('require_custom_prompt', 'false');
+        searchParams.append('require_lore', 'false');
+        searchParams.append('require_lore_embedded', 'false');
+        searchParams.append('require_lore_linked', 'false');
+
+        const includeTags = searchOptions.includeTags.filter((tag) => tag.length > 0);
+        if (includeTags.length > 0) {
+            searchParams.append('topics', includeTags.join(',').slice(0, 100));
+        }
+
+        const excludeTags = searchOptions.excludeTags.filter((tag) => tag.length > 0);
+        if (excludeTags.length > 0) {
+            searchParams.append('excludetopics', excludeTags.join(',').slice(0, 100));
+        }
+
+        const url = `https://api.chub.ai/api/${searchOptions.namespace}/search?${searchParams.toString()}/`;
 
         const chubApiKey = tavernGPT_settings.api_key_chub;
         let searchData = await fetch(url, {
