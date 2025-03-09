@@ -116,8 +116,8 @@ async function initSettings() {
     const $settings = document.querySelector('#extensions_settings2');
     await fetch(`${extensionFolderPath}/html/settings.html`)
         .then((data) => data.text())
-        .then((data) => {
-            $settings.insertAdjacentHTML('beforeend', data);
+        .then((html) => {
+            $settings.insertAdjacentHTML('beforeend', html);
         });
 
     const $rename_chats = $settings.querySelector('#rename_chats');
@@ -190,9 +190,8 @@ async function initSettings() {
 }
 
 function loadSplashText() {
-    const getRandomSplash = () => {
-        return splashes[Math.floor(Math.random() * splashes.length)];
-    };
+    const getRandomSplash = () =>
+        splashes[Math.floor(Math.random() * splashes.length)];
 
     const observer = new MutationObserver((_, observer) => {
         const welcomeElement = document.querySelector(
@@ -391,10 +390,9 @@ function main() {
     }
 
     const $settingsDrawerToggle = document.querySelector('#ai-config-button');
-    $settingsDrawerToggle.insertAdjacentHTML(
-        'beforeend',
-        '<i class="fa-solid fa-chevron-down inline-drawer-icon"></i>',
-    );
+    const drawerArrow = document.createElement('i');
+    drawerArrow.classList.add('fa-solid', 'fa-chevron-down', 'inline-drawer-icon');
+    $settingsDrawerToggle.appendChild(drawerArrow);
 
     const $characterPopup = document.querySelector('#character_popup');
     const $rightNavPanel = document.querySelector('#right-nav-panel');
@@ -420,10 +418,10 @@ function main() {
     $characterPopup.querySelector('#mes_example_div').remove();
     fetch(`${extensionFolderPath}/html/example_mes.html`)
         .then((data) => data.text())
-        .then((data) => {
+        .then((html) => {
             $rightNavPanel
                 .querySelector('#form_create')
-                .insertAdjacentHTML('beforeend', data);
+                .insertAdjacentHTML('beforeend', html);
         });
 
     eventSource.on(event_types.GENERATION_STARTED, checkWaifuVisibility);
