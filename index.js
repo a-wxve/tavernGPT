@@ -135,6 +135,7 @@ async function initSettings() {
     tavernGPT_settings = tavernGPT_settings || {};
 
     let settingsChanged = false;
+
     for (const key in default_settings) {
         if (!(key in tavernGPT_settings)) {
             tavernGPT_settings[key] = default_settings[key];
@@ -173,14 +174,17 @@ async function initSettings() {
         saveSettingsDebounced();
     });
 
-    $rename_method_function.addEventListener('click', () => {
-        tavernGPT_settings.rename_method = 'function';
-        saveSettingsDebounced();
-    });
-
-    $rename_method_system.addEventListener('click', () => {
-        tavernGPT_settings.rename_method = 'system';
-        saveSettingsDebounced();
+    $rename_method_container.addEventListener('click', (event) => {
+        switch (event.target) {
+            case $rename_method_function:
+                tavernGPT_settings.rename_method = 'function';
+                saveSettingsDebounced();
+                break;
+            case $rename_method_system:
+                tavernGPT_settings.rename_method = 'system';
+                saveSettingsDebounced();
+                break;
+        }
     });
 
     $api_key_chub.addEventListener('change', () => {
@@ -315,7 +319,7 @@ function randomizeBackground() {
         .querySelector('#background_template .bg_example')
         .insertAdjacentHTML(
             'beforeend',
-            '<input type="checkbox" title="Add to randomization list" class="bg_button bg_randomizer" tabindex="0"></div>',
+            '<input type="checkbox" title="Add to randomization list" class="bg_button bg_randomizer" tabindex="0"></input>',
         );
 
     $background_menu.addEventListener('click', () => {
@@ -372,23 +376,12 @@ function checkWaifuVisibility() {
     } else if ($sheld.classList.contains('shifted')) {
         $sheld.classList.remove('shifted');
     }
+
+    eventSource.on(event_types.GENERATION_STARTED, checkWaifuVisibility);
+    eventSource.on(event_types.CHAT_CHANGED, checkWaifuVisibility);
 }
 
-function main() {
-    initSettings();
-    randomizeBackground();
-    getPersona();
-    toggleSidebar();
-    scrollToBottom();
-    loadExplorePanel();
-    loadChatHistory();
-    moveSwipeButtons();
-    loadSplashText();
-
-    if (window.matchMedia('only screen and ((max-width: 768px))').matches) {
-        setMobileUI();
-    }
-
+async function fixUI() {
     const $settingsDrawerToggle = document.querySelector('#ai-config-button');
     const drawerArrow = document.createElement('i');
     drawerArrow.classList.add('fa-solid', 'fa-chevron-down', 'inline-drawer-icon');
@@ -416,16 +409,41 @@ function main() {
         });
 
     $characterPopup.querySelector('#mes_example_div').remove();
-    fetch(`${extensionFolderPath}/html/example_mes.html`)
+    await fetch(`${extensionFolderPath}/html/example_mes.html`)
         .then((data) => data.text())
         .then((html) => {
             $rightNavPanel
                 .querySelector('#form_create')
                 .insertAdjacentHTML('beforeend', html);
         });
+}
 
-    eventSource.on(event_types.GENERATION_STARTED, checkWaifuVisibility);
-    eventSource.on(event_types.CHAT_CHANGED, checkWaifuVisibility);
+function main() {
+    // stage 1: core initialization
+    initSettings();
+
+    // stage 2: core UI
+    fixUI();
+    loadExplorePanel();
+    loadChatHistory();
+
+    // stage 3: layout shift
+    randomizeBackground();
+    checkWaifuVisibility();
+
+    // stage 4: interactive elements
+    getPersona();
+    toggleSidebar();
+    scrollToBottom();
+    moveSwipeButtons();
+
+    // stage 5: decorative elements
+    loadSplashText();
+
+    // stage 6: mobile
+    if (window.matchMedia('only screen and ((max-width: 768px))').matches) {
+        setMobileUI();
+    }
 }
 
 main();
