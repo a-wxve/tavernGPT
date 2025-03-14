@@ -1,3 +1,4 @@
+import { moment } from '../../../../lib.js';
 import {
     characters,
     doNewChat,
@@ -28,7 +29,7 @@ import { extensionFolderPath, tavernGPT_settings } from './index.js';
 const group = selected_group
     ? groups.find((x) => x.id === selected_group)
     : null;
-const timeCategories = new Map([
+const timeIDs = new Map([
     ['Today', 0],
     ['Yesterday', 1],
     ['This Week', 2],
@@ -59,8 +60,8 @@ function sortTimeCategories(a, b) {
     const aCat = getTimeCategory(timestampToMoment(a.last_mes));
     const bCat = getTimeCategory(timestampToMoment(b.last_mes));
 
-    const aOrder = timeCategories.get(aCat);
-    const bOrder = timeCategories.get(bCat);
+    const aOrder = timeIDs.get(aCat);
+    const bOrder = timeIDs.get(bCat);
 
     if (aOrder !== undefined && bOrder !== undefined) {
         return aOrder - bOrder;
@@ -97,7 +98,7 @@ async function displayChats(searchQuery) {
         const data = await response.json();
 
         const chatCategories = {};
-        for (const [category, _] of timeCategories) {
+        for (const [category] of timeIDs) {
             chatCategories[category] = [];
         }
 
@@ -289,7 +290,7 @@ async function renameChat(oldFilename, newFilename) {
 
 function registerRenameChatTool() {
     cleanupRenamePromptListeners();
-    ToolManager.unregisterTool('renameChat');
+    ToolManager.unregisterFunctionTool('renameChat');
 
     if (!ToolManager.isToolCallingSupported()) {
         console.log(
@@ -354,7 +355,7 @@ function registerRenameChatTool() {
 function cleanupRenamePromptListeners() {
     renamePromptListeners.forEach((listener) => {
         const { event, callback } = listener;
-        eventSource.off(event, callback);
+        eventSource.removeListener(event, callback);
     });
     renamePromptListeners = [];
 }
@@ -433,8 +434,8 @@ export async function loadChatHistory() {
     const $settingsHolder = document.querySelector('#top-settings-holder');
     await fetch(`${extensionFolderPath}/html/history.html`)
         .then((data) => data.text())
-        .then((data) => {
-            $settingsHolder.insertAdjacentHTML('beforeend', data);
+        .then((html) => {
+            $settingsHolder.insertAdjacentHTML('beforeend', html);
         });
 
     $settingsHolder.addEventListener('click', overrideChatButtons, true);
