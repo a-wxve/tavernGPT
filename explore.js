@@ -27,7 +27,7 @@ async function downloadCharacter(input) {
         toastr.info(
             'Click to go to the character page',
             'Custom content import failed',
-            { onmousedown: () => window.open(url, '_blank') },
+            { onclick: () => window.open(url, '_blank') },
         );
         console.error(
             'Custom content import failed',
@@ -60,15 +60,13 @@ function generateCharacterListItem(character, index) {
     const includedTagsValue = document.querySelector('#includeTags').value.toLowerCase();
     const includedTags = includedTagsValue.split(',').map(tag => tag.trim());
 
-    const generateTagsHTML = character.tags.map(tag => {
+    const tagsHTML = character.tags.map(tag => {
         const isIncluded = includedTags.includes(tag.toLowerCase());
         const tagClass = isIncluded ? 'tag included' : 'tag';
         return `<span class="${tagClass}">${tag}</span>`;
     }).join('');
 
-    const template = document.createElement('template');
-
-    template.innerHTML = `
+    const htmlString = `
         <div class="character-list-item" data-index="${index}">
             <div class="thumbnail">
                 <img src="${character.avatar}">
@@ -82,19 +80,20 @@ function generateCharacterListItem(character, index) {
                     <span class="creator">by ${character.creator}</span>
                 </div>
                 <div class="tagline">${character.tagline}</div>
-                <div class="tags">${generateTagsHTML}</div>
+                <div class="tags">${tagsHTML}</div>
             </div>
         </div>
     `;
 
-    return template.content;
+    const fragment = document.createRange().createContextualFragment(htmlString);
+    return fragment;
 }
 
 async function generateCharacterPopup(character) {
     const includedTagsValue = document.querySelector('#includeTags').value.toLowerCase();
     const includedTags = includedTagsValue.split(',').map(tag => tag.trim());
 
-    const generateTagsHTML = character.tags.map(tag => {
+    const tagsHTML = character.tags.map(tag => {
         const isIncluded = includedTags.includes(tag.toLowerCase());
         const tagClass = isIncluded ? 'tag included' : 'tag';
         return `<span class="${tagClass}">${tag}</span>`;
@@ -146,7 +145,7 @@ async function generateCharacterPopup(character) {
                     <p>${character.description}</p>
                 </div>
                 <p class="tags">
-                ${generateTagsHTML}
+                ${tagsHTML}
                 </p>
                 <p class="chub-nowrap">
                     <i class="fa-solid fa-book"></i>
@@ -163,7 +162,7 @@ async function generateCharacterPopup(character) {
     await callGenericPopup(popupHTML, POPUP_TYPE.DISPLAY, '', {
         wider: true,
         allowVerticalScrolling: true,
-    }).then(
+    }).then(() => {
         document
             .querySelector('.chub-popup')
             .addEventListener('click', (event) => {
@@ -174,8 +173,8 @@ async function generateCharacterPopup(character) {
                         downloadButton.getAttribute('data-path'),
                     );
                 }
-            }),
-    );
+            });
+    });
 }
 
 function updateCharacterList(characters, reset = false) {
@@ -554,11 +553,9 @@ async function setupExplorePanel() {
                             element.checked = element.defaultChecked;
                             break;
                         case 'select-one':
-                            let defaultOption =
-                                Array.from(element.options).find(
-                                    (option) => option.defaultSelected,
-                                ) || element.options[0];
-                            element.value = defaultOption.value;
+                            element.value = Array.from(element.options).find(
+                                (option) => option.defaultSelected,
+                            ) || element.options[0];
                             break;
                         default:
                             element.value = element.defaultValue;
@@ -569,7 +566,7 @@ async function setupExplorePanel() {
 
     const infiniteScrollDebounced = debounce((event) => infiniteScroll(event), debounce_timeout.quick);
 
-    $characterList.addEventListener('scroll', infiniteScrollDebounced);
+    $characterList.addEventListener('scroll', (event) => infiniteScrollDebounced(event));
     $characterList.addEventListener('click', handleCharacterClick);
 }
 
@@ -579,8 +576,8 @@ export async function loadExplorePanel() {
 
     await fetch(`${extensionFolderPath}/html/explore.html`)
         .then((data) => data.text())
-        .then((data) => {
-            $top_settings_holder.insertAdjacentHTML('beforeend', data);
+        .then((html) => {
+            $top_settings_holder.insertAdjacentHTML('beforeend', html);
         });
     setupExplorePanel();
 
