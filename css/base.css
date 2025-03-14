@@ -244,10 +244,8 @@ details summary::-webkit-details-marker {
     display: flex;
 }
 
-#ai-config-button {
-    .drawer-toggle:not(:hover) ~ .inline-drawer-icon {
-        opacity: 0.3;
-    }
+#ai-config-button .drawer-toggle:not(:hover) ~ .inline-drawer-icon {
+    opacity: 0.3;
 }
 
 #ai-config-button .drawer-icon::before {
@@ -263,6 +261,38 @@ details summary::-webkit-details-marker {
     pointer-events: none;
     position: absolute;
     right: 9%;
+}
+
+#ai-config-button:has(
+        ~ :is(
+                #sys-settings-button,
+                #advanced-formatting-button,
+                #WI-SP-button,
+                #extensions-settings-button,
+                #logo_block,
+                #user-settings-button
+            )
+            .openIcon
+    )
+    > .inline-drawer-icon,
+#ai-config-button:has(.openIcon) > .inline-drawer-icon {
+    opacity: 1 !important;
+}
+
+#ai-config-button:has(
+        ~ :is(
+                #sys-settings-button,
+                #advanced-formatting-button,
+                #WI-SP-button,
+                #extensions-settings-button,
+                #logo_block,
+                #user-settings-button
+            )
+            .openIcon
+    )
+    > .inline-drawer-icon::before,
+#ai-config-button:has(.openIcon) > .inline-drawer-icon::before {
+    content: "\f077";
 }
 
 #sys-settings-button {
@@ -418,10 +448,6 @@ details summary::-webkit-details-marker {
 
 #rightNavHolder {
     order: 1;
-}
-
-#rightNavHolder .drawer-icon::before {
-    content: "\f0c0";
 }
 
 #rightNavHolder .drawer-icon::after {
@@ -749,7 +775,7 @@ details summary::-webkit-details-marker {
 }
 
 .mes .mes_block .ch_name.flex-container.justifySpaceBetween {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .mes .mes_block .mes_buttons {
