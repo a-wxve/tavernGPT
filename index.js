@@ -170,6 +170,10 @@ async function initSettings() {
         $rename_method_system.checked = true;
     }
 
+    if (tavernGPT_settings.api_key_chub) {
+        $api_key_chub.value = tavernGPT_settings.api_key_chub;
+    }
+
     $rename_chats.addEventListener('click', () => {
         tavernGPT_settings.rename_chats = $rename_chats.checked;
         $rename_method_container.style.display = $rename_chats.checked
@@ -195,6 +199,16 @@ async function initSettings() {
         tavernGPT_settings.api_key_chub = $api_key_chub.value;
         saveSettingsDebounced();
     });
+
+    $api_key_chub.nextElementSibling.addEventListener('click', (event) => {
+        const eyeIcon = event.currentTarget;
+        const isPassword = $api_key_chub.getAttribute('type') === 'password';
+
+        $api_key_chub.setAttribute('type', isPassword ? 'text' : 'password');
+        eyeIcon.classList.toggle('fa-eye', isPassword);
+        eyeIcon.classList.toggle('fa-eye-slash', !isPassword);
+    });
+
 }
 
 function loadSplashText() {

@@ -51,20 +51,28 @@
                     </small>
                 </div>
             </div>
+            <label for="api_key_chub">CharacterHub API Key</label>
             <div class="flex-container wide100p">
                 <input
-                    class="text_pole flex1s"
+                    class="text_pole flex1"
                     id="api_key_chub"
-                    type="text"
+                    type="password"
                     placeholder="CharacterHub API Key"
                 />
-                <small class="flexBasis100p m-b-1">
-                    Necessary to show characters marked "NSFL" by Character
-                    Hub's moderation team. To get your API key, view the request
-                    headers for the search object while logged in. Your API key
-                    will be shown under the 'CH-API-KEY' and 'samwise' headers.
-                </small>
+                <div
+                    id="api_key_chub_show"
+                    title="Peek a password"
+                    data-i18n="[title]Peek a password"
+                    class="menu_button fa-solid fa-fw interactable fa-eye-slash"
+                    tabindex="0"
+                ></div>
             </div>
+            <small class="flexBasis100p m-b-1">
+                Necessary to show characters marked "NSFL" by Character Hub's
+                moderation team. To get your API key, view the request headers
+                for the search object while logged in. Your API key will be
+                shown under the 'CH-API-KEY' and 'samwise' headers.
+            </small>
             <hr class="sysHR" />
         </div>
     </div>
