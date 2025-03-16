@@ -78,88 +78,85 @@ function sortTimeCategories(a, b) {
 async function displayChats(searchQuery) {
     const $selectChat = document.querySelector('#select_chat_div');
 
-    try {
-        const response = await fetch('/api/chats/search', {
-            method: 'POST',
-            headers: getRequestHeaders(),
-            body: JSON.stringify({
-                query: searchQuery,
-                avatar_url: selected_group
-                    ? null
-                    : characters[this_chid].avatar,
-                group_id: selected_group || null,
-            }),
-        });
+    const response = await fetch('/api/chats/search', {
+        method: 'POST',
+        headers: getRequestHeaders(),
+        body: JSON.stringify({
+            query: searchQuery,
+            avatar_url: selected_group
+                ? null
+                : characters[this_chid].avatar,
+            group_id: selected_group || null,
+        }),
+    });
 
-        if (!response.ok) {
-            throw new Error('Search failed');
-        }
+    if (!response.ok) {
+        console.error('/api/chats/search fetch failed');
+        toastr.error('Failed to fetch chats');
+        return;
+    }
 
-        const data = await response.json();
+    const data = await response.json();
 
-        const chatCategories = {};
-        for (const [category] of timeIDs) {
+    const chatCategories = {};
+    for (const [category] of timeIDs) {
+        chatCategories[category] = [];
+    }
+
+    data.forEach((chat) => {
+        const lastMesDate = timestampToMoment(chat.last_mes);
+        const category = getTimeCategory(lastMesDate);
+        if (!Array.isArray(chatCategories[category])) {
             chatCategories[category] = [];
         }
+        chatCategories[category].push(chat);
+    });
 
-        data.forEach((chat) => {
-            const lastMesDate = timestampToMoment(chat.last_mes);
-            const category = getTimeCategory(lastMesDate);
-            if (!Array.isArray(chatCategories[category])) {
-                chatCategories[category] = [];
+    $selectChat.replaceChildren();
+
+    Object.entries(chatCategories)
+        .filter(([, chats]) => chats.length > 0)
+        .sort(([, aChats], [, bChats]) => {
+            const a = aChats[0];
+            const b = bChats[0];
+            if (!a.last_mes || !b.last_mes) return 0;
+            return sortTimeCategories(a, b);
+        })
+        .forEach(([category, chats]) => {
+            if (chats.length > 0) {
+                $selectChat.insertAdjacentHTML(
+                    'beforeend',
+                    `<h5 class=chat-category>${category}</h5>`,
+                );
             }
-            chatCategories[category].push(chat);
-        });
 
-        $selectChat.replaceChildren();
+            for (const chat of chats) {
+                const template = document
+                    .querySelector(
+                        '#past_chat_template .select_chat_block_wrapper',
+                    )
+                    .cloneNode(true);
 
-        Object.entries(chatCategories)
-            .filter(([, chats]) => chats.length > 0)
-            .sort(([, aChats], [, bChats]) => {
-                const a = aChats[0];
-                const b = bChats[0];
-                if (!a.last_mes || !b.last_mes) return 0;
-                return sortTimeCategories(a, b);
-            })
-            .forEach(([category, chats]) => {
-                if (chats.length > 0) {
-                    $selectChat.insertAdjacentHTML(
-                        'beforeend',
-                        `<h5 class=chat-category>${category}</h5>`,
-                    );
-                }
+                template
+                    .querySelector('.select_chat_block')
+                    .setAttribute('file_name', chat.file_name);
+                template.querySelector(
+                    '.select_chat_block_filename',
+                ).textContent = chat.file_name.replace('.jsonl', '');
+                template
+                    .querySelector('.PastChat_cross')
+                    .setAttribute('file_name', chat.file_name);
 
-                for (const chat of chats) {
-                    const template = document
-                        .querySelector(
-                            '#past_chat_template .select_chat_block_wrapper',
-                        )
-                        .cloneNode(true);
-
+                const selectedChatFileName = `${selected_group ? group?.chat_id : characters[this_chid].chat}.jsonl`;
+                if (chat.file_name === selectedChatFileName) {
                     template
                         .querySelector('.select_chat_block')
-                        .setAttribute('file_name', chat.file_name);
-                    template.querySelector(
-                        '.select_chat_block_filename',
-                    ).textContent = chat.file_name.replace('.jsonl', '');
-                    template
-                        .querySelector('.PastChat_cross')
-                        .setAttribute('file_name', chat.file_name);
-
-                    const selectedChatFileName = `${selected_group ? group?.chat_id : characters[this_chid].chat}.jsonl`;
-                    if (chat.file_name === selectedChatFileName) {
-                        template
-                            .querySelector('.select_chat_block')
-                            .setAttribute('highlight', true);
-                    }
-
-                    $selectChat.append(template);
+                        .setAttribute('highlight', true);
                 }
-            });
-    } catch (error) {
-        console.error('Error loading chats:', error);
-        toastr.error('Could not load chat data. Try reloading the page.');
-    }
+
+                $selectChat.append(template);
+            }
+        });
 }
 
 async function overrideChatButtons(event) {
@@ -196,7 +193,15 @@ async function overrideChatButtons(event) {
             'Enter a new name for this chat:',
             POPUP_TYPE.INPUT,
         );
-        renameChat(oldFilename, newFilename);
+
+        if (!newFilename) return;
+
+        const result = await renameChat(oldFilename, newFilename);
+        if (!result.success) {
+            console.error(`Failed to rename chat: ${result.error}`);
+            toastr.error(`Failed to rename chat: ${result.error}`);
+            return;
+        }
     } else if (chatBlock && event.target.matches('.PastChat_cross')) {
         stopEvent(event);
 
@@ -210,6 +215,7 @@ async function overrideChatButtons(event) {
 
         if (!confirmed) {
             console.error(`Error deleting ${chatBlock}: User did not confirm.`);
+            toastr.error(`Error deleting ${chatBlock}: User did not confirm.`);
             return;
         }
 
@@ -227,7 +233,7 @@ async function overrideChatButtons(event) {
 
         const response = await deleteChat().catch((error) => {
             console.error(`Error deleting ${chatToDelete}:`, error);
-            toastr.error('An error occurred. Chat was not deleted.');
+            toastr.error(error, `Error deleting ${chatToDelete}:`);
             return null;
         });
 
@@ -247,45 +253,52 @@ async function overrideChatButtons(event) {
     }
 }
 
+/**
+ * Renames a chat file, returning a result object
+ * @param {string} oldFilename - Original chat filename
+ * @param {string} newFilename - New chat filename
+ * @returns {Promise<{success: boolean, data: any, error: string|null}>} - Result object
+ */
 async function renameChat(oldFilename, newFilename) {
-    try {
-        const response = await fetch('/api/chats/rename', {
-            method: 'POST',
-            headers: getRequestHeaders(),
-            body: JSON.stringify({
-                is_group: !!selected_group,
-                avatar_url: characters[this_chid]?.avatar,
-                original_file: `${oldFilename}.jsonl`,
-                renamed_file: `${newFilename}.jsonl`,
-            }),
-        });
+    const response = await fetch('/api/chats/rename', {
+        method: 'POST',
+        headers: getRequestHeaders(),
+        body: JSON.stringify({
+            is_group: !!selected_group,
+            avatar_url: characters[this_chid]?.avatar,
+            original_file: `${oldFilename}.jsonl`,
+            renamed_file: `${newFilename}.jsonl`,
+        }),
+    });
 
-        if (!response.ok) {
-            throw new Error('Failed to rename chat.');
-        }
-
-        if (selected_group) {
-            await renameGroupChat(selected_group, oldFilename, newFilename);
-        } else {
-            if (characters[this_chid].chat == oldFilename) {
-                characters[this_chid].chat = newFilename;
-                document.querySelector('#selected_chat_pole').value =
-                    characters[this_chid].chat;
-                saveCharacterDebounced();
-            }
-        }
-
-        const filenameElement = document.querySelector(
-            '.select_chat_block[highlight="true"] .select_chat_block_filename.select_chat_block_filename_item',
-        );
-        if (filenameElement) filenameElement.textContent = newFilename;
-
-        return true;
-    } catch (error) {
-        console.error(`Error renaming ${oldFilename}:`, error);
-        toastr.error('An error occurred. Chat was not renamed.');
-        return false;
+    if (!response.ok) {
+        return {
+            success: false,
+            data: null,
+            error: `Failed to rename chat: ${response.status} ${response.statusText}`,
+        };
     }
+
+    if (selected_group) {
+        await renameGroupChat(selected_group, oldFilename, newFilename);
+    } else {
+        if (characters[this_chid].chat == oldFilename) {
+            characters[this_chid].chat = newFilename;
+            document.querySelector('#selected_chat_pole').value = characters[this_chid].chat;
+            saveCharacterDebounced();
+        }
+    }
+
+    const filenameElement = document.querySelector(
+        '.select_chat_block[highlight="true"] .select_chat_block_filename.select_chat_block_filename_item',
+    );
+    if (filenameElement) filenameElement.textContent = newFilename;
+
+    return {
+        success: true,
+        data: { oldFilename, newFilename },
+        error: null,
+    };
 }
 
 function registerRenameChatTool() {
@@ -293,7 +306,7 @@ function registerRenameChatTool() {
     ToolManager.unregisterFunctionTool('renameChat');
 
     if (!ToolManager.isToolCallingSupported()) {
-        console.log(
+        console.warn(
             'Tool calling not supported, falling back to system prompt method.',
         );
         tavernGPT_settings.rename_method = 'system';
@@ -327,11 +340,11 @@ function registerRenameChatTool() {
                 .replace(/^'((?:\\'|[^'])*)'$/, '$1')
                 .substring(0, 90);
 
-            const success = await renameChat(oldFilename, newName);
+            const result = await renameChat(oldFilename, newName);
 
-            return success
+            return result.success
                 ? `Chat successfully renamed to "${newName}".`
-                : 'Failed to rename the chat. Please try again with a different name.';
+                : `Failed to rename the chat: ${result.error}`;
         },
         shouldRegister: () => {
             const context = getContext();
@@ -363,7 +376,7 @@ function cleanupRenamePromptListeners() {
 async function setupSystemPromptRename() {
     cleanupRenamePromptListeners();
 
-    const checkIfRenameNeeded = async () => {
+    const renameIfNeeded = async () => {
         const context = getContext();
         const oldFilename = selected_group
             ? group?.chat_id
@@ -377,49 +390,50 @@ async function setupSystemPromptRename() {
         if (matchesTimePattern(oldFilename) && context.chat.length > 2) {
             const prompt =
                 'Generate a unique name for this chat in as few words as possible. Avoid including special characters, words like "chat", or the user\'s name. Only output the chat name.';
-            try {
-                let newFilename = await generateQuietPrompt(
-                    prompt,
-                    false,
-                    false,
-                );
-                newFilename = newFilename
-                    .toString()
-                    .replace(/^'((?:\\'|[^'])*)'$/, '$1')
-                    .substring(0, 90);
-
-                if (newFilename) {
-                    await renameChat(oldFilename, newFilename);
-                }
-            } catch (error) {
+            let newFilename = await generateQuietPrompt(
+                prompt,
+                false,
+                false,
+            ).catch((error) => {
                 console.error(`Error generating new filename: ${error}`);
+                toastr.error(error, 'Error generating new filename');
+            });
+
+            if (!newFilename) return;
+
+            newFilename = newFilename
+                .toString()
+                .replace(/^'((?:\\'|[^'])*)'$/, '$1')
+                .substring(0, 90);
+
+            const result = await renameChat(oldFilename, newFilename);
+            if (!result.success) {
+                console.error(`Failed to rename chat: ${result.error}`);
+                toastr.error(result.error, 'Failed to rename chat');
             }
         }
     };
 
-    const chatChangedCallback = debounce(
-        () => checkIfRenameNeeded(),
-        debounce_timeout.short,
-    );
-    const messageReceivedCallback = debounce(
-        () => checkIfRenameNeeded(),
+    const renameCallback = debounce(
+        () => renameIfNeeded(),
         debounce_timeout.short,
     );
 
     renamePromptListeners.push(
-        { event: event_types.CHAT_CHANGED, callback: chatChangedCallback },
+        {
+            event: event_types.CHAT_CHANGED,
+            callback: renameCallback,
+        },
         {
             event: event_types.MESSAGE_RECEIVED,
-            callback: messageReceivedCallback,
+            callback: renameCallback,
         },
     );
 
-    eventSource.on(event_types.CHAT_CHANGED, chatChangedCallback);
-    eventSource.on(event_types.MESSAGE_RECEIVED, messageReceivedCallback);
+    eventSource.on(event_types.CHAT_CHANGED, renameCallback);
+    eventSource.on(event_types.MESSAGE_RECEIVED, renameCallback);
 
-    checkIfRenameNeeded();
-
-    return true;
+    renameIfNeeded();
 }
 
 export async function loadChatHistory() {
