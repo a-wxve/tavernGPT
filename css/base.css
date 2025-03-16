@@ -968,14 +968,17 @@ body #toast-container {
 }
 
 #scrollToBottom {
+    display: flex;
+    gap: 0.5rem;
     position: fixed;
     color: var(--SmartThemeBodyColor);
     bottom: 4.5rem;
     align-self: center;
+    align-items: center;
     z-index: 100;
-    padding: 0.69rem 0.25rem;
+    padding: 0.66rem;
     backdrop-filter: contrast(0.1);
-    border-radius: 100%;
+    border-radius: var(--border-radius);
     cursor: pointer;
 
     & i {

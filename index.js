@@ -81,9 +81,13 @@ function scrollToBottom() {
     const scrollButton = document.createElement('div');
     scrollButton.id = 'scrollToBottom';
 
-    const icon = document.createElement('i');
-    icon.className = 'fa-2xl fa-solid fa-circle-arrow-down';
+    const span = document.createElement('span');
+    span.textContent = 'Scroll to bottom';
 
+    const icon = document.createElement('i');
+    icon.className = 'fa-xl fa-solid fa-circle-chevron-down';
+
+    scrollButton.appendChild(span);
     scrollButton.appendChild(icon);
     scrollButton.style.visibility = 'hidden';
 
