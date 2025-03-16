@@ -685,7 +685,7 @@ details summary::-webkit-details-marker {
 }
 
 #extensionsMenuButton.fa-magic-wand-sparkles::before {
-    content: "";
+    content: "\2b";
 }
 
 #options_button::before {
@@ -706,7 +706,7 @@ details summary::-webkit-details-marker {
 }
 
 #rightSendForm {
-    margin-right: 0.25rem;
+    margin-inline-start: -3rem;
 }
 
 #send_but::before {
@@ -978,7 +978,7 @@ body #toast-container {
     z-index: 100;
     padding: 0.66rem;
     backdrop-filter: contrast(0.1);
-    border-radius: var(--border-radius);
+    border-radius: var(--borderRadius);
     cursor: pointer;
 
     & i {
