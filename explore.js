@@ -204,7 +204,7 @@ function updateCharacterList(characters, reset = false) {
 /**
 * Fetches a character from the primary API, falling back to the backup if needed
 * @param {Object} node - Character node data from search results
-* @returns {Promise<Blob>} - Promise resolving to character data blob
+* @returns {Promise<{success: boolean, data: Blob|null, error: string|null}>} - Promise resolving to result object
 */
 async function fetchCharacterData(node) {
     const endpoint = 'https://api.chub.ai/api/characters/download';
@@ -215,48 +215,40 @@ async function fetchCharacterData(node) {
         version: 'main',
     };
 
-    try {
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody),
-        });
+    const primaryResponse = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+    });
 
-        if (!response.ok) {
-            throw new Error(`Primary API returned status: ${response.status}`);
-        }
-
-        return await response.blob();
+    if (primaryResponse.ok) {
+        const blob = await primaryResponse.blob();
+        return { success: true, data: blob, error: null };
     }
-    catch (error) {
-        console.warn(`Primary API failed for ${node.fullPath}:`, error);
 
-        toastr.warning(
-            `Using backup source for ${node.name || node.fullPath}`,
-            'API Fallback',
-        );
+    console.warn(`Primary API failed for ${node.fullPath}: ${primaryResponse.status}`);
+    toastr.warning(
+        `Using backup source for ${node.name || node.fullPath}`,
+        'API Fallback',
+    );
 
-        try {
-            const backupResponse = await fetch(backupEndpoint, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+    const backupResponse = await fetch(backupEndpoint, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
 
-            if (!backupResponse.ok) {
-                throw new Error(`Backup API returned status: ${backupResponse.status}`);
-            }
-
-            return await backupResponse.blob();
-        }
-        catch (backupError) {
-            console.error(`Both APIs failed for ${node.fullPath}:`, backupError);
-            throw new Error(`Failed to fetch character "${node.name || node.fullPath}" from both primary and backup sources`);
-        }
+    if (backupResponse.ok) {
+        const blob = await backupResponse.blob();
+        return { success: true, data: blob, error: null };
     }
+
+    const errorMessage = `Failed to fetch character "${node.name || node.fullPath}" from both primary and backup sources`;
+    console.error(errorMessage, backupResponse.status);
+    return { success: false, data: null, error: errorMessage };
 }
 
 async function fetchCharacters(searchOptions, reset, callback) {
@@ -321,7 +313,7 @@ async function fetchCharacters(searchOptions, reset, callback) {
     }).then((data) => data.json());
 
     const characterPromises = searchData.nodes.map(node => fetchCharacterData(node));
-    const characterResults = await Promise.allSettled(characterPromises);
+    const characterResults = await Promise.all(characterPromises);
 
     const sanitize = (text) => {
         if (!text) return '';
@@ -337,8 +329,8 @@ async function fetchCharacters(searchOptions, reset, callback) {
     characterResults.forEach((result, index) => {
         const node = searchData.nodes[index];
 
-        if (result.status === 'fulfilled') {
-            let imageUrl = URL.createObjectURL(result.value);
+        if (result.success) {
+            let imageUrl = URL.createObjectURL(result.data);
             newCharacters.push({
                 url: imageUrl,
                 avatar: node.avatar_url,
@@ -357,7 +349,7 @@ async function fetchCharacters(searchOptions, reset, callback) {
                 numRatings: node.ratingCount,
             });
         } else {
-            console.error(`Failed to load character ${node.fullPath}:`, result.reason);
+            console.error(`Failed to load character ${node.fullPath}:`, result.error);
             toastr.error(`Could not load "${node.name || node.fullPath}"`, 'Character Load Error');
         }
     });
@@ -394,7 +386,6 @@ function search(event, reset, callback) {
             fetchCharacters(options, reset, callback),
         debounce_timeout.standard,
     );
-    console.log('Search event:', event);
 
     const splitAndTrim = (str) => {
         str = str.trim();
@@ -439,6 +430,7 @@ function search(event, reset, callback) {
 
 function infiniteScroll(event) {
     if (isLoading) return;
+
     const $characterList = document.querySelector(
         '#list-and-search-wrapper .character-list',
     );
@@ -497,6 +489,7 @@ function handleCharacterClick(event) {
         }
 
         $pageNumber.value = 1;
+
         search(event, true);
     } else if (creatorClicked) {
         const username = target.textContent.toLowerCase().split(' ')[1];
@@ -515,6 +508,7 @@ function handleCharacterClick(event) {
         $excludedTags.value = '';
         $pageNumber.value = 1;
         $sortOrder.value = 'download_count';
+
         search(event, true);
     }
 }
