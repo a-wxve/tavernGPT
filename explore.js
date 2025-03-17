@@ -1,4 +1,4 @@
-import { slideToggle } from '../../../../lib.js';
+import { DOMPurify, slideToggle } from '../../../../lib.js';
 import {
     animation_duration,
     getRequestHeaders,
@@ -317,12 +317,11 @@ async function fetchCharacters(searchOptions, reset, callback) {
 
     const sanitize = (text) => {
         if (!text) return '';
-        return text
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
+
+        return DOMPurify.sanitize(text, {
+            ALLOWED_TAGS: [],
+            ALLOWED_ATTR: [],
+        });
     };
 
     const newCharacters = [];
@@ -546,11 +545,13 @@ async function setupExplorePanel() {
                         case 'checkbox':
                             element.checked = element.defaultChecked;
                             break;
-                        case 'select-one':
-                            element.value = Array.from(element.options).find(
-                                (option) => option.defaultSelected,
-                            ) || element.options[0];
+                        case 'select-one': {
+                            const defaultOption = Array.from(element.options).find(
+                                option => option.defaultSelected,
+                            );
+                            element.value = defaultOption ? defaultOption.value : element.options[0].value;
                             break;
+                        }
                         default:
                             element.value = element.defaultValue;
                     }
