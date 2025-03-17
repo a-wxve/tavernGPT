@@ -699,6 +699,7 @@ details summary::-webkit-details-marker {
     resize: none;
     border-color: #0000;
     padding: 6px 1rem;
+    padding-right: 3rem;
 }
 
 #send_textarea::placeholder {
