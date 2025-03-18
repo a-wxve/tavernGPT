@@ -23,7 +23,7 @@ body.waifuMode .expression-holder {
     max-width: 100dvw !important;
 }
 
-#sheld #chat_header {
+#chat_header {
     z-index: 100;
     justify-content: center;
     width: 100%;
@@ -32,25 +32,25 @@ body.waifuMode .expression-holder {
     top: 0;
     left: 0;
     backdrop-filter: blur(9px);
+
+    .avatar {
+        flex: 0;
+        align-self: center;
+    }
+
+    .ch_name {
+        flex-direction: column;
+        align-items: baseline;
+
+        .mes_buttons {
+            display: none !important;
+        }
+    }
 }
 
-#sheld #chat_header .avatar {
-    flex: 0;
-    align-self: center;
-}
-
-#sheld #chat_header .ch_name {
-    flex-direction: column;
-    align-items: baseline;
-}
-
-#sheld #chat_header .ch_name .mes_buttons {
-    display: none !important;
-}
-
-#sheld #chat_header .mes_timer,
-#sheld #chat_header .mesIDDisplay,
-#sheld #chat_header .tokenCounterDisplay {
+#chat_header .mes_timer,
+#chat_header .mesIDDisplay,
+#chat_header .tokenCounterDisplay {
     cursor: default;
     opacity: 0.7;
     font-size: calc(var(--mainFontSize) * 0.69);
@@ -58,12 +58,12 @@ body.waifuMode .expression-holder {
     font-weight: 600;
 }
 
-#sheld #chat {
+#chat {
     padding-top: 6rem;
 }
 
-#sheld #form_sheld #send_form #leftSendForm,
-#sheld #form_sheld #send_form #rightSendForm {
+#leftSendForm,
+#rightSendForm {
     align-self: center;
 }
 
@@ -72,7 +72,7 @@ body.waifuMode .expression-holder {
     padding-top: 0 !important;
 }
 
-#sheld #chat .mes.last_mes {
+.mes.last_mes {
     padding-bottom: 5rem !important;
 }
 
@@ -97,10 +97,10 @@ body.waifuMode .expression-holder {
 #top-settings-holder {
     padding: 0.75rem 0.25rem;
     width: 66% !important;
-}
 
-#top-settings-holder:not(.collapsed) ~ #sheld {
-    filter: brightness(50%);
+    &:not(.collapsed) ~ #sheld {
+        filter: brightness(50%);
+    }
 }
 
 #top-settings-holder.collapsed #ai-config-button,
@@ -170,7 +170,8 @@ body.waifuMode .expression-holder {
 #rm_print_characters_block {
     flex-wrap: wrap;
     .bogus_folder_select,
-    .character_select {
+    .character_select,
+    .group_select {
         width: 100%;
     }
 }

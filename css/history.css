@@ -4,112 +4,113 @@
     border-radius: var(--borderRadiusSmol);
     background-color: var(--grey5020a);
     margin: 0.5rem 0 0;
-    transition: var(--transition);
 }
 
 #select_chat_search {
     border-radius: var(--borderRadiusSmol);
     max-height: 36px;
+
+    & input {
+        background-color: transparent;
+        border: none;
+        outline: none;
+        width: 87%;
+    }
+
+    #select_chat_div:empty ~ & {
+        display: none;
+    }
 }
 
 .historyButton {
-    &:hover, &:has(:focus) {
-        opacity: 1;
-    }
     background-color: transparent;
     opacity: 0.54;
     font-size: var(--mainFontSize);
     padding: 3px 5px;
     margin: 5px;
     font-weight: 600;
+    transition: var(--transition);
+
+    &:hover,
+    &:has(:focus) {
+        opacity: 1;
+    }
 }
 
 #new_chat {
     padding: 5px;
     cursor: pointer;
-}
 
-#select_chat_div:empty ~ #select_chat_search {
-    display: none;
-}
-
-#select_chat_search input {
-    background-color: transparent;
-    border: none;
-    outline: none;
-    width: 87%;
+    & i {
+        transition: var(--transition);
+    }
 }
 
 #select_chat_div {
-    &:not(:hover)::-webkit-scrollbar {
-        opacity: 0;
-    }
-    .select_chat_block:not(:hover) {
-        .fa-solid {
-            visibility: hidden;
-        }
-    }
     order: 12;
     margin-bottom: 3.6em;
     overflow-y: scroll;
-}
 
-#select_chat_div h5 {
-    opacity: 0.5;
-    margin: 0.5rem 0.25rem;
-}
+    &:not(:hover)::-webkit-scrollbar {
+        opacity: 0;
+    }
 
-#select_chat_div h5 + .select_chat_block_wrapper .select_chat_block {
-    margin-top: 0;
-}
+    & .select_chat_block {
+        border-radius: var(--borderRadiusSmol);
+        gap: 0px;
 
-#select_chat_div .select_chat_block {
-    border-radius: var(--borderRadiusSmol);
-    gap: 0px;
-}
+        &:hover #select_chat_name_wrapper > div:first-child {
+            max-width: 60%;
+        }
 
-#select_chat_div #select_chat_name_wrapper {
-    text-wrap: nowrap;
-    flex-wrap: nowrap;
-    overflow: hidden;
-}
+        &:not(:hover) .fa-solid {
+            visibility: hidden;
+        }
+    }
 
-#select_chat_div #select_chat_name_wrapper > .flex-container.alignItemsCenter {
-    flex-wrap: nowrap;
-}
+    & h5 {
+        opacity: 0.5;
+        margin: 0.5rem 0.25rem;
 
-#select_chat_div
-    #select_chat_name_wrapper
-    > div:first-child
-    .select_chat_block_filename.select_chat_block_filename_item {
-    opacity: 0.9;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-
-#select_chat_div
-    #select_chat_name_wrapper
-    > .flex-container.gap10px {
-        gap: 0px !important;
-        & > .flex-container.gap10px {
-        flex-wrap: nowrap;
-        gap: 5px !important;
+        & + .select_chat_block_wrapper .select_chat_block {
+            margin-top: 0;
         }
     }
 }
 
-#select_chat_div #select_chat_name_wrapper > div:first-child {
-    max-width: 100%;
+#select_chat_name_wrapper {
+    text-wrap: nowrap;
+    flex-wrap: nowrap;
+    overflow: hidden;
+
+    & > .flex-container.alignItemsCenter {
+        flex-wrap: nowrap;
+    }
+
+    & > .flex-container.gap10px {
+        gap: 0px !important;
+
+        & > .flex-container.gap10px {
+            flex-wrap: nowrap;
+            gap: 5px !important;
+        }
+    }
+
+    & > div:first-child {
+        max-width: 100%;
+
+        & .select_chat_block_filename.select_chat_block_filename_item {
+            opacity: 0.9;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+    }
 }
 
-#select_chat_div .select_chat_block:hover #select_chat_name_wrapper > div:first-child {
-    max-width: 60%;
-}
-
-.exportRawChatButton.fa-solid.fa-file-export:before {
+.exportRawChatButton.fa-solid.fa-file-export::before {
     content: "";
 }
 
-.PastChat_cross.opacity50p.hoverglow.fa-solid.fa-skull:before {
+.PastChat_cross.opacity50p.hoverglow.fa-solid.fa-skull::before {
     content: "";
 }

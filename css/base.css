@@ -5,9 +5,9 @@
     --monoFontFamily: "SF Mono", SFMono-Regular, ui-monospace,
         "DejaVu Sans Mono", Menlo, Consolas, monospace;
     --lineHeight: calc(var(--mainFontSize) * 1.25);
-    --barSize: 270px;
-    --panelSize: 42.5%;
-    --insidePadding: 10px;
+    --barSize: 20%;
+    --panelSize: 40%;
+    --insidePadding: 0.625rem;
     --borderRadius: 1.5rem;
     --borderRadiusSmol: 0.625rem;
     --transition: all 0.1s ease-in-out;
@@ -35,7 +35,6 @@ body.bubblechat {
             display: none;
         }
         .mes_block {
-            max-width: 91.17%;
             margin-left: auto;
             padding-left: 0;
             overflow-y: hidden;
@@ -102,16 +101,24 @@ body.bubblechat {
     }
 }
 
+body.hideChatAvatars {
+    .mes_block {
+        padding-left: 0;
+    }
+}
+
+body:not(.hideChatAvatars) {
+    .mes[is_user="true"] .mes_block {
+        max-width: calc(100% - 3.75rem);
+    }
+}
+
 body.big-avatars {
     .avatar,
     .avatar img {
         width: 50px;
         height: 75px;
     }
-}
-
-body.hideChatAvatars .mesAvatarWrapper {
-    display: none;
 }
 
 body.waifuMode .expression-holder {
@@ -129,7 +136,8 @@ body.waifuMode .expression-holder {
 #option_select_chat,
 #option_start_new_chat,
 #load_select_chat_div,
-details summary::-webkit-details-marker {
+details summary::-webkit-details-marker,
+body.hideChatAvatars .mesAvatarWrapper {
     display: none !important;
 }
 
@@ -142,22 +150,22 @@ details summary::-webkit-details-marker {
     justify-content: flex-start;
     height: 100dvh;
     position: fixed;
-}
 
-#top-settings-holder::before {
-    content: "";
-    z-index: -1;
-    backdrop-filter: blur(9px);
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
+    &::before {
+        content: "";
+        z-index: -1;
+        backdrop-filter: blur(9px);
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
 
-#top-settings-holder.collapsed {
-    visibility: collapse;
-    width: 0 !important;
+    &.collapsed {
+        visibility: collapse;
+        width: 0 !important;
+    }
 }
 
 #top-settings-holder.collapsed #ai-config-button,
@@ -191,26 +199,26 @@ details summary::-webkit-details-marker {
     padding: 0.36rem;
     font-size: 1.5rem;
     text-align: left;
-}
 
-.drawer-icon::before {
-    width: 36px;
-    display: inline-block;
-}
+    &::before {
+        width: 36px;
+        display: inline-block;
+    }
 
-.drawer-icon::after {
-    vertical-align: middle;
-    font-size: 18px;
-    font-weight: 700;
-    font-family: var(--mainFontFamily);
+    &::after {
+        vertical-align: middle;
+        font-size: 18px;
+        font-weight: 700;
+        font-family: var(--mainFontFamily);
+    }
 }
 
 .drawer-toggle {
     border-radius: var(--borderRadiusSmol);
-}
 
-.drawer-toggle:hover {
-    background-color: var(--white30a);
+    &:hover {
+        background-color: var(--white30a);
+    }
 }
 
 #sys-settings-button,
@@ -224,43 +232,39 @@ details summary::-webkit-details-marker {
 
 #ai-config-button {
     order: 3;
-}
 
-#ai-config-button:not(:has(.openIcon))
-    ~ #sys-settings-button:not(:has(.openIcon)),
-#ai-config-button:not(:has(.openIcon))
-    ~ #advanced-formatting-button:not(:has(.openIcon)),
-#ai-config-button:not(:has(.openIcon)) ~ #WI-SP-button:not(:has(.openIcon)),
-#ai-config-button:not(:has(.openIcon))
-    ~ #extensions-settings-button:not(:has(.openIcon)),
-#ai-config-button:not(:has(.openIcon)) ~ #logo_block:not(:has(.openIcon)),
-#ai-config-button:not(:has(.openIcon))
-    ~ #user-settings-button:not(:has(.openIcon)) {
-    display: none;
-}
+    & .drawer-icon::before {
+        content: "";
+    }
 
-#ai-config-button .drawer-toggle {
-    align-items: center;
-    display: flex;
-}
+    & .drawer-icon::after {
+        content: " Settings";
+    }
 
-#ai-config-button .drawer-toggle:not(:hover) ~ .inline-drawer-icon {
-    opacity: 0.3;
-}
+    & .drawer-toggle {
+        align-items: center;
+        display: flex;
 
-#ai-config-button .drawer-icon::before {
-    content: "";
-}
+        &:not(:hover) ~ .inline-drawer-icon {
+            opacity: 0.3;
+        }
+    }
 
-#ai-config-button .drawer-icon::after {
-    content: " Settings";
-}
+    & > .inline-drawer-icon {
+        font-size: calc(var(--mainFontSize) * 1.25);
+        pointer-events: none;
+        position: absolute;
+        right: 9%;
+    }
 
-#ai-config-button > .inline-drawer-icon {
-    font-size: calc(var(--mainFontSize) * 1.25);
-    pointer-events: none;
-    position: absolute;
-    right: 9%;
+    &:not(:has(.openIcon)) ~ #sys-settings-button:not(:has(.openIcon)),
+    &:not(:has(.openIcon)) ~ #advanced-formatting-button:not(:has(.openIcon)),
+    &:not(:has(.openIcon)) ~ #WI-SP-button:not(:has(.openIcon)),
+    &:not(:has(.openIcon)) ~ #extensions-settings-button:not(:has(.openIcon)),
+    &:not(:has(.openIcon)) ~ #logo_block:not(:has(.openIcon)),
+    &:not(:has(.openIcon)) ~ #user-settings-button:not(:has(.openIcon)) {
+        display: none;
+    }
 }
 
 #ai-config-button:has(
@@ -297,116 +301,115 @@ details summary::-webkit-details-marker {
 
 #sys-settings-button {
     order: 4;
-}
 
-#sys-settings-button .drawer-icon::after {
-    content: " API";
-}
+    & .drawer-icon::after {
+        content: " API";
+    }
 
-#sys-settings-button:has(.openIcon) ~ #advanced-formatting-button,
-#sys-settings-button:has(.openIcon) ~ #WI-SP-button,
-#sys-settings-button:has(.openIcon) ~ #extensions-settings-button,
-#sys-settings-button:has(.openIcon) ~ #logo_block,
-#sys-settings-button:has(.openIcon) ~ #user-settings-button,
-#sys-settings-button:has(+ #advanced-formatting-button .openIcon),
-#sys-settings-button:has(~ #WI-SP-button .openIcon),
-#sys-settings-button:has(~ #extensions-settings-button .openIcon),
-#sys-settings-button:has(~ #logo_block .openIcon),
-#sys-settings-button:has(~ #user-settings-button .openIcon) {
-    display: flex !important;
+    &:has(.openIcon) ~ #advanced-formatting-button,
+    &:has(.openIcon) ~ #WI-SP-button,
+    &:has(.openIcon) ~ #extensions-settings-button,
+    &:has(.openIcon) ~ #logo_block,
+    &:has(.openIcon) ~ #user-settings-button,
+    &:has(+ #advanced-formatting-button .openIcon),
+    &:has(~ #WI-SP-button .openIcon),
+    &:has(~ #extensions-settings-button .openIcon),
+    &:has(~ #logo_block .openIcon),
+    &:has(~ #user-settings-button .openIcon) {
+        display: flex !important;
+    }
 }
 
 #advanced-formatting-button {
     order: 5;
-}
 
-#advanced-formatting-button .drawer-icon::after {
-    content: " Formatting";
-}
+    & .drawer-icon::after {
+        content: " Formatting";
+    }
 
-#advanced-formatting-button:has(.openIcon) ~ #WI-SP-button,
-#advanced-formatting-button:has(.openIcon) ~ #extensions-settings-button,
-#advanced-formatting-button:has(.openIcon) ~ #logo_block,
-#advanced-formatting-button:has(.openIcon) ~ #user-settings-button,
-#advanced-formatting-button:has(~ #WI-SP-button .openIcon),
-#advanced-formatting-button:has(~ #extensions-settings-button .openIcon),
-#advanced-formatting-button:has(~ #logo_block .openIcon),
-#advanced-formatting-button:has(~ #user-settings-button .openIcon) {
-    display: flex !important;
-}
+    & .drawer-content > .flex-container {
+        flex-direction: column;
+    }
 
-#advanced-formatting-button .drawer-content > .flex-container {
-    flex-direction: column;
+    &:has(.openIcon) ~ #WI-SP-button,
+    &:has(.openIcon) ~ #extensions-settings-button,
+    &:has(.openIcon) ~ #logo_block,
+    &:has(.openIcon) ~ #user-settings-button,
+    &:has(~ #WI-SP-button .openIcon),
+    &:has(~ #extensions-settings-button .openIcon),
+    &:has(~ #logo_block .openIcon),
+    &:has(~ #user-settings-button .openIcon) {
+        display: flex !important;
+    }
 }
 
 #WI-SP-button {
     order: 6;
-}
 
-#WI-SP-button .drawer-icon::after {
-    content: " Lorebooks";
-}
+    & .drawer-icon::after {
+        content: " Lorebooks";
+    }
 
-#WI-SP-button:has(.openIcon) ~ #extensions-settings-button,
-#WI-SP-button:has(.openIcon) ~ #logo_block,
-#WI-SP-button:has(.openIcon) ~ #user-settings-button,
-#WI-SP-button:has(~ #extensions-settings-button .openIcon),
-#WI-SP-button:has(~ #logo_block .openIcon),
-#WI-SP-button:has(~ #user-settings-button .openIcon) {
-    display: flex !important;
+    &:has(.openIcon) ~ #extensions-settings-button,
+    &:has(.openIcon) ~ #logo_block,
+    &:has(.openIcon) ~ #user-settings-button,
+    &:has(~ #extensions-settings-button .openIcon),
+    &:has(~ #logo_block .openIcon),
+    &:has(~ #user-settings-button .openIcon) {
+        display: flex !important;
+    }
 }
 
 #user-settings-button {
     order: 7;
-}
 
-#user-settings-button .drawer-icon::after {
-    content: " Interface";
-}
+    & .drawer-icon::after {
+        content: " Interface";
+    }
 
-#user-settings-button:has(.openIcon) ~ #extensions-settings-button,
-#user-settings-button:has(.openIcon) ~ #logo_block,
-#user-settings-button:has(~ #extensions-settings-button .openIcon),
-#user-settings-button:has(~ #logo_block .openIcon) {
-    display: flex !important;
-}
+    & .flex-container.flexFlowRow.alignitemscenter.spaceBetween {
+        flex-wrap: wrap;
+    }
 
-#user-settings-button
-    .flex-container.flexFlowRow.alignitemscenter.spaceBetween {
-    flex-wrap: wrap;
-}
+    & #user-settings-block-content {
+        flex-direction: column;
+    }
 
-#user-settings-button #user-settings-block-content {
-    flex-direction: column;
+    &:has(.openIcon) ~ #extensions-settings-button,
+    &:has(.openIcon) ~ #logo_block,
+    &:has(~ #extensions-settings-button .openIcon),
+    &:has(~ #logo_block .openIcon) {
+        display: flex !important;
+    }
 }
 
 #logo_block {
     order: 8;
-}
 
-#logo_block .drawer-icon::before {
-    content: "";
-}
+    & .drawer-icon::before {
+        content: "";
+    }
 
-#logo_block .drawer-icon::after {
-    content: " Backgrounds";
-}
+    & .drawer-icon::after {
+        content: " Backgrounds";
+    }
 
-#logo_block:has(.openIcon) ~ #extensions-settings-button,
-#logo_block:has(~ #extensions-settings-button .openIcon) {
-    display: flex !important;
+    &:has(.openIcon) ~ #extensions-settings-button,
+    &:has(~ #extensions-settings-button .openIcon) {
+        display: flex !important;
+    }
 }
 
 #extensions-settings-button {
     order: 9;
-}
 
-#extensions-settings-button .drawer-icon::before {
-    content: "";
-}
+    & .drawer-icon::before {
+        content: "";
+    }
 
-#extensions-settings-button .drawer-icon::after {
-    content: " Extensions";
+    & .drawer-icon::after {
+        content: " Extensions";
+    }
 }
 
 #persona-management-button {
@@ -417,93 +420,86 @@ details summary::-webkit-details-marker {
     margin-left: -0.675rem;
     position: fixed;
     bottom: -3px;
-}
 
-#persona-management-button .drawer-icon {
-    align-items: center;
-    gap: 8px;
-    display: flex;
-}
+    & .drawer-icon {
+        align-items: center;
+        gap: 8px;
+        display: flex;
+    }
 
-#persona-management-button .drawer-icon.closedIcon {
-    opacity: 0.72 !important;
-}
+    & .drawer-icon.closedIcon {
+        opacity: 0.72 !important;
+    }
 
-#persona-management-button .drawer-icon.closedIcon:hover {
-    opacity: 1 !important;
-}
+    & .drawer-icon.closedIcon:hover {
+        opacity: 1 !important;
+    }
 
-#persona-management-button .drawer-icon span {
-    font-size: 18px;
-    font-weight: 720;
-    font-family: var(--mainFontFamily);
-}
+    & .drawer-icon span {
+        font-size: 18px;
+        font-weight: 720;
+        font-family: var(--mainFontFamily);
+    }
 
-#persona-management-button .persona_avatar {
-    object-fit: cover;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
+    & .persona_avatar {
+        object-fit: cover;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+    }
+
+    &:hover .persona_avatar {
+        transform: scale(1.05);
+        transition: var(--transition);
+    }
 }
 
 #rightNavHolder {
     order: 1;
-}
 
-#rightNavHolder .drawer-icon::after {
-    content: "Characters";
-    margin-left: -3px;
-}
-
-#rightNavHolder
-    #right-nav-panel
-    #CharListButtonAndHotSwaps
-    .flexFlowColumn.flex-container {
-    flex-flow: row-reverse;
-    flex: 1;
-    justify-content: space-between;
-}
-
-#rightNavHolder #right-nav-panel #rm_button_characters {
-    width: max-content;
-}
-
-#rightNavHolder #right-nav-panel #rm_button_characters::after {
-    content: " All Characters";
-    font-family: var(--mainFontFamily);
-    font-weight: 700;
-}
-
-#right-nav-panel:has(#rm_ch_create_block[style*="display: block"]) {
-    #rm_button_characters::before {
-        content: "";
+    & .drawer-icon::after {
+        content: "Characters";
+        margin-left: -3px;
     }
-    #rm_button_characters::after {
-        content: " Back";
+
+    &:has(#rm_ch_create_block[style*="display: block"]) {
+        #rm_button_characters::before {
+            content: "";
+        }
+        #rm_button_characters::after {
+            content: " Back";
+            font-family: var(--mainFontFamily);
+            font-weight: 700;
+        }
+    }
+
+    &:has(#rm_ch_create_block[style*="display: none"])
+        #rm_button_selected_ch
+        h2:not(:empty)::after {
+        content: " ";
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+    }
+}
+
+#rm_button_characters {
+    width: max-content;
+
+    &::after {
+        content: " All Characters";
         font-family: var(--mainFontFamily);
         font-weight: 700;
     }
 }
 
-#right-nav-panel:has(#rm_ch_create_block[style*="display: none"])
-    #rm_button_selected_ch
-    h2:not(:empty)::after {
-    content: " ";
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-}
-
 #rm_print_characters_block {
     flex-flow: row wrap;
+
     .bogus_folder_select,
-    .character_select {
+    .character_select,
+    .group_select {
         width: 50%;
     }
-}
-
-#form_create:has(#firstMessageWrapper[style*="display: none"])
-    #exampleMesWrapper {
-    display: none;
 }
 
 #firstmessage_textarea {
@@ -511,12 +507,24 @@ details summary::-webkit-details-marker {
     height: 20svh !important;
 }
 
-#form_create textarea {
-    resize: none;
+#form_create {
+    &:has(#firstMessageWrapper[style*="display: none"]) #exampleMesWrapper {
+        display: none;
+    }
+
+    & textarea {
+        resize: none;
+    }
 }
 
 #CharListButtonAndHotSwaps {
     flex-wrap: wrap;
+
+    .flexFlowColumn.flex-container {
+        flex-flow: row-reverse;
+        flex: 1;
+        justify-content: space-between;
+    }
 }
 
 .hotswap.avatars_inline.flex-container.expander {
@@ -537,48 +545,48 @@ details summary::-webkit-details-marker {
     top: 45%;
     left: 103%;
     visibility: visible !important;
-}
 
-#top-settings-holder:has(.drawer-icon.openIcon) #sidebarToggle {
-    display: none;
-}
+    & .arrow1,
+    & .arrow2 {
+        transition: var(--transition);
+        background-color: #fff;
+        width: 0.25rem;
+        height: 1.25rem;
+    }
 
-#top-settings-holder.collapsed #sidebarToggle {
-    left: 0.5rem;
-}
+    & .arrow1 {
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+    }
 
-#top-settings-holder.collapsed #sidebarToggle .arrow1 {
-    transform: rotate(-35deg) translateY(0.25rem);
-}
+    & .arrow2 {
+        border-bottom-right-radius: 0.25rem;
+        border-bottom-left-radius: 0.25rem;
+    }
 
-#top-settings-holder.collapsed #sidebarToggle .arrow2 {
-    transform: rotate(35deg) translateY(-0.25rem);
-}
+    &:hover .arrow1 {
+        transform: rotate(35deg) translateY(0.25rem);
+    }
 
-#sidebarToggle .arrow1,
-#sidebarToggle .arrow2 {
-    transition: var(--transition);
-    background-color: #fff;
-    width: 0.25rem;
-    height: 1.25rem;
-}
+    &:hover .arrow2 {
+        transform: rotate(-35deg) translateY(-0.25rem);
+    }
 
-#sidebarToggle .arrow1 {
-    border-top-left-radius: 0.25rem;
-    border-top-right-radius: 0.25rem;
-}
+    #top-settings-holder:has(.drawer-icon.openIcon) & {
+        display: none;
+    }
 
-#sidebarToggle .arrow2 {
-    border-bottom-right-radius: 0.25rem;
-    border-bottom-left-radius: 0.25rem;
-}
+    #top-settings-holder.collapsed & {
+        left: 0.5rem;
 
-#sidebarToggle:hover .arrow1 {
-    transform: rotate(35deg) translateY(0.25rem);
-}
+        .arrow1 {
+            transform: rotate(-35deg) translateY(0.25rem);
+        }
 
-#sidebarToggle:hover .arrow2 {
-    transform: rotate(-35deg) translateY(-0.25rem);
+        .arrow2 {
+            transform: rotate(35deg) translateY(-0.25rem);
+        }
+    }
 }
 
 .drawer-content,
@@ -614,43 +622,31 @@ details summary::-webkit-details-marker {
     backdrop-filter: blur(var(--SmartThemeBlurStrength));
     height: 100dvh;
     max-height: 100dvh;
-}
 
-#top-settings-holder:has(.drawer-content.openDrawer):not(
-        :has(#rightNavHolder .drawer-content.openDrawer)
-    ):not(:has(#explore-button .drawer-content.openDrawer))
-    ~ #sheld,
-#top-settings-holder:has(.drawer-content.pinnedOpen) ~ #sheld {
-    left: initial;
-    width: calc(100% - var(--barSize) - var(--panelSize));
-}
+    &.collapsed {
+        transition: var(--transition);
+        left: 0;
+    }
 
-:is(
-        #top-settings-holder:has(.drawer-content.openDrawer):not(
-                :has(#explore-button .drawer-content.openDrawer)
-            )
-            ~ #sheld,
-        #top-settings-holder:has(.drawer-content.pinnedOpen) ~ #sheld,
-        body:has(#character_popup[style*="display: flex"]) > #sheld
-    )
-    #splash {
-    top: 9px;
-    left: 63px;
-}
+    &.shifted {
+        left: 33%;
+    }
 
-#sheld.collapsed {
-    transition: var(--transition);
-    left: 0;
-}
-
-#sheld.shifted {
-    left: 33%;
+    #top-settings-holder:has(.drawer-content.pinnedOpen) ~ &,
+    #top-settings-holder:has(.drawer-content.openDrawer):not(
+            :has(#rightNavHolder .drawer-content.openDrawer)
+        ):not(:has(#explore-button .drawer-content.openDrawer))
+        ~ & {
+        left: initial;
+        width: calc(100% - var(--barSize) - var(--panelSize));
+    }
 }
 
 #chat {
     backdrop-filter: none;
     background-color: #0000;
     max-height: 100dvh;
+
     &:not(:hover)::-webkit-scrollbar {
         opacity: 0;
     }
@@ -671,17 +667,18 @@ details summary::-webkit-details-marker {
 }
 
 #send_form {
-    &:has(#send_textarea:focus-visible) {
-        outline: none;
-    }
     border: none;
     border-radius: 10px;
     background-color: transparent;
     backdrop-filter: none;
-}
 
-#send_form.no-connection {
-    background-color: transparent !important;
+    &.no-connection {
+        background-color: transparent !important;
+    }
+
+    &:has(#send_textarea:focus-visible) {
+        outline: none;
+    }
 }
 
 #extensionsMenuButton.fa-magic-wand-sparkles::before {
@@ -700,10 +697,10 @@ details summary::-webkit-details-marker {
     border-color: #0000;
     padding: 6px 1rem;
     padding-right: 3rem;
-}
 
-#send_textarea::placeholder {
-    text-align: left;
+    &::placeholder {
+        text-align: left;
+    }
 }
 
 #rightSendForm {
@@ -841,6 +838,7 @@ details summary::-webkit-details-marker {
     margin: 0.5rem 0;
     background-color: transparent;
     padding-left: 0;
+
     &:not(:hover) {
         color: var(--SmartThemeEmColor);
     }
@@ -938,6 +936,19 @@ body:not(.bubblechat) .mes[is_user="true"] .name_text::after {
     animation: 0.25s infinite alternate splash;
     position: relative;
     text-shadow: 2px 2px #3f3f00 !important;
+
+    :is(
+            #top-settings-holder:has(.drawer-content.openDrawer):not(
+                    :has(#explore-button .drawer-content.openDrawer)
+                )
+                ~ #sheld,
+            #top-settings-holder:has(.drawer-content.pinnedOpen) ~ #sheld,
+            body:has(#character_popup[style*="display: flex"]) > #sheld
+        )
+        & {
+        top: 9px;
+        left: 63px;
+    }
 }
 
 .cropper-crop-box .cropper-face.cropper-move {
@@ -964,27 +975,26 @@ body:not(.bubblechat) .mes[is_user="true"] .name_text::after {
 }
 
 body #toast-container {
-    top: 0;
-    left: calc(var(--barSize) / 2);
+    top: 0 !important;
 }
 
 #scrollToBottom {
     display: flex;
     gap: 0.5rem;
     position: fixed;
+    background-color: var(--black30a);
     color: var(--SmartThemeBodyColor);
-    bottom: 4.5rem;
+    bottom: 4.75rem;
     align-self: center;
     align-items: center;
     z-index: 100;
     padding: 0.66rem;
-    backdrop-filter: contrast(0.1);
+    backdrop-filter: blur(9px);
     border-radius: var(--borderRadius);
     cursor: pointer;
 
     & i {
         position: relative;
-        top: 1px;
     }
 }
 

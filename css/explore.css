@@ -1,17 +1,17 @@
 /* chub.ai character seach CSS. taken from the chubsearch extension */
 #explore-button {
     order: 2;
+
+    & .drawer-icon::after {
+        content: " Character Hub";
+    }
+
+    & .drawer-content {
+        width: calc(100dvw - var(--barSize));
+    }
 }
 
-#explore-button .drawer-icon::after {
-    content: " Character Hub";
-}
-
-#explore-button .drawer-content {
-    width: calc(100dvw - var(--barSize));
-}
-
-.list-and-search-wrapper {
+#explore-button .list-and-search-wrapper {
     flex-direction: column;
     height: 100%;
     display: flex;
