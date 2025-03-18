@@ -95,8 +95,11 @@ function scrollToBottom() {
 
     let checking = false;
     const checkScrollPosition = () => {
-        const atBottom =
-            $chat.scrollHeight - $chat.scrollTop - $chat.clientHeight < 50;
+        const hasScrollbar = $chat.scrollHeight > $chat.clientHeight;
+        const atBottom = hasScrollbar
+            ? $chat.scrollHeight - $chat.scrollTop - $chat.clientHeight < 50
+            : true;
+
         scrollButton.style.visibility = atBottom ? 'hidden' : 'visible';
         checking = false;
     };
