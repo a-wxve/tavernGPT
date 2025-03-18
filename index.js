@@ -244,7 +244,7 @@ function loadSplashText() {
 }
 
 function setMobileUI() {
-    function addChatHeader() {
+    const addChatHeader = () => {
         const $chat_header = $sheld.querySelector('#chat_header');
         const $last_mes = $sheld.querySelector('.last_mes');
 
@@ -261,7 +261,7 @@ function setMobileUI() {
         $chat_header
             .querySelector('.ch_name')
             .append(mesID, mesTimer, tokenCount);
-    }
+    };
 
     const $sheld = document.querySelector('#sheld');
     $sheld.insertAdjacentHTML(
@@ -376,27 +376,33 @@ function randomizeBackground() {
     const idx = Math.floor(Math.random() * backgroundList.length) || 0;
     const backgroundURL = `backgrounds/${backgroundList[idx]}`;
     fetch(backgroundURL)
+        .then((response) => {
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            return response;
+        })
         .then(() => {
             document.querySelector('#bg1').style.backgroundImage =
                 `url(${backgroundURL})`;
         })
-        .catch(() => {
-            console.log(`Background ${backgroundURL} could not be set`);
+        .catch((error) => {
+            console.log(`Background ${backgroundURL} could not be set:`, error);
         });
 }
 
-function checkWaifuVisibility() {
-    const $waifuImage = document.querySelector('#expression-image');
-    const $sheld = document.querySelector('#sheld');
+function setWaifuShift() {
+    const checkWaifuVisibility = () => {
+        const $waifuImage = document.querySelector('#expression-image');
+        const $sheld = document.querySelector('#sheld');
 
-    if (
-        $waifuImage.getAttribute('src') !== '' &&
-        !document.querySelector('body').classList.contains('waifuMode')
-    ) {
-        $sheld.classList.add('shifted');
-    } else if ($sheld.classList.contains('shifted')) {
-        $sheld.classList.remove('shifted');
-    }
+        if (
+            $waifuImage.getAttribute('src') !== '' &&
+            !document.querySelector('body').classList.contains('waifuMode')
+        ) {
+            $sheld.classList.add('shifted');
+        } else if ($sheld.classList.contains('shifted')) {
+            $sheld.classList.remove('shifted');
+        }
+    };
 
     eventSource.on(event_types.GENERATION_STARTED, checkWaifuVisibility);
     eventSource.on(event_types.CHAT_CHANGED, checkWaifuVisibility);
@@ -450,7 +456,7 @@ function main() {
 
     // stage 3: layout shift
     randomizeBackground();
-    checkWaifuVisibility();
+    setWaifuShift();
 
     // stage 4: interactive elements
     getPersona();
