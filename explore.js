@@ -12,10 +12,35 @@ import { extensionFolderPath, tavernGPT_settings } from './index.js';
 let characters = [];
 let totalCharactersLoaded = 0;
 let isLoading = false;
+const downloadQueue = [];
+let isProcessingQueue = false;
 
 async function downloadCharacter(input) {
-    const url = `https://www.chub.ai/characters/${input.trim()}`;
-    toastr.info(`Downloading ${input}...`);
+    const character = characters.find(char => char.fullPath === input.trim());
+    const tagline = character?.tagline || '';
+
+    downloadQueue.push({
+        path: input.trim(),
+        tagline,
+    });
+
+    if (!isProcessingQueue) {
+        processDownloadQueue();
+    }
+}
+
+async function processDownloadQueue() {
+    if (downloadQueue.length === 0) {
+        isProcessingQueue = false;
+        return;
+    }
+
+    isProcessingQueue = true;
+    const { path, tagline } = downloadQueue.shift();
+    const timestamp = Date.now();
+
+    const url = `https://www.chub.ai/characters/${path}`;
+    toastr.info(`Downloading ${path}...`);
 
     const request = await fetch('/api/content/importURL', {
         method: 'POST',
@@ -34,6 +59,7 @@ async function downloadCharacter(input) {
             request.status,
             request.statusText,
         );
+        processDownloadQueue();
         return;
     }
 
@@ -47,13 +73,77 @@ async function downloadCharacter(input) {
 
     switch (customContentType) {
         case 'character':
-            processDroppedFiles([file]);
+            await processDroppedFiles([file])
+                .then(async () => {
+                    if (tagline) {
+                        await updateMostRecentCharacter(timestamp, tagline);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error processing dropped files:', error);
+                    toastr.error(error, 'Error processing dropped files');
+                })
+                .finally(() => {
+                    processDownloadQueue();
+                });
             break;
         default:
-            toastr.warning('Unknown content type');
             console.error('Unknown content type', customContentType);
+            toastr.error('Unknown content type');
+            processDownloadQueue();
             break;
     }
+}
+
+/**
+ * Updates the creator notes of the most recently added character (after the given timestamp)
+ * @param {number} timestamp - The timestamp to compare against
+ * @param {string} tagline - The tagline to add to creator notes
+ * @returns {Promise<void>}
+ */
+async function updateMostRecentCharacter(timestamp, tagline) {
+    const response = await fetch('/api/characters/all', {
+        method: 'POST',
+        headers: getRequestHeaders(),
+    });
+
+    if (!response.ok) {
+        console.error(`Failed to get character list: ${response.status}`);
+        toastr.error('Failed to find imported character');
+        return;
+    }
+
+    const allCharacters = await response.json();
+
+    const recentCharacters = allCharacters.filter(char => char.date_added > timestamp);
+
+    if (recentCharacters.length === 0) {
+        console.error('No recently added characters found');
+        toastr.error('Could not identify the imported character');
+        return;
+    }
+
+    recentCharacters.sort((a, b) => b.date_added - a.date_added);
+    const targetCharacter = recentCharacters[0];
+
+    const updateResponse = await fetch('/api/characters/edit-attribute', {
+        method: 'POST',
+        headers: getRequestHeaders(),
+        body: JSON.stringify({
+            avatar_url: targetCharacter.avatar,
+            ch_name: targetCharacter.name,
+            field: 'creator_notes',
+            value: tagline,
+        }),
+    });
+
+    if (!updateResponse.ok) {
+        console.error(`Failed to update character notes: ${updateResponse.status}`);
+        toastr.error('Failed to add tagline to character\'s creator notes');
+        return;
+    }
+
+    toastr.success(`Added tagline to ${targetCharacter.name}'s creator notes`);
 }
 
 function generateCharacterListItem(character, index) {
