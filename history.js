@@ -160,18 +160,21 @@ async function displayChats(searchQuery) {
 }
 
 async function overrideChatButtons(event) {
+    const chatBlock = event.target.closest('.select_chat_block');
+
+    if (!chatBlock) return;
+
     const stopEvent = (event) => {
         event.stopPropagation();
         event.preventDefault();
     };
-    const chatBlock = event.target.closest('.select_chat_block');
 
-    if (
-        chatBlock &&
-        !event.target.matches(
-            '.renameChatButton, .exportRawChatButton, .exportChatButton, .PastChat_cross',
-        )
-    ) {
+    const target = event.target;
+    const shouldHighlight = target.matches('.renameChatButton, .exportRawChatButton, .exportChatButton, .PastChat_cross');
+    const shouldRename = target.matches('.renameChatButton');
+    const shouldDelete = target.matches('.PastChat_cross');
+
+    if (!shouldHighlight) {
         stopEvent(event);
 
         const filename = chatBlock
@@ -181,12 +184,7 @@ async function overrideChatButtons(event) {
         selected_group
             ? await openGroupChat(selected_group, filename)
             : await openCharacterChat(filename);
-
-        chatBlock.parentNode.parentNode
-            .querySelector('.select_chat_block[highlight="true"]')
-            .removeAttribute('highlight');
-        chatBlock.setAttribute('highlight', true);
-    } else if (chatBlock && event.target.matches('.renameChatButton')) {
+    } else if (shouldRename) {
         stopEvent(event);
         const oldFilename = chatBlock.getAttribute('file_name');
         const newFilename = await callGenericPopup(
@@ -202,7 +200,7 @@ async function overrideChatButtons(event) {
             toastr.error(`Failed to rename chat: ${result.error}`);
             return;
         }
-    } else if (chatBlock && event.target.matches('.PastChat_cross')) {
+    } else if (shouldDelete) {
         stopEvent(event);
 
         const chatToDelete = chatBlock.getAttribute('file_name');
