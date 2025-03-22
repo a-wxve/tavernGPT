@@ -385,7 +385,10 @@ function randomizeBackground() {
                 `url(${backgroundURL})`;
         })
         .catch((error) => {
-            console.log(`Background ${backgroundURL} could not be set:`, error);
+            console.error(`Background ${backgroundURL} could not be set:`, error);
+            console.warn(`Removing ${backgroundList[idx]} from background list...`);
+            backgroundList.splice(idx, 1);
+            saveSettingsDebounced();
         });
 }
 
