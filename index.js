@@ -1,4 +1,5 @@
 import {
+    chat,
     eventSource,
     event_types,
     getUserAvatar,
@@ -7,6 +8,7 @@ import {
     user_avatar,
 } from '../../../../script.js';
 import { extension_settings } from '../../../extensions.js';
+import { power_user } from '../../../power-user.js';
 import { loadExplorePanel } from './explore.js';
 import { loadChatHistory } from './history.js';
 import { splashes } from './splashes.js';
@@ -222,6 +224,7 @@ function loadSplashText() {
         const welcomeElement = document.querySelector(
             '#version_display_welcome',
         );
+
         if (welcomeElement) {
             observer.disconnect();
 
@@ -276,6 +279,8 @@ function setMobileUI() {
 }
 
 function moveSwipeButtons() {
+    let mesText;
+
     const $chat = document.querySelector('#chat');
 
     const $mesTemplate = document.querySelector('#message_template');
@@ -301,11 +306,23 @@ function moveSwipeButtons() {
     $chat.addEventListener('click', (event) => {
         const target = event.target;
 
-        //TODO: automatically swipe on message edit
-        if (target.matches('.mes_swipe_left')) {
-            handleSwipe(event, 'left');
-        } else if (target.matches('.mes_swipe_right')) {
-            handleSwipe(event, 'right');
+        switch (true) {
+            case target.matches('.mes_swipe_left'):
+                handleSwipe(event, 'left');
+                break;
+            case target.matches('.mes_swipe_right'):
+                handleSwipe(event, 'right');
+                break;
+            case target.matches(`.mes[mesid="${lastUserMes}"] .mes_edit`): {
+                const lastUserMes =
+                    parseInt($chat.querySelector('.last_mes').getAttribute('mesid')) -
+                    1;
+                mesText = chat[lastUserMes]['mes'];
+
+                if (power_user.trim_spaces) {
+                    mesText = mesText.trim();
+                }
+            }
         }
     });
 
@@ -323,12 +340,28 @@ function moveSwipeButtons() {
                 case 'ArrowRight':
                     handleSwipe(event, 'right');
                     break;
-                case 'ArrowUp':
+                case 'ArrowUp': {
+                    const lastUserMes =
+                        parseInt($chat.querySelector('.last_mes').getAttribute('mesid')) -
+                        1;
                     $chat
                         .querySelector(`.mes[mesid="${lastUserMes}"] .mes_edit`)
                         .click();
                     break;
+                }
             }
+        }
+    });
+
+
+    eventSource.on(event_types.MESSAGE_UPDATED, (mes_id) => {
+        const idMatch = parseInt($chat.querySelector('.last_mes').getAttribute('mesid')) == parseInt(mes_id) + 1;
+        const mesTextChanged = chat[mes_id]['mes'] !== mesText;
+
+        if (idMatch && mesTextChanged) {
+            eventSource.once(event_types.GENERATE_AFTER_DATA, () => {
+                $chat.querySelector('.last_mes .swipe_right').click();
+            });
         }
     });
 }
