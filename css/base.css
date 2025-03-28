@@ -353,11 +353,6 @@ body.swipeAllMessages {
         }
     }
 
-    .swipes .mes_swipe_left:hover,
-    .swipes .mes_swipe_right:hover {
-        opacity: 1;
-    }
-
     &:not(.last_mes),
     &[is_user="true"] {
         .swipes-counter,
@@ -396,11 +391,11 @@ body.swipeAllMessages {
     }
 
     .swipes-counter {
-        opacity: 0;
+        opacity: 0.8 !important;
         transition: var(--transition);
+        font-size: 1rem;
         font-weight: 500;
         padding: 0;
-        margin: 0;
         min-width: auto;
     }
 
@@ -410,6 +405,10 @@ body.swipeAllMessages {
         transition: var(--transition);
         filter: drop-shadow(0 0 0.125rem #000);
         opacity: 0;
+
+        &:hover {
+            opacity: 1;
+        }
     }
 }
 

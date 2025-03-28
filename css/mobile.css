@@ -1,5 +1,7 @@
 body.hideChatAvatars .mes .ch_name.flex-container.justifySpaceBetween,
-#rm_button_panel_pin_div {
+#rm_button_panel_pin_div,
+#advanced-formatting-button,
+#WI-SP-button {
     display: none !important;
 }
 
