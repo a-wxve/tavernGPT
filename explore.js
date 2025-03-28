@@ -1,11 +1,16 @@
 import { DOMPurify, slideToggle } from '../../../../lib.js';
 import {
-    animation_duration,
+    event_types,
+    eventSource,
+    getOneCharacter,
     getRequestHeaders,
+    getSlideToggleOptions,
+    printCharactersDebounced,
     processDroppedFiles,
+    this_chid,
 } from '../../../../script.js';
 import { debounce_timeout } from '../../../constants.js';
-import { POPUP_TYPE, callGenericPopup } from '../../../popup.js';
+import { callGenericPopup, POPUP_TYPE } from '../../../popup.js';
 import { debounce } from '../../../utils.js';
 import { extensionFolderPath, tavernGPT_settings } from './index.js';
 
@@ -14,6 +19,38 @@ let totalCharactersLoaded = 0;
 let isLoading = false;
 const downloadQueue = [];
 let isProcessingQueue = false;
+const searchElements = lazyLoadSearchOptions({
+    searchWrapper: '#list-and-search-wrapper',
+    characterList: '#list-and-search-wrapper .character-list',
+    searchButton: '#characterSearchButton',
+    resetButton: '#resetSearchButton',
+    searchTerm: '#characterSearchInput',
+    creator: '#creatorSearch',
+    namespace: '#namespace',
+    includedTags: '#includedTags',
+    excludedTags: '#excludedTags',
+    nsfw: '#nsfwCheckbox',
+    itemsPerPage: '#itemsPerPage',
+    sort: '#sortOrder',
+    sortAscending: '#sortDirection',
+    page: '#pageNumber',
+});
+
+function lazyLoadSearchOptions(selectorMap) {
+    const cache = {};
+    return new Proxy(cache, {
+        get(target, name) {
+            if (!(name in target)) {
+                if (selectorMap[name]) {
+                    target[name] = document.querySelector(selectorMap[name]);
+                } else {
+                    throw new Error(`Selector for '${String(name)}' is not defined!`);
+                }
+            }
+            return target[name];
+        },
+    });
+}
 
 async function downloadCharacter(input) {
     const character = characters.find(char => char.fullPath === input.trim());
@@ -73,7 +110,7 @@ async function processDownloadQueue() {
 
     switch (customContentType) {
         case 'character':
-            await processDroppedFiles([file])
+            processDroppedFiles([file])
                 .then(async () => {
                     if (tagline) {
                         await updateMostRecentCharacter(timestamp, tagline);
@@ -89,7 +126,7 @@ async function processDownloadQueue() {
             break;
         default:
             console.error('Unknown content type', customContentType);
-            toastr.error('Unknown content type');
+            toastr.error('Unknown content type', customContentType);
             processDownloadQueue();
             break;
     }
@@ -108,8 +145,8 @@ async function updateMostRecentCharacter(timestamp, tagline) {
     });
 
     if (!response.ok) {
-        console.error(`Failed to get character list: ${response.status}`);
-        toastr.error('Failed to find imported character');
+        console.error(`Failed to get character list: ${response.status} ${response.statusText}`);
+        toastr.error(`${response.status} ${response.statusText}`, 'Failed to get character list');
         return;
     }
 
@@ -135,19 +172,24 @@ async function updateMostRecentCharacter(timestamp, tagline) {
             field: 'creator_notes',
             value: tagline,
         }),
+        cache: 'no-cache',
     });
 
     if (!updateResponse.ok) {
-        console.error(`Failed to update character notes: ${updateResponse.status}`);
-        toastr.error('Failed to add tagline to character\'s creator notes');
+        console.error('Failed to update character notes:', updateResponse.status, updateResponse.statusText);
+        toastr.error(`${updateResponse.status} ${updateResponse.statusText}`, `Failed to add tagline to ${targetCharacter.name}`);
         return;
     }
 
-    toastr.success(`Added tagline to ${targetCharacter.name}'s creator notes`);
+    await getOneCharacter(targetCharacter.avatar);
+    await eventSource.emit(event_types.CHARACTER_EDITED, {
+        detail: { id: this_chid, character: characters[this_chid] },
+    });
+    printCharactersDebounced();
 }
 
 function generateCharacterListItem(character, index) {
-    const includedTagsValue = document.querySelector('#includeTags').value.toLowerCase();
+    const includedTagsValue = searchElements.includedTags.value.toLowerCase();
     const includedTags = includedTagsValue.split(',').map(tag => tag.trim());
 
     const tagsHTML = character.tags.map(tag => {
@@ -160,14 +202,19 @@ function generateCharacterListItem(character, index) {
         <div class="character-list-item" data-index="${index}">
             <div class="thumbnail">
                 <img src="${character.avatar}">
-                <div data-path="${character.fullPath}" class="menu_button menu_button_icon download-btn wide100p">
+                <div data-path="${character.fullPath}" class="menu_button menu_button_icon download-btn">
                     <i class="fa-solid fa-cloud-arrow-down"></i>
                     <span data-i18n="Download">Download</span>
                 </div>
             </div>
             <div class="info">
-                <div class="name">${character.name}
-                    <span class="creator">by ${character.creator}</span>
+                <div class="name">${character.name}</div>
+                <div class="subtitle">
+                    <div class="creator">${character.creator}</div>
+                    <div class="favorites">
+                        <i class="fa-solid fa-heart" style="color: hotpink"></i>
+                        <span>${character.numfavorites} favorites</span>
+                    </div>
                 </div>
                 <div class="tagline">${character.tagline}</div>
                 <div class="tags">${tagsHTML}</div>
@@ -180,7 +227,7 @@ function generateCharacterListItem(character, index) {
 }
 
 async function generateCharacterPopup(character) {
-    const includedTagsValue = document.querySelector('#includeTags').value.toLowerCase();
+    const includedTagsValue = searchElements.includedTags.value.toLowerCase();
     const includedTags = includedTagsValue.split(',').map(tag => tag.trim());
 
     const tagsHTML = character.tags.map(tag => {
@@ -192,11 +239,11 @@ async function generateCharacterPopup(character) {
     const generateStarHTML = (rating) => {
         let starsHTML = '';
         for (let i = 0; i < Math.floor(rating); i++) {
-            starsHTML += '<i class="fa-solid fa-star"></i>';
+            starsHTML += '<i class="fa-solid fa-star" style="color: gold"></i>';
         }
 
         if (rating % 1 >= 0.5) {
-            starsHTML += '<i class="fa-solid fa-star-half-stroke"></i>';
+            starsHTML += '<i class="fa-solid fa-star-half-stroke" style="color: gold"></i>';
         }
 
         return starsHTML;
@@ -210,24 +257,21 @@ async function generateCharacterPopup(character) {
                     <span data-i18n="Download">Download</span>
                 </div>
                 <div class="chub-text-align">
-                    ${generateStarHTML(character.rating)} ${character.rating}/5
-                </div>
-                <div class="chub-text-align">
-                    <i class="fa-solid ${character.rating > 3 ? 'fa-thumbs-up' : 'fa-thumbs-down'}"></i>
+                    ${generateStarHTML(character.rating)}
                     <span>${character.numRatings} ratings</span>
                 </div>
                 <div class="chub-text-align">
-                    <i class="fa-solid fa-star"></i>
-                    <span>${character.starCount} stars</span>
+                    <i class="fa-solid fa-heart" style="color: hotpink"></i>
+                    <span>${character.numfavorites} favorites</span>
                 </div>
                 <div class="chub-text-align">
-                    <i class="fa-solid fa-heart"></i>
-                    <span>${character.numfavorites} favorites</span>
+                    <i class="fa-solid fa-download"></i>
+                    <span>${character.downloadCount} downloads</span>
                 </div>
             </div>
             <div class="chub-padding">
                 <div>
-                    <h3><a href="https://www.characterhub.org/characters/${character.fullPath}" target="_blank" rel="noopener noreferrer">${character.name}</a></h3>
+                    <h3><a href="https://www.chub.ai/characters/${character.fullPath}" target="_blank" rel="noopener noreferrer">${character.name}</a></h3>
                     <h5>by ${character.creator}</h5>
                 </div>
                 <div class="chub-text-align">
@@ -252,29 +296,69 @@ async function generateCharacterPopup(character) {
     await callGenericPopup(popupHTML, POPUP_TYPE.DISPLAY, '', {
         wider: true,
         allowVerticalScrolling: true,
-    }).then(() => {
-        document
-            .querySelector('.chub-popup')
-            .addEventListener('click', (event) => {
-                const downloadButton =
-                    event.target.closest('.download-btn');
-                if (downloadButton) {
-                    downloadCharacter(
-                        downloadButton.getAttribute('data-path'),
-                    );
-                }
-            });
+    });
+
+    document.querySelector('.chub-popup').addEventListener('click', (event) => {
+        if (!(event.target instanceof HTMLElement)) return;
+        const downloadButton = event.target.closest('.download-btn');
+        if (!downloadButton) return;
+        downloadCharacter(downloadButton.getAttribute('data-path'));
     });
 }
 
-function updateCharacterList(characters, reset = false) {
-    const $characterList = document.querySelector(
-        '#list-and-search-wrapper .character-list',
+/**
+* Fetches a character from the primary API, falling back to the backup if needed
+* @param {Object} node - Character node data from search results
+* @returns {Promise<{success: boolean, data: Blob?, error: string?}>} - Promise resolving to result object
+*/
+async function fetchCharacterData(node) {
+    const endpoint = 'https://api.chub.ai/api/characters/download';
+    const backupEndpoint = `https://avatars.charhub.io/avatars/${node.fullPath}/avatar.webp`;
+
+    const headers = new Headers({
+        'Content-Type': 'application/json',
+    });
+
+    const primaryResponse = await fetch(endpoint, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({
+            fullPath: node.fullPath,
+            format: 'tavern',
+            version: 'main',
+        }),
+    });
+
+    if (primaryResponse.ok) {
+        const blob = await primaryResponse.blob();
+        return { success: true, data: blob, error: null };
+    }
+
+    console.warn('Primary API failed for', node.fullPath, ':', primaryResponse.status, primaryResponse.statusText);
+    toastr.warning(
+        `Using backup source for ${node.name || node.fullPath}`,
+        'API Fallback',
     );
 
+    const backupResponse = await fetch(backupEndpoint, {
+        method: 'GET',
+        headers: headers,
+    });
+
+    if (backupResponse.ok) {
+        const blob = await backupResponse.blob();
+        return { success: true, data: blob, error: null };
+    }
+
+    const errorMessage = `Failed to fetch character "${node.name || node.fullPath}" from both primary and backup sources`;
+    console.error(errorMessage, backupResponse.status, backupResponse.statusText);
+    return { success: false, data: null, error: errorMessage };
+}
+
+function updateCharacterList(characters, reset = false) {
     if (reset) {
-        $characterList.innerHTML = '';
-        $characterList.scrollTop = 0;
+        searchElements.characterList.innerHTML = '';
+        searchElements.characterList.scrollTop = 0;
     }
 
     const fragment = document.createDocumentFragment();
@@ -286,72 +370,25 @@ function updateCharacterList(characters, reset = false) {
         fragment.appendChild(characterElement);
     });
 
-    $characterList.appendChild(fragment);
+    searchElements.characterList.appendChild(fragment);
 
     totalCharactersLoaded += characters.length;
 }
 
 /**
-* Fetches a character from the primary API, falling back to the backup if needed
-* @param {Object} node - Character node data from search results
-* @returns {Promise<{success: boolean, data: Blob|null, error: string|null}>} - Promise resolving to result object
+* Builds the search URL from the search options and fetches characters from the chub search API
+* @param {Object} searchOptions - Search options
+* @param {boolean} resetCharacterList - Whether we should clear the character list
+* @param {boolean} resetLoadStatus - Whether we should reset the loading status
+* @returns {Promise<void>}
 */
-async function fetchCharacterData(node) {
-    const endpoint = 'https://api.chub.ai/api/characters/download';
-    const backupEndpoint = `https://avatars.charhub.io/avatars/${node.fullPath}/avatar.webp`;
-    const requestBody = {
-        fullPath: node.fullPath,
-        format: 'tavern',
-        version: 'main',
-    };
-
-    const primaryResponse = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-    });
-
-    if (primaryResponse.ok) {
-        const blob = await primaryResponse.blob();
-        return { success: true, data: blob, error: null };
-    }
-
-    console.warn(`Primary API failed for ${node.fullPath}: ${primaryResponse.status}`);
-    toastr.warning(
-        `Using backup source for ${node.name || node.fullPath}`,
-        'API Fallback',
-    );
-
-    const backupResponse = await fetch(backupEndpoint, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
-
-    if (backupResponse.ok) {
-        const blob = await backupResponse.blob();
-        return { success: true, data: blob, error: null };
-    }
-
-    const errorMessage = `Failed to fetch character "${node.name || node.fullPath}" from both primary and backup sources`;
-    console.error(errorMessage, backupResponse.status);
-    return { success: false, data: null, error: errorMessage };
-}
-
-async function fetchCharacters(searchOptions, reset, callback) {
-    if (reset) {
+async function fetchCharacters(searchOptions, resetCharacterList, resetLoadStatus = false) {
+    if (resetCharacterList) {
         characters = [];
         totalCharactersLoaded = 0;
     }
 
-    const $characterList = document.querySelector(
-        '#list-and-search-wrapper .character-list',
-    );
-
-    $characterList.classList.add('searching');
+    searchElements.characterList.classList.add('searching');
 
     console.log('Search options:', searchOptions);
     toastr.info('Searching...');
@@ -363,46 +400,38 @@ async function fetchCharacters(searchOptions, reset, callback) {
     if (searchOptions.creator) {
         searchParams.append('username', searchOptions.creator);
     }
+    searchParams.append('first', searchOptions.itemsPerPage);
     searchParams.append('sort', searchOptions.sort || 'download_count');
     searchParams.append('namespace', searchOptions.namespace);
-    searchParams.append('first', searchOptions.findCount);
     searchParams.append('page', searchOptions.page || 1);
-    searchParams.append('asc', 'false');
+    searchParams.append('asc', searchOptions.sortAscending);
     searchParams.append('include_forks', 'true');
     searchParams.append('venus', 'true');
     searchParams.append('chub', 'true');
     searchParams.append('nsfw', searchOptions.nsfw);
     searchParams.append('nsfl', searchOptions.nsfw);
-    searchParams.append('nsfw_only', 'false');
-    searchParams.append('require_images', 'false');
-    searchParams.append('require_example_dialogues', 'false');
-    searchParams.append('require_alternate_greetings', 'false');
-    searchParams.append('require_custom_prompt', 'false');
-    searchParams.append('require_lore', 'false');
-    searchParams.append('require_lore_embedded', 'false');
-    searchParams.append('require_lore_linked', 'false');
 
-    const includeTags = searchOptions.includeTags.filter((tag) => tag.length > 0);
-    if (includeTags.length > 0) {
-        searchParams.append('topics', includeTags.join(',').slice(0, 100));
+    const includedTags = searchOptions.includedTags.filter((tag) => tag.length > 0);
+    if (includedTags.length > 0) {
+        searchParams.append('tags', includedTags.join(',').slice(0, 100));
     }
 
-    const excludeTags = searchOptions.excludeTags.filter((tag) => tag.length > 0);
-    if (excludeTags.length > 0) {
-        searchParams.append('excludetopics', excludeTags.join(',').slice(0, 100));
+    const excludedTags = searchOptions.excludedTags.filter((tag) => tag.length > 0);
+    if (excludedTags.length > 0) {
+        searchParams.append('exclude_tags', excludedTags.join(',').slice(0, 100));
     }
-
-    const url = `https://api.chub.ai/api/${searchOptions.namespace}/search?${searchParams.toString()}`;
 
     const chubApiKey = tavernGPT_settings.api_key_chub;
-    let searchData = await fetch(url, {
-        headers: {
+    const response = await fetch(`https://gateway.chub.ai/search?${String(searchParams)}`, {
+        method: 'GET',
+        headers: new Headers({
             'CH-API-KEY': chubApiKey,
             samwise: chubApiKey,
-        },
-    }).then((data) => data.json());
+        }),
+    });
+    const searchResults = await response.json();
 
-    const characterPromises = searchData.nodes.map(node => fetchCharacterData(node));
+    const characterPromises = searchResults.data.nodes.map(node => fetchCharacterData(node));
     const characterResults = await Promise.all(characterPromises);
 
     const sanitize = (text) => {
@@ -416,136 +445,120 @@ async function fetchCharacters(searchOptions, reset, callback) {
 
     const newCharacters = [];
     characterResults.forEach((result, index) => {
-        const node = searchData.nodes[index];
+        const node = searchResults.data.nodes[index];
 
-        if (result.success) {
-            let imageUrl = URL.createObjectURL(result.data);
-            newCharacters.push({
-                url: imageUrl,
-                avatar: node.avatar_url,
-                description: node.description,
-                tagline: sanitize(node.tagline),
-                name: node.name,
-                fullPath: node.fullPath,
-                tags: node.topics,
-                creator: node.fullPath.split('/')[0],
-                starCount: node.starCount,
-                lastActivityAt: node.lastActivityAt,
-                createdAt: node.createdAt,
-                numTokens: node.nTokens,
-                numfavorites: node.n_favorites,
-                rating: node.rating,
-                numRatings: node.ratingCount,
-            });
-        } else {
+        if (!result.success) {
             console.error(`Failed to load character ${node.fullPath}:`, result.error);
             toastr.error(`Could not load "${node.name || node.fullPath}"`, 'Character Load Error');
+            return;
         }
+
+        let imageUrl = URL.createObjectURL(result.data);
+        newCharacters.push({
+            url: imageUrl,
+            avatar: node.avatar_url,
+            description: node.description,
+            tagline: sanitize(node.tagline),
+            name: node.name,
+            fullPath: node.fullPath,
+            tags: node.topics,
+            creator: node.fullPath.split('/')[0],
+            downloadCount: node.starCount,
+            lastActivityAt: node.lastActivityAt,
+            createdAt: node.createdAt,
+            numTokens: node.nTokens,
+            numfavorites: node.n_favorites,
+            rating: node.rating,
+            numRatings: node.ratingCount,
+        });
     });
     characters.push(...newCharacters);
 
-    $characterList.classList.remove('searching');
-
     if (newCharacters && newCharacters.length > 0) {
-        updateCharacterList(newCharacters, reset);
+        updateCharacterList(newCharacters, resetCharacterList);
     } else {
         toastr.error('No characters found.');
     }
 
-    if (callback && typeof callback === 'function') {
-        callback();
-    }
+    searchElements.characterList.classList.remove('searching');
+
+    if (resetLoadStatus) isLoading = false;
 }
 
-function search(event, reset, callback) {
-    if (
-        event.type === 'keydown' &&
-        event.key !== 'Enter' &&
-        event.target.id !== 'includeTags' &&
-        event.target.id !== 'excludeTags'
-    ) {
-        return;
+/**
+* Gets the search options from the search input fields and initializes the search
+* @param {Event} event - The event that triggered the search
+* @param {boolean} resetCharacterList - Whether we should clear the character list
+* @param {boolean?} resetLoadStatus - Whether we should reset the loading status
+* @returns {void}
+*/
+function search(event, resetCharacterList, resetLoadStatus) {
+    if (event instanceof KeyboardEvent && event.target instanceof HTMLElement) {
+        if (event.type === 'keydown' &&
+            event.key !== 'Enter' &&
+            event.target.id !== 'includedTags' &&
+            event.target.id !== 'excludedTags') {
+            return;
+        }
     }
-    const $searchWrapper = document.querySelector(
-        '#list-and-search-wrapper',
-    );
 
     const fetchCharactersDebounced = debounce(
-        (options, reset, callback) =>
-            fetchCharacters(options, reset, callback),
+        (options, resetCharacterList, resetLoadStatus) =>
+            fetchCharacters(options, resetCharacterList, resetLoadStatus),
         debounce_timeout.standard,
     );
 
-    const splitAndTrim = (str) => {
+    const splitTags = (str) => {
         str = str.trim();
-        if (!str.includes(',')) {
-            return [str];
-        }
+        if (!str.includes(',')) return [str];
         return str.split(',').map((tag) => tag.trim());
     };
 
-    const searchTerm = $searchWrapper.querySelector(
-        '#characterSearchInput',
-    ).value;
-    const creator = $searchWrapper.querySelector('#creatorSearch').value;
-    const namespace = $searchWrapper.querySelector('#namespace').value;
-    const includeTags = splitAndTrim(
-        $searchWrapper.querySelector('#includeTags').value,
-    );
-    const excludeTags = splitAndTrim(
-        $searchWrapper.querySelector('#excludeTags').value,
-    );
-    const nsfw = $searchWrapper.querySelector('#nsfwCheckbox').checked;
-    const findCount = $searchWrapper.querySelector('#findCount').value;
-    const sort = $searchWrapper.querySelector('#sortOrder').value;
-    const page = $searchWrapper.querySelector('#pageNumber').value;
+    const options = [
+        'searchTerm',
+        'namespace',
+        'creator',
+        'includedTags',
+        'excludedTags',
+        'nsfw',
+        'itemsPerPage',
+        'sort',
+        'sortAscending',
+        'page',
+    ];
+    const searchOptions = {};
+    for (const option of options) {
+        switch (option) {
+            case 'includedTags':
+            case 'excludedTags':
+                searchOptions[option] = splitTags(searchElements[option].value);
+                break;
+            case 'nsfw':
+                searchOptions[option] = searchElements[option].checked;
+                break;
+            default:
+                searchOptions[option] = searchElements[option].value;
+        }
+    }
 
-    fetchCharactersDebounced(
-        {
-            searchTerm,
-            namespace,
-            creator,
-            includeTags,
-            excludeTags,
-            nsfw,
-            findCount,
-            sort,
-            page,
-        },
-        reset,
-        callback,
-    );
+    fetchCharactersDebounced(searchOptions, resetCharacterList, resetLoadStatus);
 }
 
 function infiniteScroll(event) {
     if (isLoading) return;
+    if (totalCharactersLoaded < searchElements.itemsPerPage.value) return;
 
-    const $characterList = document.querySelector(
-        '#list-and-search-wrapper .character-list',
-    );
-    const $pageNumber = document.querySelector('#pageNumber');
     const scrollThreshold = 50;
-
-    const distanceFromBottom =
-        $characterList.scrollHeight -
-        ($characterList.scrollTop + $characterList.clientHeight);
+    const distanceFromBottom = searchElements.characterList.scrollHeight - (searchElements.characterList.scrollTop + searchElements.characterList.clientHeight);
 
     if (distanceFromBottom <= scrollThreshold) {
         isLoading = true;
-        $pageNumber.value = Math.max(
-            1,
-            parseInt($pageNumber.value.toString()) + 1,
-        );
-        search(event, false, () => {
-            isLoading = false;
-        });
+        searchElements.page.value = Number(searchElements.page.value) + 1;
+        search(event, false, true);
     }
 }
 
 function handleCharacterClick(event) {
-    const $searchWrapper = document.querySelector('#list-and-search-wrapper');
-    const $pageNumber = $searchWrapper.querySelector('#pageNumber');
-
     const target = event.target;
     const nameClicked = target.matches('.name');
     const avatarClicked = target.matches('.thumbnail img');
@@ -553,106 +566,104 @@ function handleCharacterClick(event) {
     const tagClicked = target.matches('.tag');
     const creatorClicked = target.matches('.creator');
 
-    if (nameClicked || avatarClicked) {
-        const index = parseInt(
-            target
-                .closest('.character-list-item')
-                .getAttribute('data-index'),
-        );
-        generateCharacterPopup(characters[index]);
-    } else if (downloadButtonClicked) {
-        downloadCharacter(downloadButtonClicked.getAttribute('data-path'));
-    } else if (tagClicked) {
-        const $tags = $searchWrapper.querySelector('#includeTags');
-        const tagText = target.textContent.toLowerCase();
-
-        if (target.classList.contains('included')) {
-            target.classList.remove('included');
-            $tags.value = $tags.value
-                .split(',')
-                .map((tags) => tags.trim())
-                .filter((tags) => tags !== tagText)
-                .join(', ');
-        } else {
-            $tags.value += `${tagText}, `;
+    switch (true) {
+        case nameClicked:
+        case avatarClicked: {
+            const index = Number(
+                target
+                    .closest('.character-list-item')
+                    .getAttribute('data-index'),
+            );
+            generateCharacterPopup(characters[index]);
+            break;
         }
+        case downloadButtonClicked:
+            downloadCharacter(downloadButtonClicked.getAttribute('data-path'));
+            break;
+        case tagClicked: {
+            const tags = searchElements.includedTags;
+            const tagText = target.textContent.toLowerCase();
 
-        $pageNumber.value = 1;
+            if (target.classList.contains('included')) {
+                target.classList.remove('included');
+                tags.value = tags.value
+                    .split(',')
+                    .map((tags) => tags.trim())
+                    .filter((tags) => tags !== tagText)
+                    .join(', ');
+            } else {
+                tags.value += `${tagText}, `;
+            }
 
-        search(event, true);
-    } else if (creatorClicked) {
-        const username = target.textContent.toLowerCase().split(' ')[1];
-        const $searchTerm = $searchWrapper.querySelector(
-            '#characterSearchInput',
-        );
-        const $creatorSearch =
-            $searchWrapper.querySelector('#creatorSearch');
-        const $tags = $searchWrapper.querySelector('#includeTags');
-        const $excludedTags = $searchWrapper.querySelector('#excludeTags');
-        const $sortOrder = $searchWrapper.querySelector('#sortOrder');
+            searchElements.page.value = 1;
 
-        $searchTerm.value = '';
-        $creatorSearch.value = `${username}`;
-        $tags.value = '';
-        $excludedTags.value = '';
-        $pageNumber.value = 1;
-        $sortOrder.value = 'download_count';
+            search(event, true, false);
+            break;
+        }
+        case creatorClicked:
+            searchElements.searchTerm.value = '';
+            searchElements.creator.value = target.textContent.toLowerCase();
+            searchElements.includedTags.value = '';
+            searchElements.excludedTags.value = '';
+            searchElements.page.value = 1;
+            searchElements.sort.value = 'created_at';
 
-        search(event, true);
+            search(event, true, false);
+            break;
     }
 }
 
 async function setupExplorePanel() {
-    const $searchWrapper = document.querySelector('#list-and-search-wrapper');
-    const $characterList = $searchWrapper.querySelector('.character-list');
-    const $pageNumber = $searchWrapper.querySelector('#pageNumber');
-
-    $searchWrapper
-        .querySelectorAll(
-            '#characterSearchInput, #creatorSearch, #namespace, #includeTags, #excludeTags, #findCount, #sortOrder, #nsfwCheckbox',
-        )
-        .forEach((element) => {
-            element.addEventListener('change', (event) => {
-                $pageNumber.value = 1;
-                search(event, true);
-            });
+    const elements = [
+        'searchTerm',
+        'namespace',
+        'creator',
+        'includedTags',
+        'excludedTags',
+        'nsfw',
+        'itemsPerPage',
+        'sort',
+        'sortAscending',
+        'page',
+    ];
+    for (const element of elements) {
+        searchElements[element].addEventListener('change', (event) => {
+            searchElements.page.value = 1;
+            search(event, true, false);
         });
+    }
 
-    $searchWrapper
-        .querySelector('#characterSearchButton')
-        .addEventListener('click', (event) => {
-            $pageNumber.value = 1;
-            search(event, true);
-        });
+    searchElements.searchButton.addEventListener('click', (event) => {
+        searchElements.page.value = 1;
+        search(event, true, false);
+    });
 
-    $searchWrapper
-        .querySelector('#resetSearchButton')
-        .addEventListener('click', (event) => {
-            $searchWrapper
-                .querySelectorAll('input, select')
-                .forEach((element) => {
-                    switch (element.type) {
-                        case 'checkbox':
-                            element.checked = element.defaultChecked;
-                            break;
-                        case 'select-one': {
-                            const defaultOption = Array.from(element.options).find(
-                                option => option.defaultSelected,
-                            );
-                            element.value = defaultOption ? defaultOption.value : element.options[0].value;
-                            break;
-                        }
-                        default:
-                            element.value = element.defaultValue;
+    searchElements.resetButton.addEventListener('click', (event) => {
+        searchElements.searchWrapper
+            .querySelectorAll('input, select')
+            .forEach((element) => {
+                switch (element.type) {
+                    case 'checkbox':
+                        element.checked = element.defaultChecked;
+                        break;
+                    case 'select-one': {
+                        const defaultOption = Array.from(element.options).find(
+                            option => option.defaultSelected,
+                        );
+                        element.value = defaultOption ? defaultOption.value : element.options[0].value;
+                        break;
                     }
-                });
-            search(event, true);
-        });
+                    default:
+                        element.value = element.defaultValue;
+                }
+            });
+        search(event, true, false);
+    });
 
     const infiniteScrollDebounced = debounce((event) => infiniteScroll(event), debounce_timeout.quick);
 
-    $characterList.addEventListener('scroll', (event) => infiniteScrollDebounced(event));
-    $characterList.addEventListener('click', handleCharacterClick);
+    searchElements.characterList.addEventListener('scroll', infiniteScrollDebounced);
+    searchElements.characterList.addEventListener('click', handleCharacterClick);
 }
 
 export async function loadExplorePanel() {
@@ -675,18 +686,19 @@ export async function loadExplorePanel() {
             $explore_toggle.parentNode.querySelector('.drawer-content');
         const drawerOpen = drawer.classList.contains('openDrawer');
 
+        if (!(drawer instanceof HTMLElement)) return;
         if (drawer.classList.contains('resizing')) return;
 
         if (!drawerOpen) {
             $top_settings_holder
                 .querySelectorAll('.openDrawer')
                 .forEach((element) => {
+                    if (!(element instanceof HTMLElement)) return;
                     if (!element.classList.contains('pinnedOpen')) {
                         element.classList.add('resizing');
                     }
                     slideToggle(element, {
-                        miliseconds: animation_duration * 1.5,
-                        transitionFunction: 'ease-in',
+                        ...getSlideToggleOptions(),
                         onAnimationEnd: (element) => {
                             element
                                 .closest('.drawer-content')
@@ -710,8 +722,7 @@ export async function loadExplorePanel() {
 
             drawer.classList.add('resizing');
             slideToggle(drawer, {
-                miliseconds: animation_duration * 1.5,
-                transitionFunction: 'ease-in',
+                ...getSlideToggleOptions(),
                 onAnimationEnd: (element) => {
                     element.classList.remove('resizing');
                 },
@@ -721,7 +732,7 @@ export async function loadExplorePanel() {
             drawer.classList.replace('closedDrawer', 'openDrawer');
 
             if (exploreFirstOpen) {
-                drawer.querySelector('#characterSearchButton').click();
+                searchElements.searchButton.click();
                 exploreFirstOpen = false;
             }
         } else if (drawerOpen) {
@@ -729,8 +740,7 @@ export async function loadExplorePanel() {
 
             drawer.classList.add('resizing');
             slideToggle(drawer, {
-                miliseconds: animation_duration * 1.5,
-                transitionFunction: 'ease-in',
+                ...getSlideToggleOptions(),
                 onAnimationEnd: (element) => {
                     element.classList.remove('resizing');
                 },

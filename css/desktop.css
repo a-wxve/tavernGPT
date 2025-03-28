@@ -1,0 +1,505 @@
+#option_select_chat,
+#option_start_new_chat,
+#load_select_chat_div {
+    display: none;
+}
+
+body:not(.hideChatAvatars) {
+    .mes[is_user="true"] .mes_block {
+        max-width: calc(100% - 3.75rem);
+    }
+}
+
+body.waifuMode .expression-holder {
+    left: var(--barSize);
+}
+
+#top-settings-holder {
+    width: var(--barSize);
+    padding: var(--insidePadding);
+    transition: var(--transition);
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100dvh;
+    position: fixed;
+
+    &::before {
+        content: "";
+        z-index: -1;
+        backdrop-filter: blur(var(--backdropBlur));
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    &.collapsed {
+        visibility: collapse;
+        width: 0 !important;
+
+        #ai-config-button,
+        #sys-settings-button,
+        #advanced-formatting-button,
+        #WI-SP-button,
+        #logo_block,
+        #extensions-settings-button,
+        #persona-management-button,
+        #user-settings-button,
+        #rightNavHolder,
+        .historyButton,
+        #select_chat_div,
+        #select_chat_search,
+        #explore-button {
+            display: none;
+        }
+    }
+}
+
+.drawer {
+    justify-content: left;
+}
+
+.drawer-toggle,
+.drawer-icon {
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+
+.drawer-icon {
+    padding: 0.36rem;
+    font-size: 1.5rem;
+    text-align: left;
+
+    &::before {
+        width: 2.25rem;
+        display: inline-block;
+    }
+
+    &::after {
+        vertical-align: middle;
+        font-size: 1.125rem;
+        font-weight: 700;
+        font-family: var(--mainFontFamily);
+    }
+}
+
+.drawer-toggle {
+    border-radius: var(--borderRadiusSmol);
+
+    &:hover {
+        background-color: var(--white30a);
+    }
+}
+
+#sys-settings-button,
+#advanced-formatting-button,
+#WI-SP-button,
+#logo_block,
+#extensions-settings-button,
+#user-settings-button {
+    padding-left: 1rem;
+}
+
+#ai-config-button {
+    order: 3;
+
+    & .drawer-icon::after {
+        content: " Settings";
+    }
+
+    & .drawer-toggle {
+        align-items: center;
+        display: flex;
+
+        &:not(:hover) ~ .inline-drawer-icon {
+            opacity: 0.3;
+        }
+    }
+
+    & > .inline-drawer-icon {
+        font-size: calc(var(--mainFontSize) * 1.25);
+        pointer-events: none;
+        position: absolute;
+        right: 9%;
+    }
+
+    &:not(:has(.openIcon)) ~ #sys-settings-button:not(:has(.openIcon)),
+    &:not(:has(.openIcon)) ~ #advanced-formatting-button:not(:has(.openIcon)),
+    &:not(:has(.openIcon)) ~ #WI-SP-button:not(:has(.openIcon)),
+    &:not(:has(.openIcon)) ~ #extensions-settings-button:not(:has(.openIcon)),
+    &:not(:has(.openIcon)) ~ #logo_block:not(:has(.openIcon)),
+    &:not(:has(.openIcon)) ~ #user-settings-button:not(:has(.openIcon)) {
+        display: none;
+    }
+}
+
+#ai-config-button:has(
+        ~ :is(
+                #sys-settings-button,
+                #advanced-formatting-button,
+                #WI-SP-button,
+                #extensions-settings-button,
+                #logo_block,
+                #user-settings-button
+            )
+            .openIcon
+    )
+    > .inline-drawer-icon,
+#ai-config-button:has(.openIcon) > .inline-drawer-icon {
+    opacity: 1 !important;
+
+    &::before {
+        content: "";
+    }
+}
+
+#sys-settings-button {
+    order: 4;
+
+    & .drawer-icon::after {
+        content: " API";
+    }
+
+    &:has(.openIcon) ~ #advanced-formatting-button,
+    &:has(.openIcon) ~ #WI-SP-button,
+    &:has(.openIcon) ~ #extensions-settings-button,
+    &:has(.openIcon) ~ #logo_block,
+    &:has(.openIcon) ~ #user-settings-button,
+    &:has(+ #advanced-formatting-button .openIcon),
+    &:has(~ #WI-SP-button .openIcon),
+    &:has(~ #extensions-settings-button .openIcon),
+    &:has(~ #logo_block .openIcon),
+    &:has(~ #user-settings-button .openIcon) {
+        display: flex !important;
+    }
+}
+
+#advanced-formatting-button {
+    order: 5;
+
+    & .drawer-icon::after {
+        content: " Formatting";
+    }
+
+    & .drawer-content > .flex-container {
+        flex-direction: column;
+    }
+
+    &:has(.openIcon) ~ #WI-SP-button,
+    &:has(.openIcon) ~ #extensions-settings-button,
+    &:has(.openIcon) ~ #logo_block,
+    &:has(.openIcon) ~ #user-settings-button,
+    &:has(~ #WI-SP-button .openIcon),
+    &:has(~ #extensions-settings-button .openIcon),
+    &:has(~ #logo_block .openIcon),
+    &:has(~ #user-settings-button .openIcon) {
+        display: flex !important;
+    }
+}
+
+#WI-SP-button {
+    order: 6;
+
+    & .drawer-icon::after {
+        content: " Lorebooks";
+    }
+
+    &:has(.openIcon) ~ #extensions-settings-button,
+    &:has(.openIcon) ~ #logo_block,
+    &:has(.openIcon) ~ #user-settings-button,
+    &:has(~ #extensions-settings-button .openIcon),
+    &:has(~ #logo_block .openIcon),
+    &:has(~ #user-settings-button .openIcon) {
+        display: flex !important;
+    }
+}
+
+#user-settings-button {
+    order: 7;
+
+    & .drawer-icon::after {
+        content: " Interface";
+    }
+
+    & .flex-container.flexFlowRow.alignitemscenter.spaceBetween {
+        flex-wrap: wrap;
+    }
+
+    & #user-settings-block-content {
+        flex-direction: column;
+    }
+
+    &:has(.openIcon) ~ #extensions-settings-button,
+    &:has(.openIcon) ~ #logo_block,
+    &:has(~ #extensions-settings-button .openIcon),
+    &:has(~ #logo_block .openIcon) {
+        display: flex !important;
+    }
+}
+
+#logo_block {
+    order: 8;
+
+    & .drawer-icon::after {
+        content: " Backgrounds";
+    }
+
+    &:has(.openIcon) ~ #extensions-settings-button,
+    &:has(~ #extensions-settings-button .openIcon) {
+        display: flex !important;
+    }
+}
+
+#extensions-settings-button {
+    order: 9;
+
+    & .drawer-icon::after {
+        content: " Extensions";
+    }
+}
+
+#persona-management-button {
+    padding: var(--borderRadiusSmol);
+    z-index: 1;
+    width: inherit;
+    order: 13;
+    margin-left: -0.675rem;
+    position: fixed;
+    bottom: -0.25rem;
+
+    & .drawer-icon {
+        align-items: center;
+        gap: 0.5rem;
+        display: flex;
+    }
+
+    & .drawer-icon.closedIcon {
+        opacity: 0.72 !important;
+    }
+
+    & .drawer-icon.closedIcon:hover {
+        opacity: 1 !important;
+    }
+
+    & .drawer-icon span {
+        font-size: 1.125rem;
+        font-weight: 720;
+        font-family: var(--mainFontFamily);
+    }
+}
+
+#rightNavHolder {
+    order: 1;
+
+    & .drawer-icon::after {
+        content: "Characters";
+        margin-left: -3px;
+    }
+}
+
+#explore-button {
+    order: 2;
+
+    & .drawer-icon::after {
+        content: " Character Hub";
+    }
+
+    & .drawer-content {
+        width: calc(100dvw - var(--barSize));
+    }
+}
+
+#rm_print_characters_block {
+    flex-flow: row wrap;
+
+    .bogus_folder_select,
+    .character_select,
+    .group_select {
+        width: 50%;
+    }
+}
+
+#form_create {
+    &:has(#firstMessageWrapper[style*="display: none"]) #exampleMesWrapper {
+        display: none;
+    }
+
+    & textarea {
+        resize: none;
+    }
+}
+
+#CharListButtonAndHotSwaps {
+    flex-wrap: wrap;
+
+    .flexFlowColumn.flex-container {
+        flex-flow: row-reverse;
+        flex: 1;
+        justify-content: space-between;
+    }
+}
+
+.hotswap.avatars_inline.flex-container.expander {
+    max-height: fit-content;
+}
+
+#sidebarToggle {
+    cursor: pointer;
+    transition: var(--transition);
+    background-color: #0000;
+    border: none;
+    order: 11;
+    position: absolute;
+    top: 45%;
+    left: 103%;
+    visibility: visible !important;
+
+    & .arrow1,
+    & .arrow2 {
+        transition: var(--transition);
+        background-color: #fff;
+        width: 0.25rem;
+        height: 1.25rem;
+    }
+
+    & .arrow1 {
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+    }
+
+    & .arrow2 {
+        border-bottom-right-radius: 0.25rem;
+        border-bottom-left-radius: 0.25rem;
+    }
+
+    &:hover .arrow1 {
+        transform: rotate(35deg) translateY(0.25rem);
+    }
+
+    &:hover .arrow2 {
+        transform: rotate(-35deg) translateY(-0.25rem);
+    }
+
+    #top-settings-holder:has(.drawer-icon.openIcon) & {
+        display: none;
+    }
+
+    #top-settings-holder.collapsed & {
+        left: 0.5rem;
+
+        .arrow1 {
+            transform: rotate(-35deg) translateY(0.25rem);
+        }
+
+        .arrow2 {
+            transform: rotate(35deg) translateY(-0.25rem);
+        }
+    }
+}
+
+.drawer-content,
+#right-nav-panel,
+#character_popup {
+    width: var(--panelSize);
+    right: inherit;
+    left: var(--barSize);
+    padding: var(--insidePadding);
+    height: 100dvh;
+    padding-bottom: 0;
+    position: fixed;
+    max-height: 100dvh !important;
+}
+
+#right-nav-panel,
+#character_popup {
+    width: calc(100% - var(--barSize));
+    max-width: 100dvw;
+}
+
+#sheld {
+    max-width: calc(100% - var(--barSize));
+    left: var(--barSize);
+    padding: 0 var(--insidePadding);
+    height: 100dvh;
+    max-height: 100dvh;
+
+    &.collapsed {
+        transition: var(--transition);
+        left: 0;
+    }
+
+    &.shifted {
+        left: 33%;
+    }
+
+    #top-settings-holder:has(.drawer-content.pinnedOpen):not(
+            :has(#rightNavHolder .drawer-content.pinnedOpen)
+        )
+        ~ &,
+    #top-settings-holder:has(.drawer-content.openDrawer):not(
+            :has(#rightNavHolder .drawer-content.openDrawer)
+        ):not(:has(#explore-button .drawer-content.openDrawer))
+        ~ & {
+        left: initial;
+        width: calc(100% - var(--barSize) - var(--panelSize));
+    }
+}
+
+#form_sheld {
+    margin: 0 0 0 -0.5rem;
+}
+
+.mes {
+    padding: var(--insidePadding);
+
+    &[is_user="true"] {
+        padding: 0 var(--insidePadding);
+    }
+}
+
+.mes .mes_block .timestamp {
+    order: 1;
+}
+
+.mes .mes_block .mes_buttons {
+    padding: 0;
+}
+
+.mes .mesIDDisplay,
+.mes .mes_timer,
+.mes .tokenCounterDisplay {
+    transition: var(--transition);
+}
+
+.cropper-crop-box .cropper-face.cropper-move {
+    opacity: 1;
+    background-color: #ffffff1a;
+    border: 0.25rem solid #39f;
+    border-radius: 100%;
+    height: 66.666%;
+    top: 16.5%;
+}
+
+.expression-holder {
+    resize: none;
+    width: fit-content;
+}
+
+.zoomed_avatar,
+.zoomed_avatar img {
+    z-index: 10000;
+}
+
+.range-block-title {
+    text-align: left;
+}
+
+#toast-container {
+    left: calc(var(--barSize) / 2);
+}
+
+#rawPromptPopup {
+    height: 100%;
+}

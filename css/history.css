@@ -3,18 +3,21 @@
     justify-content: space-around;
     border-radius: var(--borderRadiusSmol);
     background-color: var(--grey5020a);
-    margin: 0.5rem 0 0;
+    margin: var(--insidePadding) 0 0;
 }
 
 #select_chat_search {
     border-radius: var(--borderRadiusSmol);
     max-height: 36px;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
 
     & input {
         background-color: transparent;
         border: none;
         outline: none;
-        width: 87%;
+        width: 100%;
     }
 
     #select_chat_div:empty ~ & {
@@ -51,20 +54,18 @@
     margin-bottom: 3.6em;
     overflow-y: scroll;
 
-    &:not(:hover)::-webkit-scrollbar {
-        opacity: 0;
-    }
-
     & .select_chat_block {
         border-radius: var(--borderRadiusSmol);
         gap: 0px;
 
-        &:hover #select_chat_name_wrapper > div:first-child {
-            max-width: 60%;
+        & .fa-solid {
+            transform: translateX(5rem);
+            transition: all 0.1s ease-in-out;
+            will-change: transform;
         }
 
-        &:not(:hover) .fa-solid {
-            visibility: hidden;
+        &:hover .fa-solid {
+            transform: translateX(0px);
         }
     }
 
@@ -93,24 +94,36 @@
         & > .flex-container.gap10px {
             flex-wrap: nowrap;
             gap: 5px !important;
+            align-items: center;
         }
     }
 
-    & > div:first-child {
+    & > div:nth-child(1) {
         max-width: 100%;
+        transition: max-width 0.1s ease-in-out;
+        will-change: max-width;
+
+        .select_chat_block:hover & {
+            max-width: calc(100% - 80px);
+        }
 
         & .select_chat_block_filename.select_chat_block_filename_item {
             opacity: 0.9;
             text-overflow: ellipsis;
             overflow: hidden;
+            flex: unset;
         }
     }
 }
 
-.exportRawChatButton.fa-solid.fa-file-export::before {
-    content: "";
+.exportChatButton.fa-file-lines::before {
+    content: "";
 }
 
-.PastChat_cross.opacity50p.hoverglow.fa-solid.fa-skull::before {
-    content: "";
+.PastChat_cross.opacity50p.hoverglow {
+    animation: none;
+
+    &.fa-solid.fa-skull::before {
+        content: "";
+    }
 }

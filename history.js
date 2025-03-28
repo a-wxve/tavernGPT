@@ -32,28 +32,27 @@ const group = selected_group
 const timeIDs = new Map([
     ['Today', 0],
     ['Yesterday', 1],
-    ['This Week', 2],
-    ['This Month', 3],
+    ['Last 7 Days', 2],
+    ['Last 30 Days', 3],
 ]);
 let renamePromptListeners = [];
 
 function getTimeCategory(date) {
     const today = moment().startOf('day');
     const timeCategories = {
-        Today: () => date.isSame(today, 'day'),
-        Yesterday: () => date.isSame(moment(today).subtract(1, 'days'), 'day'),
-        'This Week': () =>
-            date.isAfter(moment(today).subtract(1, 'weeks').startOf('week')),
-        'This Month': () => date.isSame(today, 'month'),
+        'Today': () => date.isSame(today, 'day'),
+        'Yesterday': () => date.isSame(moment(today).subtract(1, 'days'), 'day'),
+        'Last 7 Days': () =>
+            date.isAfter(moment(today).subtract(7, 'days').startOf('day')),
+        'Last 30 Days': () =>
+            date.isAfter(moment(today).subtract(30, 'days').startOf('day')),
     };
 
     for (const [category, condition] of Object.entries(timeCategories)) {
         if (condition()) return category;
     }
 
-    return date.isSame(today, 'year')
-        ? date.format('MMMM')
-        : date.format('MMMM YYYY');
+    return date.isSame(today, 'year') ? date.format('MMMM') : date.format('MMMM YYYY');
 }
 
 function sortTimeCategories(a, b) {
@@ -70,9 +69,7 @@ function sortTimeCategories(a, b) {
     if (aOrder !== undefined) return -1;
     if (bOrder !== undefined) return 1;
 
-    return moment(aCat, 'MMMM YYYY').isAfter(moment(bCat, 'MMMM YYYY'))
-        ? -1
-        : 1;
+    return moment(aCat, 'MMMM YYYY').isAfter(moment(bCat, 'MMMM YYYY')) ? -1 : 1;
 }
 
 async function displayChats(searchQuery) {
@@ -91,8 +88,8 @@ async function displayChats(searchQuery) {
     });
 
     if (!response.ok) {
-        console.error('/api/chats/search fetch failed');
-        toastr.error('Failed to fetch chats');
+        console.error('/api/chats/search fetch failed: ', response.status, response.statusText);
+        toastr.error(`${response.status} ${response.statusText}`, 'Failed to fetch chats');
         return;
     }
 
@@ -137,6 +134,8 @@ async function displayChats(searchQuery) {
                     )
                     .cloneNode(true);
 
+                if (!(template instanceof Element)) return;
+
                 template
                     .querySelector('.select_chat_block')
                     .setAttribute('file_name', chat.file_name);
@@ -151,7 +150,7 @@ async function displayChats(searchQuery) {
                 if (chat.file_name === selectedChatFileName) {
                     template
                         .querySelector('.select_chat_block')
-                        .setAttribute('highlight', true);
+                        .setAttribute('highlight', 'true');
                 }
 
                 $selectChat.append(template);
@@ -170,11 +169,11 @@ async function overrideChatButtons(event) {
     };
 
     const target = event.target;
-    const shouldHighlight = target.matches('.renameChatButton, .exportRawChatButton, .exportChatButton, .PastChat_cross');
+    const shouldOpen = !target.matches('.renameChatButton, .exportRawChatButton, .exportChatButton, .PastChat_cross');
     const shouldRename = target.matches('.renameChatButton');
     const shouldDelete = target.matches('.PastChat_cross');
 
-    if (!shouldHighlight) {
+    if (shouldOpen) {
         stopEvent(event);
 
         const filename = chatBlock
@@ -194,7 +193,7 @@ async function overrideChatButtons(event) {
 
         if (!newFilename) return;
 
-        const result = await renameChat(oldFilename, newFilename);
+        const result = await renameChat(oldFilename, String(newFilename));
         if (!result.success) {
             console.error(`Failed to rename chat: ${result.error}`);
             toastr.error(`Failed to rename chat: ${result.error}`);
@@ -212,8 +211,8 @@ async function overrideChatButtons(event) {
         );
 
         if (!confirmed) {
-            console.error(`Error deleting ${chatBlock}: User did not confirm.`);
-            toastr.error(`Error deleting ${chatBlock}: User did not confirm.`);
+            console.error(`Error deleting ${chatToDelete}: User did not confirm.`);
+            toastr.error(`Error deleting ${chatToDelete}: User did not confirm.`);
             return;
         }
 
@@ -246,8 +245,6 @@ async function overrideChatButtons(event) {
 
             await eventSource.emit(event_types.CHAT_DELETED, name);
         }
-
-        chatBlock.remove();
     }
 }
 
@@ -282,85 +279,18 @@ async function renameChat(oldFilename, newFilename) {
     } else {
         if (characters[this_chid].chat == oldFilename) {
             characters[this_chid].chat = newFilename;
-            document.querySelector('#selected_chat_pole').value = characters[this_chid].chat;
+            document.querySelector('#selected_chat_pole').setAttribute('value', characters[this_chid].chat);
             saveCharacterDebounced();
         }
     }
 
-    const filenameElement = document.querySelector(
-        '.select_chat_block[highlight="true"] .select_chat_block_filename.select_chat_block_filename_item',
-    );
-    if (filenameElement) filenameElement.textContent = newFilename;
+    displayChats('');
 
     return {
         success: true,
         data: { oldFilename, newFilename },
         error: null,
     };
-}
-
-function registerRenameChatTool() {
-    cleanupRenamePromptListeners();
-    ToolManager.unregisterFunctionTool('renameChat');
-
-    if (!ToolManager.isToolCallingSupported()) {
-        console.warn(
-            'Tool calling not supported, falling back to system prompt method.',
-        );
-        tavernGPT_settings.rename_method = 'system';
-        saveSettingsDebounced();
-        return setupSystemPromptRename();
-    }
-
-    ToolManager.registerFunctionTool({
-        name: 'renameChat',
-        displayName: 'Rename Chat',
-        description:
-            'Rename the current chat to a more descriptive title. Use this to change or create a name for the current conversation. If you see this tool, that means the chat needs to be renamed, so use it!',
-        parameters: Object.freeze({
-            $schema: 'https://json-schema.org/draft/2020-12/schema',
-            type: 'object',
-            properties: {
-                newName: {
-                    type: 'string',
-                    description:
-                        'The new name for the chat. Should be concise, descriptive, and avoid special characters.',
-                },
-            },
-            required: ['newName'],
-        }),
-        action: async ({ newName }) => {
-            const oldFilename = selected_group
-                ? group?.chat_id
-                : characters[this_chid].chat;
-            newName = newName
-                .toString()
-                .replace(/^'((?:\\'|[^'])*)'$/, '$1')
-                .substring(0, 90);
-
-            const result = await renameChat(oldFilename, newName);
-
-            return result.success
-                ? `Chat successfully renamed to "${newName}".`
-                : `Failed to rename the chat: ${result.error}`;
-        },
-        shouldRegister: () => {
-            const context = getContext();
-            const currentFilename = selected_group
-                ? group?.chat_id
-                : characters[this_chid]?.chat;
-
-            const matchesTimePattern = (string) => {
-                const regexPattern = /@\d\dh\s?\d\dm\s?\d\ds(\d{1,3}ms)?/;
-                return regexPattern.test(string);
-            };
-
-            return (
-                matchesTimePattern(currentFilename) && context.chat.length > 2
-            );
-        },
-        stealth: true,
-    });
 }
 
 function cleanupRenamePromptListeners() {
@@ -399,8 +329,7 @@ async function setupSystemPromptRename() {
 
             if (!newFilename) return;
 
-            newFilename = newFilename
-                .toString()
+            newFilename = String(newFilename)
                 .replace(/^'((?:\\'|[^'])*)'$/, '$1')
                 .substring(0, 90);
 
@@ -434,14 +363,75 @@ async function setupSystemPromptRename() {
     renameIfNeeded();
 }
 
+function registerRenameChatTool() {
+    cleanupRenamePromptListeners();
+    ToolManager.unregisterFunctionTool('renameChat');
+
+    if (!ToolManager.isToolCallingSupported()) {
+        console.warn(
+            'Tool calling not supported, falling back to system prompt method.',
+        );
+        tavernGPT_settings.rename_method = 'system';
+        saveSettingsDebounced();
+        return setupSystemPromptRename();
+    }
+
+    ToolManager.registerFunctionTool({
+        name: 'renameChat',
+        displayName: 'Rename Chat',
+        description:
+            'Rename the current chat to a more descriptive title. Use this to change or create a name for the current conversation. If you see this tool, that means the chat needs to be renamed, so use it!',
+        parameters: Object.freeze({
+            $schema: 'https://json-schema.org/draft/2020-12/schema',
+            type: 'object',
+            properties: {
+                newName: {
+                    type: 'string',
+                    description:
+                        'The new name for the chat. Should be concise, descriptive, and avoid special characters.',
+                },
+            },
+            required: ['newName'],
+        }),
+        action: async ({ newName }) => {
+            const oldFilename = selected_group
+                ? group?.chat_id
+                : characters[this_chid].chat;
+            newName = String(newName)
+                .replace(/^'((?:\\'|[^'])*)'$/, '$1')
+                .substring(0, 90);
+
+            const result = await renameChat(oldFilename, newName);
+
+            return result.success
+                ? `Chat successfully renamed to "${newName}".`
+                : `Failed to rename the chat: ${result.error}`;
+        },
+        shouldRegister: () => {
+            const context = getContext();
+            const currentFilename = selected_group
+                ? group?.chat_id
+                : characters[this_chid]?.chat;
+
+            const matchesTimePattern = (string) => {
+                const regexPattern = /@\d\dh\s?\d\dm\s?\d\ds(\d{1,3}ms)?/;
+                return regexPattern.test(string);
+            };
+
+            return (
+                matchesTimePattern(currentFilename) && context.chat.length > 2
+            );
+        },
+        stealth: true,
+    });
+}
+
 export async function loadChatHistory() {
     let lastCharacterLoaded;
 
     const searchChats = debounce((searchQuery) => {
         displayChats(searchQuery);
     }, debounce_timeout.short);
-
-    document.querySelector('#shadow_select_chat_popup').remove();
 
     const $settingsHolder = document.querySelector('#top-settings-holder');
     await fetch(`${extensionFolderPath}/html/history.html`)
@@ -454,15 +444,15 @@ export async function loadChatHistory() {
 
     $settingsHolder.querySelector('#new_chat').addEventListener('click', () => {
         doNewChat({ deleteCurrentChat: false });
-        //TODO: extract chat history template creation into function
-        //and manually add the new chat to the history
         displayChats('');
     });
 
     $settingsHolder
         .querySelector('#select_chat_search input')
         .addEventListener('input', (event) => {
-            searchChats(event.target.value);
+            if (event.target instanceof HTMLInputElement) {
+                searchChats(event.target.value);
+            }
         });
 
     if (tavernGPT_settings.rename_chats) {

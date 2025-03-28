@@ -1,5 +1,4 @@
 :root {
-    color-scheme: only dark;
     --mainFontFamily: "SF Pro", system-ui, -apple-system, BlinkMacSystemFont,
         "Helvetica Neue", Helvetica, Arial, sans-serif;
     --monoFontFamily: "SF Mono", SFMono-Regular, ui-monospace,
@@ -7,10 +6,25 @@
     --lineHeight: calc(var(--mainFontSize) * 1.25);
     --barSize: 20%;
     --panelSize: 40%;
-    --insidePadding: 0.625rem;
+    --insidePadding: 0.5rem;
     --borderRadius: 1.5rem;
     --borderRadiusSmol: 0.625rem;
     --transition: all 0.1s ease-in-out;
+    --backdropBlur: 0.5rem;
+}
+
+#top-bar,
+#persona-management-button .drawer-icon::before,
+#ReverseProxyWarningMessage,
+#quickReplyPopoutButton,
+#summaryExtensionPopoutButton,
+.mes_edit_copy,
+.mes_edit_up,
+.mes_edit_down,
+details summary::-webkit-details-marker,
+body.hideChatAvatars .mesAvatarWrapper,
+body.swipeAllMessages .mes:not(.last_mes) .swipe_right ~ .swipes-counter {
+    display: none !important;
 }
 
 a {
@@ -19,69 +33,76 @@ a {
 
 body {
     background-color: var(--SmartThemeChatTintColor);
+    color-scheme: only dark;
 }
 
 body.bubblechat {
     .mes {
-        background-color: #0000;
+        background-color: transparent;
         border: none;
         border-radius: 0;
         margin-bottom: 0;
     }
+
     .mes[is_user="true"] {
-        background-color: #0000;
-        padding: 0 10px;
+        background-color: transparent;
+        padding: 0 var(--insidePadding);
+
         .mesAvatarWrapper {
             display: none;
         }
+
         .mes_block {
             margin-left: auto;
             padding-left: 0;
             overflow-y: hidden;
         }
+
         .ch_name.flex-container.justifySpaceBetween {
             display: none;
         }
+
         .mes_text {
             background-color: var(--SmartThemeUserMesBlurTintColor);
             margin-top: 0;
             margin-left: auto;
         }
+
         .mes_buttons,
         .mes_edit_buttons {
             justify-content: end;
         }
+
         .timestamp {
             align-self: end;
         }
     }
-    .smallSysMes .mes_text {
-        padding: 3px !important;
-        border-radius: 9px !important;
-        width: unset;
+
+    .mes[is_user="false"] {
+        .mes_text {
+            border-top-left-radius: 0.25rem;
+        }
+
+        details {
+            border-top-left-radius: 0.25rem;
+            border-top-right-radius: var(--borderRadius);
+            background-color: var(--SmartThemeBotMesBlurTintColor);
+            padding: 0.625rem 1rem 0;
+
+            &:has(.mes_reasoning:not(:empty)) + .mes_text,
+            &:has(textarea) + .mes_text {
+                border-top-left-radius: 0;
+                border-top-right-radius: 0;
+                padding-top: 0;
+                width: auto;
+            }
+
+            &:has(.mes_reasoning:not(:empty))[open] + .mes_text {
+                padding-top: 0.625rem;
+            }
+        }
     }
-    .mes[is_user="false"] .mes_text {
-        border-top-left-radius: 3px;
-    }
-    .mes[is_user="false"] details {
-        border-top-left-radius: 3px;
-        border-top-right-radius: var(--borderRadius);
-        background-color: var(--SmartThemeBotMesBlurTintColor);
-        padding: 0 1rem 0;
-    }
-    .mes[is_user="false"] details:has(.mes_reasoning:not(:empty)) + .mes_text {
-        border-top-left-radius: 0px;
-        border-top-right-radius: 0px;
-        padding-top: 0;
-        width: auto;
-    }
-    .mes[is_user="false"]
-        details:has(.mes_reasoning:not(:empty))[open]
-        + .mes_text {
-        border-top-left-radius: 0px;
-        border-top-right-radius: 0px;
-        padding-top: 0.625rem;
-    }
+
     .mes_text {
         border-radius: var(--borderRadius);
         background-color: var(--SmartThemeBotMesBlurTintColor);
@@ -91,25 +112,28 @@ body.bubblechat {
         &:has(#curEditTextarea) {
             width: unset;
         }
+
+        .smallSysMes & {
+            padding: 0.25rem !important;
+            border-radius: var(--borderRadiusSmol) !important;
+            width: unset;
+        }
     }
-    .mes_edit_buttons[style*="display: inline-flex"] {
-        display: flex !important;
-    }
+
     .mes_img_container.img_extra,
     .mes_file_container {
-        margin: 0.5rem 0 0 auto;
+        margin: 0 0 0 auto;
+        padding-right: 0;
     }
 }
 
 body.hideChatAvatars {
+    .mes.last_mes:not(.smallSysMes) {
+        padding-bottom: 4.5rem !important;
+    }
+
     .mes_block {
         padding-left: 0;
-    }
-}
-
-body:not(.hideChatAvatars) {
-    .mes[is_user="true"] .mes_block {
-        max-width: calc(100% - 3.75rem);
     }
 }
 
@@ -121,331 +145,34 @@ body.big-avatars {
     }
 }
 
-body.waifuMode .expression-holder {
-    left: var(--barSize);
-}
-
-#top-bar,
-#persona-management-button .drawer-icon::before,
-#ReverseProxyWarningMessage,
-#quickReplyPopoutButton,
-#summaryExtensionPopoutButton,
-.mes_edit_copy,
-.mes_edit_up,
-.mes_edit_down,
-#option_select_chat,
-#option_start_new_chat,
-#load_select_chat_div,
-details summary::-webkit-details-marker,
-body.hideChatAvatars .mesAvatarWrapper {
-    display: none !important;
+body.swipeAllMessages {
+    .swipeRightBlock {
+        pointer-events: none;
+    }
 }
 
 #top-settings-holder {
     background-color: var(--SmartThemeBlurTintColor);
-    width: var(--barSize);
-    padding: var(--insidePadding);
-    transition: var(--transition);
-    flex-direction: column;
-    justify-content: flex-start;
-    height: 100dvh;
-    position: fixed;
-
-    &::before {
-        content: "";
-        z-index: -1;
-        backdrop-filter: blur(9px);
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-    }
-
-    &.collapsed {
-        visibility: collapse;
-        width: 0 !important;
-    }
 }
 
-#top-settings-holder.collapsed #ai-config-button,
-#top-settings-holder.collapsed #sys-settings-button,
-#top-settings-holder.collapsed #advanced-formatting-button,
-#top-settings-holder.collapsed #WI-SP-button,
-#top-settings-holder.collapsed #logo_block,
-#top-settings-holder.collapsed #extensions-settings-button,
-#top-settings-holder.collapsed #persona-management-button,
-#top-settings-holder.collapsed #user-settings-button,
-#top-settings-holder.collapsed #rightNavHolder,
-#top-settings-holder.collapsed .historyButton,
-#top-settings-holder.collapsed #select_chat_div,
-#top-settings-holder.collapsed #select_chat_search,
-#top-settings-holder.collapsed #explore-button {
-    display: none;
+#ai-config-button .drawer-icon::before {
+    content: "";
 }
 
-.drawer {
-    justify-content: left;
+#logo_block .drawer-icon::before {
+    content: "";
 }
 
-.drawer-toggle,
-.drawer-icon {
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
-}
-
-.drawer-icon {
-    padding: 0.36rem;
-    font-size: 1.5rem;
-    text-align: left;
-
-    &::before {
-        width: 36px;
-        display: inline-block;
-    }
-
-    &::after {
-        vertical-align: middle;
-        font-size: 18px;
-        font-weight: 700;
-        font-family: var(--mainFontFamily);
-    }
-}
-
-.drawer-toggle {
-    border-radius: var(--borderRadiusSmol);
-
-    &:hover {
-        background-color: var(--white30a);
-    }
-}
-
-#sys-settings-button,
-#advanced-formatting-button,
-#WI-SP-button,
-#logo_block,
-#extensions-settings-button,
-#user-settings-button {
-    padding-left: 1rem;
-}
-
-#ai-config-button {
-    order: 3;
-
-    & .drawer-icon::before {
-        content: "";
-    }
-
-    & .drawer-icon::after {
-        content: " Settings";
-    }
-
-    & .drawer-toggle {
-        align-items: center;
-        display: flex;
-
-        &:not(:hover) ~ .inline-drawer-icon {
-            opacity: 0.3;
-        }
-    }
-
-    & > .inline-drawer-icon {
-        font-size: calc(var(--mainFontSize) * 1.25);
-        pointer-events: none;
-        position: absolute;
-        right: 9%;
-    }
-
-    &:not(:has(.openIcon)) ~ #sys-settings-button:not(:has(.openIcon)),
-    &:not(:has(.openIcon)) ~ #advanced-formatting-button:not(:has(.openIcon)),
-    &:not(:has(.openIcon)) ~ #WI-SP-button:not(:has(.openIcon)),
-    &:not(:has(.openIcon)) ~ #extensions-settings-button:not(:has(.openIcon)),
-    &:not(:has(.openIcon)) ~ #logo_block:not(:has(.openIcon)),
-    &:not(:has(.openIcon)) ~ #user-settings-button:not(:has(.openIcon)) {
-        display: none;
-    }
-}
-
-#ai-config-button:has(
-        ~ :is(
-                #sys-settings-button,
-                #advanced-formatting-button,
-                #WI-SP-button,
-                #extensions-settings-button,
-                #logo_block,
-                #user-settings-button
-            )
-            .openIcon
-    )
-    > .inline-drawer-icon,
-#ai-config-button:has(.openIcon) > .inline-drawer-icon {
-    opacity: 1 !important;
-}
-
-#ai-config-button:has(
-        ~ :is(
-                #sys-settings-button,
-                #advanced-formatting-button,
-                #WI-SP-button,
-                #extensions-settings-button,
-                #logo_block,
-                #user-settings-button
-            )
-            .openIcon
-    )
-    > .inline-drawer-icon::before,
-#ai-config-button:has(.openIcon) > .inline-drawer-icon::before {
-    content: "\f077";
-}
-
-#sys-settings-button {
-    order: 4;
-
-    & .drawer-icon::after {
-        content: " API";
-    }
-
-    &:has(.openIcon) ~ #advanced-formatting-button,
-    &:has(.openIcon) ~ #WI-SP-button,
-    &:has(.openIcon) ~ #extensions-settings-button,
-    &:has(.openIcon) ~ #logo_block,
-    &:has(.openIcon) ~ #user-settings-button,
-    &:has(+ #advanced-formatting-button .openIcon),
-    &:has(~ #WI-SP-button .openIcon),
-    &:has(~ #extensions-settings-button .openIcon),
-    &:has(~ #logo_block .openIcon),
-    &:has(~ #user-settings-button .openIcon) {
-        display: flex !important;
-    }
-}
-
-#advanced-formatting-button {
-    order: 5;
-
-    & .drawer-icon::after {
-        content: " Formatting";
-    }
-
-    & .drawer-content > .flex-container {
-        flex-direction: column;
-    }
-
-    &:has(.openIcon) ~ #WI-SP-button,
-    &:has(.openIcon) ~ #extensions-settings-button,
-    &:has(.openIcon) ~ #logo_block,
-    &:has(.openIcon) ~ #user-settings-button,
-    &:has(~ #WI-SP-button .openIcon),
-    &:has(~ #extensions-settings-button .openIcon),
-    &:has(~ #logo_block .openIcon),
-    &:has(~ #user-settings-button .openIcon) {
-        display: flex !important;
-    }
-}
-
-#WI-SP-button {
-    order: 6;
-
-    & .drawer-icon::after {
-        content: " Lorebooks";
-    }
-
-    &:has(.openIcon) ~ #extensions-settings-button,
-    &:has(.openIcon) ~ #logo_block,
-    &:has(.openIcon) ~ #user-settings-button,
-    &:has(~ #extensions-settings-button .openIcon),
-    &:has(~ #logo_block .openIcon),
-    &:has(~ #user-settings-button .openIcon) {
-        display: flex !important;
-    }
-}
-
-#user-settings-button {
-    order: 7;
-
-    & .drawer-icon::after {
-        content: " Interface";
-    }
-
-    & .flex-container.flexFlowRow.alignitemscenter.spaceBetween {
-        flex-wrap: wrap;
-    }
-
-    & #user-settings-block-content {
-        flex-direction: column;
-    }
-
-    &:has(.openIcon) ~ #extensions-settings-button,
-    &:has(.openIcon) ~ #logo_block,
-    &:has(~ #extensions-settings-button .openIcon),
-    &:has(~ #logo_block .openIcon) {
-        display: flex !important;
-    }
-}
-
-#logo_block {
-    order: 8;
-
-    & .drawer-icon::before {
-        content: "";
-    }
-
-    & .drawer-icon::after {
-        content: " Backgrounds";
-    }
-
-    &:has(.openIcon) ~ #extensions-settings-button,
-    &:has(~ #extensions-settings-button .openIcon) {
-        display: flex !important;
-    }
-}
-
-#extensions-settings-button {
-    order: 9;
-
-    & .drawer-icon::before {
-        content: "";
-    }
-
-    & .drawer-icon::after {
-        content: " Extensions";
-    }
+#extensions-settings-button .drawer-icon::before {
+    content: "";
 }
 
 #persona-management-button {
-    padding: var(--borderRadiusSmol);
-    z-index: 1;
-    width: inherit;
-    order: 13;
-    margin-left: -0.675rem;
-    position: fixed;
-    bottom: -3px;
-
-    & .drawer-icon {
-        align-items: center;
-        gap: 8px;
-        display: flex;
-    }
-
-    & .drawer-icon.closedIcon {
-        opacity: 0.72 !important;
-    }
-
-    & .drawer-icon.closedIcon:hover {
-        opacity: 1 !important;
-    }
-
-    & .drawer-icon span {
-        font-size: 18px;
-        font-weight: 720;
-        font-family: var(--mainFontFamily);
-    }
-
     & .persona_avatar {
         object-fit: cover;
         border-radius: 50%;
-        width: 36px;
-        height: 36px;
+        width: 2.25rem;
+        height: 2.25rem;
     }
 
     &:hover .persona_avatar {
@@ -455,17 +182,11 @@ body.hideChatAvatars .mesAvatarWrapper {
 }
 
 #rightNavHolder {
-    order: 1;
-
-    & .drawer-icon::after {
-        content: "Characters";
-        margin-left: -3px;
-    }
-
     &:has(#rm_ch_create_block[style*="display: block"]) {
         #rm_button_characters::before {
             content: "";
         }
+
         #rm_button_characters::after {
             content: " Back";
             font-family: var(--mainFontFamily);
@@ -482,6 +203,16 @@ body.hideChatAvatars .mesAvatarWrapper {
     }
 }
 
+.drawer-content,
+#right-nav-panel,
+#character_popup {
+    top: 0;
+    background-color: var(--SmartThemeChatTintColor);
+    box-shadow: none;
+    border: 0;
+    border-radius: 0;
+}
+
 #rm_button_characters {
     width: max-content;
 
@@ -492,210 +223,71 @@ body.hideChatAvatars .mesAvatarWrapper {
     }
 }
 
-#rm_print_characters_block {
-    flex-flow: row wrap;
-
-    .bogus_folder_select,
-    .character_select,
-    .group_select {
-        width: 50%;
-    }
-}
-
 #firstmessage_textarea {
     flex: none;
     height: 20svh !important;
-}
-
-#form_create {
-    &:has(#firstMessageWrapper[style*="display: none"]) #exampleMesWrapper {
-        display: none;
-    }
-
-    & textarea {
-        resize: none;
-    }
-}
-
-#CharListButtonAndHotSwaps {
-    flex-wrap: wrap;
-
-    .flexFlowColumn.flex-container {
-        flex-flow: row-reverse;
-        flex: 1;
-        justify-content: space-between;
-    }
-}
-
-.hotswap.avatars_inline.flex-container.expander {
-    max-height: fit-content;
 }
 
 #creator_notes_spoiler img {
     max-width: 100%;
 }
 
-#sidebarToggle {
-    cursor: pointer;
-    transition: var(--transition);
-    background-color: #0000;
-    border: none;
-    order: 11;
-    position: absolute;
-    top: 45%;
-    left: 103%;
-    visibility: visible !important;
-
-    & .arrow1,
-    & .arrow2 {
-        transition: var(--transition);
-        background-color: #fff;
-        width: 0.25rem;
-        height: 1.25rem;
-    }
-
-    & .arrow1 {
-        border-top-left-radius: 0.25rem;
-        border-top-right-radius: 0.25rem;
-    }
-
-    & .arrow2 {
-        border-bottom-right-radius: 0.25rem;
-        border-bottom-left-radius: 0.25rem;
-    }
-
-    &:hover .arrow1 {
-        transform: rotate(35deg) translateY(0.25rem);
-    }
-
-    &:hover .arrow2 {
-        transform: rotate(-35deg) translateY(-0.25rem);
-    }
-
-    #top-settings-holder:has(.drawer-icon.openIcon) & {
-        display: none;
-    }
-
-    #top-settings-holder.collapsed & {
-        left: 0.5rem;
-
-        .arrow1 {
-            transform: rotate(-35deg) translateY(0.25rem);
-        }
-
-        .arrow2 {
-            transform: rotate(35deg) translateY(-0.25rem);
-        }
-    }
+#char_connections_button::before {
+    content: "";
 }
 
-.drawer-content,
-#right-nav-panel,
-#character_popup {
-    width: var(--panelSize);
-    top: 0;
-    right: inherit;
-    left: var(--barSize);
-    padding: var(--insidePadding);
-    background-color: var(--SmartThemeChatTintColor);
-    box-shadow: none;
-    border: 0;
-    border-radius: 0;
-    height: 100dvh;
-    padding-bottom: 0;
-    position: fixed;
-    max-height: 100dvh !important;
-    max-width: 100dvw;
-}
-
-#right-nav-panel,
-#character_popup {
-    width: calc(100% - var(--barSize));
+#delete_button::before {
+    content: "";
 }
 
 #sheld {
-    max-width: calc(100% - var(--barSize));
     top: 0;
-    left: var(--barSize);
-    padding: 0px var(--insidePadding);
     background-color: var(--SmartThemeChatTintColor);
     backdrop-filter: blur(var(--SmartThemeBlurStrength));
-    height: 100dvh;
-    max-height: 100dvh;
-
-    &.collapsed {
-        transition: var(--transition);
-        left: 0;
-    }
-
-    &.shifted {
-        left: 33%;
-    }
-
-    #top-settings-holder:has(.drawer-content.pinnedOpen) ~ &,
-    #top-settings-holder:has(.drawer-content.openDrawer):not(
-            :has(#rightNavHolder .drawer-content.openDrawer)
-        ):not(:has(#explore-button .drawer-content.openDrawer))
-        ~ & {
-        left: initial;
-        width: calc(100% - var(--barSize) - var(--panelSize));
-    }
 }
 
 #chat {
     backdrop-filter: none;
-    background-color: #0000;
+    background-color: transparent;
     max-height: 100dvh;
+}
 
-    &:not(:hover)::-webkit-scrollbar {
-        opacity: 0;
-    }
+#hypeBotBar {
+    padding: 0 0 var(--insidePadding) var(--insidePadding);
 }
 
 #form_sheld {
-    backdrop-filter: blur(9px);
-    margin: 0 0 0 -10px;
-    padding: 10px;
+    backdrop-filter: blur(var(--backdropBlur));
+    padding: var(--insidePadding);
     position: absolute;
     bottom: 0;
     border-top-left-radius: var(--borderRadius);
     border-top-right-radius: var(--borderRadius);
-}
 
-#hypeBotBar {
-    padding: 0 0 10px 10px;
+    &:has(#file_form:not(.displayNone)) {
+        padding-top: 0;
+    }
 }
 
 #send_form {
     border: none;
-    border-radius: 10px;
+    border-radius: var(--borderRadiusSmol);
     background-color: transparent;
     backdrop-filter: none;
-
-    &.no-connection {
-        background-color: transparent !important;
-    }
 
     &:has(#send_textarea:focus-visible) {
         outline: none;
     }
 }
 
-#extensionsMenuButton.fa-magic-wand-sparkles::before {
-    content: "\2b";
-}
-
-#options_button::before {
-    content: "";
-}
-
 #send_textarea {
+    border-top-width: 0.125rem;
     border-radius: var(--borderRadius);
     clip-path: none;
     background-color: var(--SmartThemeBlurTintColor);
     resize: none;
     border-color: #0000;
-    padding: 6px 1rem;
+    padding: 0.5rem 1rem;
     padding-right: 3rem;
 
     &::placeholder {
@@ -703,8 +295,21 @@ body.hideChatAvatars .mesAvatarWrapper {
     }
 }
 
+#leftSendForm {
+    padding: 0;
+}
+
 #rightSendForm {
-    margin-inline-start: -3rem;
+    padding: 0;
+    margin-inline-start: -2.75rem;
+}
+
+#extensionsMenuButton.fa-magic-wand-sparkles::before {
+    content: "+";
+}
+
+#options_button::before {
+    content: "";
 }
 
 #send_but::before {
@@ -716,171 +321,26 @@ body.hideChatAvatars .mesAvatarWrapper {
 }
 
 .mes {
-    padding: 10px;
-}
+    &.last_mes {
+        padding-bottom: 4.5rem !important;
 
-.mes.last_mes {
-    padding-bottom: 4.5rem !important;
-}
+        #sheld:has(#file_form:not(.displayNone)) & {
+            padding-bottom: 6.5rem !important;
+        }
 
-.mes.last_mes .swipe_left,
-.mes.last_mes .swipeRightBlock {
-    visibility: hidden;
-}
-
-.mes:not(.last_mes),
-.mes[is_user="true"] {
-    .swipes-counter,
-    .mes_swipe_left,
-    .mes_swipe_right {
-        display: none;
+        & .swipe_left,
+        & .swipeRightBlock {
+            visibility: hidden;
+        }
     }
-}
 
-.mes[is_user="true"] {
-    padding: 0 10px;
-}
-
-.mes .swipes {
-    align-items: center;
-}
-
-.mes .swipes .swipes-counter {
-    opacity: 0;
-    transition: var(--transition);
-    font-weight: 500;
-    padding: 0;
-    margin: 0;
-    min-width: auto;
-}
-
-.mes .swipes .mes_swipe_left,
-.mes .swipes .mes_swipe_right {
-    cursor: pointer;
-    transition: var(--transition);
-    filter: drop-shadow(0 0 2px #000);
-    opacity: 0;
-}
-
-.mes .mes_buttons,
-.mes .mes_edit_buttons {
-    float: none;
-    justify-content: flex-start;
-}
-
-.mes .mes_block .timestamp {
-    order: 1;
-}
-
-.mes .mes_block .ch_name.flex-container.justifySpaceBetween {
-    margin-bottom: 0.25rem;
-}
-
-.mes .mes_block .mes_buttons {
-    margin-top: 0.5rem;
-    padding: 0;
-}
-
-.mes .mes_block .mes_edit_buttons {
-    margin-top: 0.5rem;
-    padding-bottom: 0;
-}
-
-.mes .mes_block .mes_edit_buttons .menu_button {
-    aspect-ratio: 3;
-    height: 21px;
-}
-
-.mes_text {
-    padding: 0;
-}
-
-.mes .mes_block .mes_text > :last-child {
-    margin-bottom: 0;
-}
-
-.mes .mes_block .mes_text p {
-    margin-bottom: var(--lineHeight);
-}
-.mes .mes_block .mes_text p:has(+ ol),
-.mes .mes_block .mes_text p:has(+ ul) {
-    margin-bottom: calc(var(--lineHeight) / 2);
-}
-.mes .mes_block .mes_text h1,
-.mes .mes_block .mes_text h2,
-.mes .mes_block .mes_text h3,
-.mes .mes_block .mes_text h4,
-.mes .mes_block .mes_text a:not(.fa-solid) {
-    margin: 0 0 calc(var(--lineHeight) / 2) 0;
-}
-.mes .mes_block .mes_text ol,
-.mes .mes_block .mes_text ul {
-    margin-block: calc(var(--lineHeight) / 2);
-    padding-inline-start: 2rem;
-}
-.mes .mes_block .mes_text ol:has(+ p),
-.mes .mes_block .mes_text ul:has(+ p) {
-    margin-block-end: var(--lineHeight);
-}
-
-.mes .mes_block .mes_text #curEditTextarea {
-    resize: none;
-    font-family: inherit;
-    font-weight: inherit;
-    line-height: calc(var(--mainFontSize) + 0.25rem);
-    background-color: #0000;
-    border: none;
-    padding: 0;
-}
-
-/* Reasoning */
-.mes_reasoning_header {
-    margin: 0.5rem 0;
-    background-color: transparent;
-    padding-left: 0;
-
-    &:not(:hover) {
-        color: var(--SmartThemeEmColor);
-    }
-}
-
-.mes .mes_block details .mes_reasoning {
-    border-radius: 0;
-    border-left: 3px solid var(--SmartThemeEmColor);
-    background-color: transparent;
-    margin-bottom: 0;
-}
-
-.mes_reasoning_details,
-.mes_reasoning_details .mes_reasoning_summary {
-    margin-right: 0;
-}
-
-body:not(.bubblechat) .mes[is_user="true"] .name_text {
-    visibility: hidden;
-    text-indent: -999px;
-    line-height: 0;
-}
-
-body:not(.bubblechat) .mes[is_user="true"] .name_text::after {
-    text-indent: 0;
-    visibility: visible;
-    line-height: initial;
-    display: block;
-    content: "(You)" !important;
-}
-
-/* these rules have to be nested to get around silly's css sanitization */
-.mes {
-    &:hover {
-        .swipes {
-            .swipes-counter {
-                opacity: 0.7;
-            }
-            .mes_swipe_left,
-            .mes_swipe_right {
-                opacity: 0.3;
-            }
+    &:hover .swipes {
+        .swipes-counter {
+            opacity: 0.7;
+        }
+        .mes_swipe_left,
+        .mes_swipe_right {
+            opacity: 0.3;
         }
     }
 
@@ -897,23 +357,180 @@ body:not(.bubblechat) .mes[is_user="true"] .name_text::after {
     .swipes .mes_swipe_right:hover {
         opacity: 1;
     }
+
+    &:not(.last_mes),
+    &[is_user="true"] {
+        .swipes-counter,
+        .mes_swipe_left,
+        .mes_swipe_right {
+            display: none;
+        }
+    }
 }
 
-.mes .mesIDDisplay,
-.mes .mes_timer,
-.mes .tokenCounterDisplay {
-    transition: var(--transition);
+.mes .mes_buttons,
+.mes .mes_edit_buttons {
+    float: none;
+    justify-content: flex-start;
+    margin-top: var(--insidePadding);
 }
 
-.mes .mes_img_controls {
-    height: 100%;
+.mes .mes_block .mes_edit_buttons {
+    padding-bottom: 1px;
+
+    & .menu_button {
+        aspect-ratio: 3;
+        height: 1.25rem;
+    }
 }
 
-.mes .right_menu_button.fa-lg.fa-solid.fa-magnifying-glass.mes_img_enlarge {
+.mes.smallSysMes .mes_block {
+    padding-left: 0;
+}
+
+.swipes {
+    align-items: center;
+
+    &:has(.swipes-counter[style="display: none;"]) {
+        display: none;
+    }
+
+    .swipes-counter {
+        opacity: 0;
+        transition: var(--transition);
+        font-weight: 500;
+        padding: 0;
+        margin: 0;
+        min-width: auto;
+    }
+
+    .mes_swipe_left,
+    .mes_swipe_right {
+        cursor: pointer;
+        transition: var(--transition);
+        filter: drop-shadow(0 0 0.125rem #000);
+        opacity: 0;
+    }
+}
+
+.mes_text {
+    padding: 0;
+
+    p {
+        margin-bottom: var(--lineHeight);
+
+        &:has(+ ol),
+        &:has(+ ul) {
+            margin-bottom: calc(var(--lineHeight) / 2);
+        }
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    a:not(.fa-solid) {
+        margin: 0 0 calc(var(--lineHeight) / 2) 0;
+    }
+
+    ol,
+    ul {
+        margin-block: calc(var(--lineHeight) / 2);
+        padding-inline-start: 2rem;
+
+        &:has(+ p) {
+            margin-block-end: var(--lineHeight);
+        }
+    }
+
+    #curEditTextarea {
+        resize: none;
+        font-family: inherit;
+        font-weight: inherit;
+        line-height: calc(var(--mainFontSize) + 0.25rem);
+        background-color: #0000;
+        border: none;
+        padding: 0;
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    & > :last-child {
+        margin-bottom: 0;
+    }
+}
+
+/* Reasoning */
+.mes_reasoning_header {
+    margin: var(--insidePadding) 0;
+    background-color: transparent;
+    padding-left: 0;
+    margin-top: 0;
+
+    &:not(:hover) {
+        color: var(--SmartThemeEmColor);
+    }
+}
+
+.mes .mes_block details .mes_reasoning {
+    border-radius: 0;
+    border-left: 0.25rem solid var(--SmartThemeEmColor);
+    background-color: transparent;
+    margin-bottom: 0;
+}
+
+.mes_reasoning_details,
+.mes_reasoning_details .mes_reasoning_summary {
+    margin-right: 0;
+}
+
+.mes .mes_img_enlarge {
     opacity: 0;
+    pointer-events: none;
+}
+
+.mes_img_container {
     cursor: pointer;
-    width: 100%;
-    height: 100%;
+}
+
+body:not(.bubblechat) .mes[is_user="true"] .name_text {
+    visibility: hidden;
+    text-indent: -999px;
+    line-height: 0;
+
+    &::after {
+        text-indent: 0;
+        visibility: visible;
+        line-height: initial;
+        display: block;
+        content: "(You)" !important;
+    }
+}
+
+#scrollToBottom {
+    display: flex;
+    gap: 0.5rem;
+    position: fixed;
+    background-color: var(--black30a);
+    color: var(--SmartThemeBodyColor);
+    bottom: 4rem;
+    align-self: center;
+    align-items: center;
+    z-index: 100;
+    padding: 0.625rem;
+    backdrop-filter: blur(var(--backdropBlur));
+    border-radius: var(--borderRadius);
+    cursor: pointer;
+
+    & i {
+        position: relative;
+    }
+
+    #sheld:has(#file_form:not(.displayNone)) & {
+        bottom: 6.5rem;
+    }
 }
 
 @keyframes splash {
@@ -927,81 +544,26 @@ body:not(.bubblechat) .mes[is_user="true"] .name_text::after {
 }
 
 #splash {
-    left: 2rem;
     text-align: center;
     color: #ff0;
     height: 0;
     margin: 0;
     font-style: normal;
+    font-family: var(--monoFontFamily);
     animation: 0.25s infinite alternate splash;
     position: relative;
-    text-shadow: 2px 2px #3f3f00 !important;
-
-    :is(
-            #top-settings-holder:has(.drawer-content.openDrawer):not(
-                    :has(#explore-button .drawer-content.openDrawer)
-                )
-                ~ #sheld,
-            #top-settings-holder:has(.drawer-content.pinnedOpen) ~ #sheld,
-            body:has(#character_popup[style*="display: flex"]) > #sheld
-        )
-        & {
-        top: 9px;
-        left: 63px;
-    }
-}
-
-.cropper-crop-box .cropper-face.cropper-move {
-    opacity: 1;
-    background-color: #ffffff1a;
-    border: 3px solid #39f;
-    border-radius: 100%;
-    height: 66.666%;
-    top: 16.5%;
-}
-
-.expression-holder {
-    resize: none;
-    width: fit-content;
-}
-
-.zoomed_avatar,
-.zoomed_avatar img {
-    z-index: 10000;
-}
-
-.range-block-title {
-    text-align: left;
-}
-
-body #toast-container {
-    top: 0 !important;
-}
-
-#scrollToBottom {
-    display: flex;
-    gap: 0.5rem;
-    position: fixed;
-    background-color: var(--black30a);
-    color: var(--SmartThemeBodyColor);
-    bottom: 4.75rem;
-    align-self: center;
-    align-items: center;
-    z-index: 100;
-    padding: 0.66rem;
-    backdrop-filter: blur(9px);
-    border-radius: var(--borderRadius);
-    cursor: pointer;
-
-    & i {
-        position: relative;
-    }
+    text-shadow: 0.125rem 0.125rem #3f3f00 !important;
 }
 
 .icon-svg {
-    height: 1em;
+    height: 1rem;
 }
 
-#rawPromptPopup {
-    height: 100%;
+#toast-container {
+    top: 0 !important;
+}
+
+.BGSampleTitle {
+    border-radius: 0;
+    margin-top: 2rem;
 }

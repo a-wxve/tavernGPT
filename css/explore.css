@@ -1,25 +1,13 @@
 /* chub.ai character seach CSS. taken from the chubsearch extension */
-#explore-button {
-    order: 2;
-
-    & .drawer-icon::after {
-        content: " Character Hub";
-    }
-
-    & .drawer-content {
-        width: calc(100dvw - var(--barSize));
-    }
-}
-
-#explore-button .list-and-search-wrapper {
+.list-and-search-wrapper {
     flex-direction: column;
     height: 100%;
     display: flex;
-}
 
-.list-and-search-wrapper .flex-container label {
-    white-space: nowrap;
-    align-self: center;
+    & .flex-container label {
+        white-space: nowrap;
+        align-self: center;
+    }
 }
 
 .search-container {
@@ -29,100 +17,189 @@
 
 .character-list {
     flex-flow: wrap;
-    padding: 0 0.9rem;
     display: flex;
     overflow-y: auto;
 }
 
-.character-list:has(#loading) {
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-}
-
-.character-list .character-list-item {
+.character-list-item {
+    flex-flow: column;
     align-items: flex-start;
-    width: 50%;
-    margin: 10px 0;
-    padding: 0 10px;
+    width: 25%;
+    padding: var(--insidePadding);
     display: inline-flex;
+    overflow: auto;
+
+    & .thumbnail {
+        width: 100%;
+
+        & img {
+            object-fit: cover;
+            border-radius: var(--borderRadiusSmol);
+            width: 100%;
+            cursor: pointer;
+        }
+    }
+
+    & .info {
+        text-align: left;
+        flex: 1;
+        overflow: hidden;
+
+        &:has(.skeleton-text) {
+            width: 100%;
+        }
+
+        & .name {
+            text-align: left;
+            color: var(--SmartThemeBodyColor);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        & .subtitle {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+            color: var(--SmartThemeEmColor);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        & .creator {
+            cursor: pointer;
+        }
+
+        & .tagline {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 9;
+            -webkit-box-orient: vertical;
+        }
+
+        & .tags {
+            margin-top: var(--insidePadding);
+
+            & .tag {
+                cursor: pointer;
+            }
+
+            & .included {
+                color: green;
+                border-color: green;
+            }
+        }
+    }
 }
 
-.character-list .character-list-item .thumbnail {
-    margin-right: 10px;
-}
+.download-btn {
+    margin: -2rem auto 0.5rem;
+    width: 90%;
+    backdrop-filter: blur(var(--backdropBlur));
 
-.character-list .character-list-item img {
-    object-fit: cover;
-    border-radius: var(--borderRadiusSmol);
-    flex: 0 0 100px;
-    height: 100px;
-    cursor: pointer;
-}
-
-.character-list .character-list-item .info {
-    text-align: left;
-    flex: 1;
-    overflow: hidden;
-}
-
-.character-list .character-list-item .info .name {
-    text-align: left;
-    color: var(--SmartThemeBodyColor);
-    margin-bottom: 5px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.character-list .character-list-item .info .tagline {
-    color: var(--SmartThemeEmColor);
-    text-overflow: visble;
-    text-align: left;
-    overflow: hidden;
-}
-
-.character-list .character-list-item .info .tags {
-    margin-top: 10px;
-}
-
-.character-list .character-list-item .info .tags .tag {
-    cursor: pointer;
-}
-
-.character-list .character-list-item .info .tags .included {
-    color: green;
-    border-color: green;
-}
-
-.character-list .character-list-item .info .tags .excluded {
-    color: red;
-    border-color: red;
-}
-
-.character-list .character-list-item .info .creator {
-    color: var(--SmartThemeEmColor);
-    font-size: 0.8rem;
-    cursor: pointer;
+    &:hover {
+        background-color: var(--grey30a) !important;
+        backdrop-filter: contrast(0.1);
+    }
 }
 
 .page-buttons {
-    place-content: center space-between;
-    align-items: center;
-}
+    & .flex-container {
+        flex: 1 1 auto;
+        flex-flow: row;
+    }
 
-.page-buttons .flex-container:has(#sortOrder) {
-    flex-flow: row;
+    & .flex-container:last-child {
+        flex-grow: 0;
+    }
 }
 
 .searching {
     filter: grayscale();
 }
 
+#loading {
+    display: flex;
+    flex-wrap: wrap;
+    max-height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(200%);
+    }
+}
+
+.skeleton-image,
+.skeleton-text {
+    position: relative;
+    border-radius: var(--borderRadiusSmol);
+    background-color: dimgray;
+    overflow: hidden;
+}
+
+.skeleton-image::after,
+.skeleton-text::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(200, 200, 200, 0.8),
+        transparent
+    );
+    animation: shimmer 2s ease-in-out infinite;
+}
+
+.skeleton-image {
+    aspect-ratio: 1;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-text {
+    pointer-events: none;
+}
+
+.name.skeleton-text {
+    height: 1rem;
+    width: 45%;
+    margin-bottom: 0.25rem;
+}
+
+.creator.skeleton-text,
+.favorites.skeleton-text {
+    height: 0.85rem;
+    width: 33%;
+}
+
+.tagline.skeleton-text {
+    height: 5rem;
+    width: 100%;
+}
+
+.tag.skeleton-text {
+    height: 1rem;
+    width: 25%;
+}
+
+.popup:has(.chub-popup) {
+    width: auto;
+}
+
 .chub-popup {
     flex-wrap: nowrap;
 
-    @media screen and (width<=1024px) {
-        flex-wrap: wrap;
+    > div:first-child {
+        display: flex;
+        flex-flow: column;
     }
 
     img {
@@ -134,16 +211,17 @@
         display: inline-block;
     }
 
-    i:not(.fa-cloud-arrow-down) {
-        margin: 0.25rem;
-    }
-
     .chub-padding {
-        padding: 0.5rem;
+        padding: var(--insidePadding);
     }
 
     .chub-text-align {
         text-align: left;
+        margin: 0.25rem;
+
+        img {
+            max-width: 100%;
+        }
     }
 
     .chub-nowrap {
@@ -153,8 +231,4 @@
     .tags {
         justify-content: center;
     }
-}
-
-.popup:has(.chub-popup) {
-    width: auto;
 }
