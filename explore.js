@@ -293,7 +293,7 @@ async function generateCharacterPopup(character) {
         </div>
         `;
 
-    await callGenericPopup(popupHTML, POPUP_TYPE.DISPLAY, '', {
+    callGenericPopup(popupHTML, POPUP_TYPE.DISPLAY, '', {
         wider: true,
         allowVerticalScrolling: true,
     });
@@ -562,7 +562,7 @@ function handleCharacterClick(event) {
     const target = event.target;
     const nameClicked = target.matches('.name');
     const avatarClicked = target.matches('.thumbnail img');
-    const downloadButtonClicked = target.closest('.download-btn');
+    const downloadButtonClicked = target.matches('.download-btn') || target.parentNode.matches('.download-btn');
     const tagClicked = target.matches('.tag');
     const creatorClicked = target.matches('.creator');
 
@@ -578,7 +578,7 @@ function handleCharacterClick(event) {
             break;
         }
         case downloadButtonClicked:
-            downloadCharacter(downloadButtonClicked.getAttribute('data-path'));
+            downloadCharacter(target.closest('.download-btn').getAttribute('data-path'));
             break;
         case tagClicked: {
             const tags = searchElements.includedTags;

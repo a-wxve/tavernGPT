@@ -560,6 +560,7 @@ body:not(.bubblechat) .mes[is_user="true"] .name_text {
 
 #toast-container {
     top: 0 !important;
+    z-index: 999999;
 }
 
 .BGSampleTitle {
