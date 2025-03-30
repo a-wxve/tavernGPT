@@ -428,17 +428,15 @@ function registerRenameChatTool() {
 
 export async function loadChatHistory() {
     let lastCharacterLoaded;
+    const $settingsHolder = document.querySelector('#top-settings-holder');
 
     const searchChats = debounce((searchQuery) => {
         displayChats(searchQuery);
     }, debounce_timeout.short);
 
-    const $settingsHolder = document.querySelector('#top-settings-holder');
-    await fetch(`${extensionFolderPath}/html/history.html`)
-        .then((data) => data.text())
-        .then((html) => {
-            $settingsHolder.insertAdjacentHTML('beforeend', html);
-        });
+    const response = await fetch(`${extensionFolderPath}/html/history.html`);
+    const html = await response.text();
+    $settingsHolder.insertAdjacentHTML('beforeend', html);
 
     $settingsHolder.addEventListener('click', overrideChatButtons, true);
 

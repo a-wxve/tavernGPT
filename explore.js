@@ -670,11 +670,9 @@ export async function loadExplorePanel() {
     let exploreFirstOpen = true;
     const $top_settings_holder = document.querySelector('#top-settings-holder');
 
-    await fetch(`${extensionFolderPath}/html/explore.html`)
-        .then((data) => data.text())
-        .then((html) => {
-            $top_settings_holder.insertAdjacentHTML('beforeend', html);
-        });
+    const response = await fetch(`${extensionFolderPath}/html/explore.html`);
+    const html = await response.text();
+    $top_settings_holder.insertAdjacentHTML('beforeend', html);
     setupExplorePanel();
 
     const $explore_toggle = document.querySelector(

@@ -26,11 +26,10 @@ const default_settings = {
 
 async function initSettings() {
     const $settings = document.querySelector('#extensions_settings2');
-    await fetch(`${extensionFolderPath}/html/settings.html`)
-        .then((data) => data.text())
-        .then((html) => {
-            $settings.insertAdjacentHTML('beforeend', html);
-        });
+
+    const response = await fetch(`${extensionFolderPath}/html/settings.html`);
+    const html = await response.text();
+    $settings.insertAdjacentHTML('beforeend', html);
 
     tavernGPT_settings = tavernGPT_settings || {};
 
@@ -512,12 +511,10 @@ async function setDesktopUI() {
 async function editUI() {
     document.querySelector('#mes_example_div').remove();
 
-    await fetch(`${extensionFolderPath}/html/example_mes.html`)
-        .then((data) => data.text())
-        .then((html) => {
-            document.querySelector('#form_create')
-                .insertAdjacentHTML('beforeend', html);
-        });
+    const response = await fetch(`${extensionFolderPath}/html/example_mes.html`);
+    const html = await response.text();
+    document.querySelector('#form_create')
+        .insertAdjacentHTML('beforeend', html);
 
     // get rid of bogus webkit scrollbar styling
     const stylesheet = Array.from(document.styleSheets).find(sheet => sheet.href && sheet.href.includes('style.css'));
