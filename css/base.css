@@ -53,7 +53,6 @@ body.bubblechat {
                 width: calc(var(--borderRadius) / 2);
                 height: var(--borderRadius);
                 position: absolute;
-                bottom: 0;
                 content: "";
             }
 
@@ -95,6 +94,7 @@ body.bubblechat {
 
             &::before {
                 right: 0;
+                bottom: 0;
                 background-color: var(--SmartThemeUserMesBlurTintColor);
                 border-top-right-radius: 0.25rem;
                 border-bottom-left-radius: 1rem 0.875rem;
@@ -118,8 +118,6 @@ body.bubblechat {
             &::before {
                 left: 0;
                 background-color: var(--SmartThemeBotMesBlurTintColor);
-                border-top-left-radius: 0.25rem;
-                border-bottom-right-radius: 1rem 0.875rem;
             }
         }
 

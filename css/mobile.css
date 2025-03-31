@@ -89,6 +89,16 @@ body.hideChatAvatars .mes .ch_name.flex-container.justifySpaceBetween,
     }
 }
 
+.mes {
+    &[is_user="false"] {
+        & .mes_text::before {
+            bottom: 0;
+            border-top-left-radius: 0.25rem;
+            border-bottom-right-radius: 1rem 0.875rem;
+        }
+    }
+}
+
 #form_sheld {
     margin: unset;
 }
