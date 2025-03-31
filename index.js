@@ -383,7 +383,7 @@ function moveSwipeButtons() {
     });
 }
 
-function randomizeBackground() {
+function loadBackgroundImage() {
     const $background_menu = document.querySelector('#logo_block');
     const backgroundList = tavernGPT_settings.background_list;
 
@@ -394,25 +394,30 @@ function randomizeBackground() {
             '<input type="checkbox" title="Add to randomization list" class="bg_randomizer" tabindex="0" style="align-self: end;"></input>',
         );
 
-    const idx = Math.floor(Math.random() * backgroundList.length) || 0;
-    const backgroundURL = `backgrounds/${backgroundList[idx]}`;
-    fetch(backgroundURL)
-        .then((response) => {
-            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-            return response;
-        })
-        .then(() => {
-            const bg = document.querySelector('#bg1');
-            if (bg instanceof HTMLElement) {
-                bg.style.backgroundImage = `url(${backgroundURL})`;
-            }
-        })
-        .catch((error) => {
-            console.error(`Background ${backgroundURL} could not be set:`, error);
-            console.warn(`Removing ${backgroundList[idx]} from background list...`);
-            backgroundList.splice(idx, 1);
-            saveSettingsDebounced();
-        });
+    const randomizeBackground = () => {
+        const idx = Math.floor(Math.random() * backgroundList.length) || 0;
+        const backgroundURL = `backgrounds/${backgroundList[idx]}`;
+        fetch(backgroundURL)
+            .then((response) => {
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                return response;
+            })
+            .then(() => {
+                const bg = document.querySelector('#bg1');
+                if (bg instanceof HTMLElement) {
+                    bg.style.backgroundImage = `url(${backgroundURL})`;
+                }
+            })
+            .catch((error) => {
+                console.error(`Background ${backgroundURL} could not be set:`, error);
+                console.warn(`Removing ${backgroundList[idx]} from background list...`);
+                backgroundList.splice(idx, 1);
+                saveSettingsDebounced();
+                randomizeBackground();
+            });
+    };
+
+    randomizeBackground();
 
     $background_menu.addEventListener('click', () => {
         $background_menu
@@ -537,7 +542,7 @@ function main() {
     loadExplorePanel();
     loadSplashText();
 
-    randomizeBackground();
+    loadBackgroundImage();
     setWaifuShift();
 
     if (window.matchMedia('screen and (max-width: 1023px)').matches) {
