@@ -522,6 +522,19 @@ body:not(.bubblechat) .mes[is_user="true"] .name_text {
     backdrop-filter: blur(var(--backdropBlur));
     border-radius: var(--borderRadius);
     cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity 0.1s ease-in-out,
+        visibility 0s 0.1s;
+
+    &.show {
+        opacity: 1;
+        visibility: visible;
+        transition:
+            opacity 0.1s ease-in-out,
+            visibility 0s 0s;
+    }
 
     & i {
         position: relative;

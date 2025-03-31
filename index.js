@@ -186,7 +186,6 @@ function addScrollButton() {
 
     scrollButton.appendChild(span);
     scrollButton.appendChild(icon);
-    scrollButton.style.visibility = 'hidden';
 
     $chat.after(scrollButton);
 
@@ -196,7 +195,7 @@ function addScrollButton() {
         const currentHeight = $chat.scrollHeight - $chat.scrollTop - $chat.clientHeight;
         const atBottom = hasScrollbar ? currentHeight < 50 : true;
 
-        scrollButton.style.visibility = atBottom ? 'hidden' : 'visible';
+        atBottom ? scrollButton.classList.remove('show') : scrollButton.classList.add('show');
         checking = false;
     };
 
