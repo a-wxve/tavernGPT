@@ -92,8 +92,7 @@
 }
 
 .download-btn {
-    margin: -2rem auto 0.5rem;
-    width: 90%;
+    margin: -2rem 0.25rem 0.5rem;
     backdrop-filter: blur(var(--backdropBlur));
 
     &:hover {
@@ -140,23 +139,22 @@
     border-radius: var(--borderRadiusSmol);
     background-color: dimgray;
     overflow: hidden;
-}
 
-.skeleton-image::after,
-.skeleton-text::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    height: 100%;
-    width: 100%;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(200, 200, 200, 0.8),
-        transparent
-    );
-    animation: shimmer 2s ease-in-out infinite;
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        height: 100%;
+        width: 100%;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(200, 200, 200, 0.8),
+            transparent
+        );
+        animation: shimmer 2s ease-in-out infinite;
+    }
 }
 
 .skeleton-image {
@@ -194,6 +192,10 @@
     width: auto;
 }
 
+.popup-content:has(.chub-popup) {
+    display: flex;
+}
+
 .chub-popup {
     flex-wrap: nowrap;
 
@@ -206,6 +208,11 @@
         border-radius: var(--borderRadiusSmol);
     }
 
+    .download-btn {
+        margin: -2rem auto 0.5rem;
+        width: 90%;
+    }
+
     h3,
     h5 {
         display: inline-block;
@@ -213,6 +220,7 @@
 
     .chub-padding {
         padding: var(--insidePadding);
+        overflow-y: scroll;
     }
 
     .chub-text-align {
@@ -221,6 +229,14 @@
 
         img {
             max-width: 100%;
+        }
+
+        p:first-child {
+            font-weight: bold;
+        }
+
+        p:nth-of-type(2) {
+            margin-top: calc(var(--lineHeight) / 1.25);
         }
     }
 

@@ -308,9 +308,9 @@ function moveSwipeButtons() {
     $mesButtons.insertAdjacentHTML(
         'afterbegin',
         `<div class="flex-container swipes">
-            <div class="mes_swipe_left fa-solid fa-chevron-left"></div>
+            <div class="mes_button mes_swipe_left fa-solid fa-chevron-left"></div>
             <div class="swipes-counter">1/1</div>
-            <div class="mes_swipe_right fa-solid fa-chevron-right"></div>
+            <div class="mes_button mes_swipe_right fa-solid fa-chevron-right"></div>
         </div>`,
     );
     $mesTemplate.querySelector('.mes_text').after($mesButtons, $mesEditButtons);

@@ -133,25 +133,25 @@ body.waifuMode .expression-holder {
     &:not(:has(.openIcon)) ~ #user-settings-button:not(:has(.openIcon)) {
         display: none;
     }
-}
 
-#ai-config-button:has(
-        ~ :is(
-                #sys-settings-button,
-                #advanced-formatting-button,
-                #WI-SP-button,
-                #extensions-settings-button,
-                #logo_block,
-                #user-settings-button
-            )
-            .openIcon
-    )
-    > .inline-drawer-icon,
-#ai-config-button:has(.openIcon) > .inline-drawer-icon {
-    opacity: 1 !important;
+    &:has(
+            ~ :is(
+                    #sys-settings-button,
+                    #advanced-formatting-button,
+                    #WI-SP-button,
+                    #extensions-settings-button,
+                    #logo_block,
+                    #user-settings-button
+                )
+                .openIcon
+        )
+        > .inline-drawer-icon,
+    &:has(.openIcon) > .inline-drawer-icon {
+        opacity: 1 !important;
 
-    &::before {
-        content: "";
+        &::before {
+            content: "";
+        }
     }
 }
 
@@ -345,6 +345,12 @@ body.waifuMode .expression-holder {
     max-height: fit-content;
 }
 
+#completion_prompt_manager_popup {
+    top: calc(var(--topBarBlockSize) / 2);
+    border-radius: var(--borderRadius);
+    right: var(--barSize);
+}
+
 #sidebarToggle {
     cursor: pointer;
     transition: var(--transition);
@@ -457,20 +463,22 @@ body.waifuMode .expression-holder {
     &[is_user="true"] {
         padding: 0 var(--insidePadding);
     }
-}
 
-.mes .mes_block .timestamp {
-    order: 1;
-}
+    & .mesIDDisplay,
+    & .mes_timer,
+    & .tokenCounterDisplay {
+        transition: var(--transition);
+    }
 
-.mes .mes_block .mes_buttons {
-    padding: 0;
-}
+    & .mes_block {
+        .timestamp {
+            order: 1;
+        }
 
-.mes .mesIDDisplay,
-.mes .mes_timer,
-.mes .tokenCounterDisplay {
-    transition: var(--transition);
+        .mes_buttons {
+            padding: 0;
+        }
+    }
 }
 
 .cropper-crop-box .cropper-face.cropper-move {

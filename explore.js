@@ -5,6 +5,7 @@ import {
     getOneCharacter,
     getRequestHeaders,
     getSlideToggleOptions,
+    messageFormatting,
     printCharactersDebounced,
     processDroppedFiles,
     this_chid,
@@ -52,7 +53,7 @@ function lazyLoadSearchOptions(selectorMap) {
     });
 }
 
-async function downloadCharacter(input) {
+function downloadCharacter(input) {
     const character = characters.find(char => char.fullPath === input.trim());
     const tagline = character?.tagline || '';
 
@@ -226,7 +227,7 @@ function generateCharacterListItem(character, index) {
     return fragment;
 }
 
-async function generateCharacterPopup(character) {
+function generateCharacterPopup(character) {
     const includedTagsValue = searchElements.includedTags.value.toLowerCase();
     const includedTags = includedTagsValue.split(',').map(tag => tag.trim());
 
@@ -276,7 +277,8 @@ async function generateCharacterPopup(character) {
                 </div>
                 <div class="chub-text-align">
                     <p>${character.tagline}</p>
-                    <p>${character.description}</p>
+                    <hr>
+                    ${messageFormatting(character.description, character.name, false, false, null)}
                 </div>
                 <p class="tags">
                 ${tagsHTML}
@@ -295,7 +297,6 @@ async function generateCharacterPopup(character) {
 
     callGenericPopup(popupHTML, POPUP_TYPE.DISPLAY, '', {
         wider: true,
-        allowVerticalScrolling: true,
     });
 
     document.querySelector('.chub-popup').addEventListener('click', (event) => {
@@ -613,7 +614,7 @@ function handleCharacterClick(event) {
     }
 }
 
-async function setupExplorePanel() {
+function setupExplorePanel() {
     const elements = [
         'searchTerm',
         'namespace',
