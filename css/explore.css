@@ -28,6 +28,7 @@
     padding: var(--insidePadding);
     display: inline-flex;
     overflow: auto;
+    max-height: 40rem;
 
     & .thumbnail {
         width: 100%;
@@ -58,6 +59,7 @@
 
         & .subtitle {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             margin-bottom: 0.25rem;
             color: var(--SmartThemeEmColor);
