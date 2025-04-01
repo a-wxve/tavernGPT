@@ -269,28 +269,32 @@ function generateCharacterPopup(character) {
                     <i class="fa-solid fa-download"></i>
                     <span>${character.downloadCount} downloads</span>
                 </div>
+                <div class="chub-text-align">
+                    <i class="fa-solid fa-book"></i>
+                    <span>${character.numTokens} tokens</span>
+                </div>
+                <div class="chub-text-align">
+                    <i class="fa-solid fa-cake-candles"></i>
+                    <span>Created ${new Date(character.createdAt).toLocaleDateString()}</span>
+                </div>
+                <div class="chub-text-align">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>Last Updated ${new Date(character.lastActivityAt).toLocaleDateString()}</span>
+                </div>
             </div>
             <div class="chub-padding">
                 <div>
                     <h3><a href="https://www.chub.ai/characters/${character.fullPath}" target="_blank" rel="noopener noreferrer">${character.name}</a></h3>
                     <h5>by ${character.creator}</h5>
                 </div>
+                <p class="tags">
+                    ${tagsHTML}
+                </p>
                 <div class="chub-text-align">
                     <p>${character.tagline}</p>
                     <hr>
                     ${messageFormatting(character.description, character.name, false, false, null)}
                 </div>
-                <p class="tags">
-                ${tagsHTML}
-                </p>
-                <p class="chub-nowrap">
-                    <i class="fa-solid fa-book"></i>
-                    <span>${character.numTokens} tokens</span>
-                    <i class="fa-solid fa-cake-candles"></i>
-                    <span>Created ${new Date(character.createdAt).toLocaleDateString()}</span>
-                    <i class="fa-solid fa-pen-nib"></i>
-                    <span>Last Updated ${new Date(character.lastActivityAt).toLocaleDateString()}</span>
-                </p>
             </div>
         </div>
         `;
