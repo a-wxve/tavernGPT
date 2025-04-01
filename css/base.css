@@ -204,6 +204,7 @@ body.swipeAllMessages {
         width: 2.25rem;
         height: 2.25rem;
         transition: var(--transition);
+        will-change: transform;
     }
 
     &:hover .persona_avatar {
@@ -579,17 +580,17 @@ details {
         font-weight: 600;
         padding: 0;
         min-width: auto;
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.075rem;
     }
 
     & .mes_swipe_left,
     & .mes_swipe_right {
         cursor: pointer;
-        transition: var(--transition);
         filter: drop-shadow(0 0 0.125rem black);
         opacity: 0;
         transition: var(--transition);
         padding-top: 0.35rem;
+        will-change: opacity;
 
         &:hover {
             opacity: 1;
@@ -617,6 +618,7 @@ details {
     transition:
         opacity 0.1s ease-in-out,
         visibility 0s 0.1s;
+    will-change: opacity, visibility;
 
     &.show {
         opacity: 1;

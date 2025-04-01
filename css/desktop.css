@@ -22,6 +22,7 @@ body.waifuMode .expression-holder {
     justify-content: flex-start;
     height: 100dvh;
     position: fixed;
+    will-change: width, visibility;
 
     &::before {
         content: "";
@@ -353,8 +354,7 @@ body.waifuMode .expression-holder {
 
 #sidebarToggle {
     cursor: pointer;
-    transition: var(--transition);
-    background-color: #0000;
+    background-color: transparent;
     border: none;
     order: 11;
     position: absolute;
@@ -368,6 +368,7 @@ body.waifuMode .expression-holder {
         background-color: #fff;
         width: 0.25rem;
         height: 1.25rem;
+        will-change: transform;
     }
 
     & .arrow1 {
@@ -430,9 +431,10 @@ body.waifuMode .expression-holder {
     padding: 0 var(--insidePadding);
     height: 100dvh;
     max-height: 100dvh;
+    transition: var(--transition);
+    will-change: left;
 
     &.collapsed {
-        transition: var(--transition);
         left: 0;
     }
 

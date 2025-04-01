@@ -33,6 +33,7 @@
     margin: 5px;
     font-weight: 600;
     transition: var(--transition);
+    will-change: opacity;
 
     &:hover,
     &:has(:focus) {
