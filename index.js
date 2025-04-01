@@ -412,8 +412,6 @@ function loadBackgroundImage() {
             });
     };
 
-    randomizeBackground();
-
     $background_menu.addEventListener('click', () => {
         $background_menu
             .querySelectorAll('.bg_randomizer')
@@ -439,6 +437,8 @@ function loadBackgroundImage() {
             : backgroundList.push(filename);
         saveSettingsDebounced();
     });
+
+    randomizeBackground();
 }
 
 function setWaifuShift() {
