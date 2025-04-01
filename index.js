@@ -339,11 +339,6 @@ function moveSwipeButtons() {
                 }
                 break;
             }
-            case target.matches('.mes_img_container, .mes_img'): {
-                const enlargeButton = target.parentElement.querySelector('.mes_img_enlarge');
-                if (enlargeButton instanceof HTMLElement) enlargeButton.click();
-                break;
-            }
         }
     });
 

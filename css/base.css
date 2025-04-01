@@ -448,15 +448,6 @@ body.swipeAllMessages {
             height: 1.25rem;
         }
     }
-
-    & .mes_img_container {
-        cursor: pointer;
-
-        & .mes_img_enlarge {
-            opacity: 0;
-            pointer-events: none;
-        }
-    }
 }
 
 .mes_text {
