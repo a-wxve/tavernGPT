@@ -603,6 +603,7 @@ function handleCharacterClick(event) {
 
             searchElements.creator.value = '';
             searchElements.page.value = 1;
+            searchElements.sort.value = 'trending';
 
             search(event, true, false);
             break;
