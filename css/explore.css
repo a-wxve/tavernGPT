@@ -201,52 +201,60 @@
 .chub-popup {
     flex-wrap: nowrap;
 
-    > div:first-child {
+    & > div:first-child {
         display: flex;
         flex-flow: column;
     }
 
-    img {
+    & img {
         border-radius: var(--borderRadiusSmol);
     }
 
-    .download-btn {
+    & .download-btn {
         margin: -2rem auto 0.5rem;
         width: 90%;
     }
 
-    h3,
-    h5 {
+    & h3,
+    & h5 {
         display: inline-block;
     }
 
-    .chub-padding {
+    & .chub-padding {
         padding: var(--insidePadding);
         overflow-y: scroll;
     }
 
-    .chub-text-align {
+    & .chub-text-align {
         text-align: left;
         margin: 0.25rem;
 
-        img {
+        & img {
             max-width: 100%;
         }
 
-        p:first-child {
+        & p:first-child {
             font-weight: bold;
         }
 
-        p:nth-of-type(2) {
+        & p:nth-of-type(2) {
             margin-top: calc(var(--lineHeight) / 1.25);
         }
     }
 
-    .chub-nowrap {
+    & .chub-nowrap {
         text-wrap: nowrap;
     }
 
-    .tags {
+    & .creator {
+        cursor: pointer;
+    }
+
+    & .tags {
         justify-content: center;
+    }
+
+    & .tag {
+        cursor: pointer;
     }
 }

@@ -285,7 +285,7 @@ function generateCharacterPopup(character) {
             <div class="chub-padding">
                 <div>
                     <h3><a href="https://www.chub.ai/characters/${character.fullPath}" target="_blank" rel="noopener noreferrer">${character.name}</a></h3>
-                    <h5>by ${character.creator}</h5>
+                    <h5 class="creator">by ${character.creator}</h5>
                 </div>
                 <p class="tags">
                     ${tagsHTML}
@@ -303,12 +303,7 @@ function generateCharacterPopup(character) {
         wider: true,
     });
 
-    document.querySelector('.chub-popup').addEventListener('click', (event) => {
-        if (!(event.target instanceof HTMLElement)) return;
-        const downloadButton = event.target.closest('.download-btn');
-        if (!downloadButton) return;
-        downloadCharacter(downloadButton.getAttribute('data-path'));
-    });
+    document.querySelector('.chub-popup').addEventListener('click', handleCharacterClick);
 }
 
 /**
@@ -570,6 +565,7 @@ function handleCharacterClick(event) {
     const downloadButtonClicked = target.matches('.download-btn') || target.parentNode.matches('.download-btn');
     const tagClicked = target.matches('.tag');
     const creatorClicked = target.matches('.creator');
+    const popupCloseButton = target.closest('dialog')?.querySelector('.popup-button-close');
 
     switch (true) {
         case nameClicked:
@@ -582,10 +578,15 @@ function handleCharacterClick(event) {
             generateCharacterPopup(characters[index]);
             break;
         }
-        case downloadButtonClicked:
+        case downloadButtonClicked: {
+            if (popupCloseButton) popupCloseButton.click();
+
             downloadCharacter(target.closest('.download-btn').getAttribute('data-path'));
             break;
+        }
         case tagClicked: {
+            if (popupCloseButton) popupCloseButton.click();
+
             const tags = searchElements.includedTags;
             const tagText = target.textContent.toLowerCase();
 
@@ -600,14 +601,17 @@ function handleCharacterClick(event) {
                 tags.value += `${tagText}, `;
             }
 
+            searchElements.creator.value = '';
             searchElements.page.value = 1;
 
             search(event, true, false);
             break;
         }
-        case creatorClicked:
+        case creatorClicked: {
+            if (popupCloseButton) popupCloseButton.click();
+
             searchElements.searchTerm.value = '';
-            searchElements.creator.value = target.textContent.toLowerCase();
+            searchElements.creator.value = target.textContent.toLowerCase().replace('by ', '');
             searchElements.includedTags.value = '';
             searchElements.excludedTags.value = '';
             searchElements.page.value = 1;
@@ -615,6 +619,7 @@ function handleCharacterClick(event) {
 
             search(event, true, false);
             break;
+        }
     }
 }
 
