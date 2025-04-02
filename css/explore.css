@@ -28,7 +28,6 @@
     padding: var(--insidePadding);
     display: inline-flex;
     overflow: auto;
-    max-height: 40rem;
 
     & .thumbnail {
         width: 100%;
@@ -54,7 +53,6 @@
             text-align: left;
             color: var(--SmartThemeBodyColor);
             font-weight: 700;
-            cursor: pointer;
         }
 
         & .subtitle {
@@ -67,10 +65,6 @@
             font-weight: 600;
         }
 
-        & .creator {
-            cursor: pointer;
-        }
-
         & .tagline {
             overflow: hidden;
             display: -webkit-box;
@@ -81,15 +75,24 @@
         & .tags {
             margin-top: var(--insidePadding);
 
-            & .tag {
-                cursor: pointer;
-            }
-
             & .included {
                 color: green;
                 border-color: green;
             }
         }
+    }
+}
+
+.character-list-item .name,
+.character-list-item .creator,
+.character-list-item .tag,
+.chub-popup .creator,
+.chub-popup .tag {
+    cursor: pointer;
+
+    &:hover {
+        color: orange;
+        border-color: orange;
     }
 }
 
@@ -246,15 +249,7 @@
         text-wrap: nowrap;
     }
 
-    & .creator {
-        cursor: pointer;
-    }
-
     & .tags {
         justify-content: center;
-    }
-
-    & .tag {
-        cursor: pointer;
     }
 }
