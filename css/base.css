@@ -513,6 +513,11 @@ body.swipeAllMessages {
         }
     }
 
+    & img {
+        max-height: 90dvh !important;
+        border-radius: var(--borderRadiusSmol);
+    }
+
     #curEditTextarea {
         resize: none;
         font-family: inherit;
