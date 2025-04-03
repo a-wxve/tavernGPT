@@ -211,7 +211,7 @@ function generateCharacterListItem(character, index) {
             <div class="info">
                 <div class="name">${character.name}</div>
                 <div class="subtitle">
-                    <div class="creator">${character.creator}</div>
+                    <div class="creator">@${character.creator}</div>
                     <div class="favorites">
                         <i class="fa-solid fa-heart" style="color: hotpink"></i>
                         <span>${character.numfavorites} favorites</span>
@@ -258,40 +258,44 @@ function generateCharacterPopup(character) {
                     <span data-i18n="Download">Download</span>
                 </div>
                 <div class="chub-text-align">
-                    ${generateStarHTML(character.rating)}
-                    <span>${character.numRatings} ratings</span>
-                </div>
-                <div class="chub-text-align">
-                    <i class="fa-solid fa-heart" style="color: hotpink"></i>
-                    <span>${character.numfavorites} favorites</span>
-                </div>
-                <div class="chub-text-align">
-                    <i class="fa-solid fa-download"></i>
-                    <span>${character.downloadCount} downloads</span>
-                </div>
-                <div class="chub-text-align">
-                    <i class="fa-solid fa-book"></i>
-                    <span>${character.numTokens} tokens</span>
-                </div>
-                <div class="chub-text-align">
                     <i class="fa-solid fa-cake-candles"></i>
-                    <span>Created ${new Date(character.createdAt).toLocaleDateString()}</span>
+                    <span>
+                        Created ${new Date(character.createdAt).toLocaleDateString()} by
+                        <strong class="creator">@${character.creator}</strong>
+                    </span>
                 </div>
                 <div class="chub-text-align">
-                    <i class="fa-solid fa-clock"></i>
-                    <span>Last Updated ${new Date(character.lastActivityAt).toLocaleDateString()}</span>
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <span>Last Updated ${new Date(character.lastActivityAt).toLocaleString()}</span>
+                </div>
+                <div class="chub-info">
+                    <div class="chub-text-align">
+                        ${generateStarHTML(character.rating)}
+                        <span>${character.numRatings} ratings</span>
+                    </div>
+                    <div class="chub-text-align">
+                        <i class="fa-solid fa-heart" style="color: hotpink"></i>
+                        <span>${character.numfavorites} favorites</span>
+                    </div>
+                    <div class="chub-text-align">
+                        <i class="fa-solid fa-download"></i>
+                        <span>${character.downloadCount} downloads</span>
+                    </div>
+                    <div class="chub-text-align">
+                        <i class="fa-solid fa-book"></i>
+                        <span>${character.numTokens} tokens</span>
+                    </div>
                 </div>
             </div>
             <div class="chub-padding">
                 <div>
                     <h3><a href="https://www.chub.ai/characters/${character.fullPath}" target="_blank" rel="noopener noreferrer">${character.name}</a></h3>
-                    <h5 class="creator">by ${character.creator}</h5>
                 </div>
                 <p class="tags">
                     ${tagsHTML}
                 </p>
                 <div class="chub-text-align">
-                    <p>${character.tagline}</p>
+                    <strong>${character.tagline}</strong>
                     <hr>
                     ${messageFormatting(character.description, character.name, false, false, null)}
                 </div>
@@ -612,7 +616,7 @@ function handleCharacterClick(event) {
             if (popupCloseButton) popupCloseButton.click();
 
             searchElements.searchTerm.value = '';
-            searchElements.creator.value = target.textContent.toLowerCase().replace('by ', '');
+            searchElements.creator.value = target.textContent.toLowerCase().replace('@', '');
             searchElements.includedTags.value = '';
             searchElements.excludedTags.value = '';
             searchElements.page.value = 1;
