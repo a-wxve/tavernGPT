@@ -105,7 +105,7 @@ body.hideChatAvatars .mes .ch_name.flex-container.justifySpaceBetween,
 
 #explore-button {
     & .character-list-item {
-        width: 50%;
+        width: 100%;
 
         & .download-btn {
             margin: -2rem auto 0.5rem;
@@ -119,9 +119,12 @@ body.hideChatAvatars .mes .ch_name.flex-container.justifySpaceBetween,
     overflow-x: hidden;
     overflow-y: scroll;
 
-    div:first-child {
-        margin: 0 auto;
-        align-items: center;
+    & img {
+        width: 100%;
+    }
+
+    & .chub-text-align {
+        overflow-x: hidden;
     }
 }
 
