@@ -466,11 +466,13 @@ body.waifuMode .expression-holder {
         padding: 0 var(--insidePadding);
     }
 
-    &[is_user="false"] {
+    body.bubblechat &[is_user="false"] {
         & .mes_text::before {
             top: 0;
-            border-bottom-left-radius: 0.25rem;
-            border-top-right-radius: 0.875rem 1rem;
+            left: -0.25rem !important;
+            width: var(--borderRadius) !important;
+            height: calc(var(--borderRadius) / 2) !important;
+            border-bottom-left-radius: 1rem 0.875rem;
         }
     }
 
