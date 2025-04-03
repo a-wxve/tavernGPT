@@ -49,7 +49,7 @@ body.bubblechat {
             width: fit-content;
             padding: 0.625rem 1rem;
 
-            &::before {
+            .mes:not(.smallSysMes) &::before {
                 width: calc(var(--borderRadius) / 2);
                 height: var(--borderRadius);
                 position: absolute;
@@ -176,7 +176,7 @@ body.swipeAllMessages {
 
 #ai-config-button {
     & .drawer-icon::before {
-        content: "";
+        content: "";
     }
 }
 
