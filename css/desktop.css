@@ -469,8 +469,8 @@ body.waifuMode .expression-holder {
     body.bubblechat &[is_user="false"] {
         & .mes_text::before {
             top: 0;
-            left: -0.25rem !important;
-            width: var(--borderRadius) !important;
+            left: -0.375rem !important;
+            width: calc(var(--borderRadius) * 1.25) !important;
             height: calc(var(--borderRadius) / 2) !important;
             border-bottom-left-radius: 1rem 0.875rem;
         }
