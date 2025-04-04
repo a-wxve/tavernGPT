@@ -324,10 +324,7 @@ async function setupSystemPromptRename() {
         }
     };
 
-    const renameCallback = debounce(
-        () => renameIfNeeded(),
-        debounce_timeout.short,
-    );
+    const renameCallback = debounce(renameIfNeeded, debounce_timeout.short);
 
     renamePromptListeners.push({
         event: event_types.CHAT_CHANGED,
