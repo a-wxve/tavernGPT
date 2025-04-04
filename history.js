@@ -440,9 +440,8 @@ export async function loadChatHistory() {
     }
 
     eventSource.on(event_types.CHAT_CHANGED, () => {
-        if (characters[this_chid] !== lastCharacterLoaded) {
-            lastCharacterLoaded = characters[this_chid];
-            displayChats('');
-        }
+        if (characters[this_chid] === lastCharacterLoaded) return;
+        lastCharacterLoaded = characters[this_chid];
+        displayChats('');
     });
 }
