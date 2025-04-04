@@ -235,7 +235,7 @@ async function overrideChatButtons(event) {
  * Renames a chat file, returning a result object
  * @param {string} oldFilename - Original chat filename
  * @param {string} newFilename - New chat filename
- * @returns {Promise<{success: boolean, data: any, error: string|null}>} - Result object
+ * @returns {Promise<{success: boolean, data: { oldFilename: string, newFilename: string }?, error: string?}>} Result object
  */
 async function renameChat(oldFilename, newFilename) {
     const response = await fetch('/api/chats/rename', {
