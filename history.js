@@ -224,6 +224,8 @@ async function overrideChatButtons(event) {
 
             await eventSource.emit(event_types.CHAT_DELETED, name);
 
+            displayChats('');
+
             break;
         }
     }
