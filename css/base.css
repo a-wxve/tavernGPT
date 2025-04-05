@@ -520,7 +520,7 @@ body.swipeAllMessages {
         resize: none;
         font-family: inherit;
         font-weight: inherit;
-        line-height: calc(var(--mainFontSize) + 0.5rem);
+        line-height: var(--lineHeight);
         background-color: transparent;
         border: none;
         padding: 0;
