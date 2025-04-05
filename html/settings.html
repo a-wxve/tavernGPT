@@ -21,36 +21,33 @@
                 style="display: none"
             >
                 <div class="flex-container wide100p">
-                    <label class="radio_label">
-                        <input
-                            type="radio"
-                            name="rename_method"
-                            id="rename_method_function"
-                            value="function"
-                            checked
-                        />
-                        Function Call
-                    </label>
+                    <input
+                        type="radio"
+                        name="rename_method"
+                        id="rename_method_function"
+                        value="function"
+                        checked
+                    />
+                    <label class="radio_label">Function Call</label>
                     <small class="flexBasis100p m-b-1">
                         More efficient, but requires model support and may not
                         work with some reverse proxies.
                     </small>
                 </div>
                 <div class="flex-container wide100p">
-                    <label class="radio_label">
-                        <input
-                            type="radio"
-                            name="rename_method"
-                            id="rename_method_system"
-                            value="system"
-                        />
-                        System Prompt
-                    </label>
+                    <input
+                        type="radio"
+                        name="rename_method"
+                        id="rename_method_system"
+                        value="system"
+                    />
+                    <label class="radio_label">System Prompt</label>
                     <small class="flexBasis100p m-b-1">
                         More compatible, but uses extra tokens.
                     </small>
                 </div>
             </div>
+            <hr class="sysHR" />
             <label for="api_key_chub">CharacterHub API Key</label>
             <div class="flex-container wide100p">
                 <input
@@ -73,7 +70,6 @@
                 for the search object while logged in. Your API key will be
                 shown under the 'CH-API-KEY' and 'samwise' headers.
             </small>
-            <hr class="sysHR" />
         </div>
     </div>
 </div>
