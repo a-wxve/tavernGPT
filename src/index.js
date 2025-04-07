@@ -270,12 +270,12 @@ function setMobileUI() {
     };
 
     const $sheld = document.querySelector('#sheld');
-    const body = document.body;
+    // const body = document.body;
 
-    const classes = ['bubblechat', 'hideChatAvatars'];
-    for (const className of classes) {
-        if (!body.classList.contains(className)) body.classList.add(className);
-    }
+    // const classes = ['bubblechat', 'hideChatAvatars'];
+    // for (const className of classes) {
+    //     if (!body.classList.contains(className)) body.classList.add(className);
+    // }
 
     $sheld.insertAdjacentHTML(
         'afterbegin',

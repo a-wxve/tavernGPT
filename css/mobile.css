@@ -60,7 +60,8 @@ body.hideChatAvatars .mes .ch_name.flex-container.justifySpaceBetween,
     left: 0;
     backdrop-filter: blur(var(--backdropBlur));
 
-    &:has(~ #chat [ch_name="SillyTavern System"][mesid="0"]) {
+    &:has(~ #chat [ch_name="SillyTavern System"][mesid="0"]),
+    body:not(.hideChatAvatars) & {
         display: none;
     }
 
