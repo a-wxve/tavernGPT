@@ -97,6 +97,12 @@ body.hideChatAvatars .mes .ch_name.flex-container.justifySpaceBetween,
             border-bottom-right-radius: 1rem 0.875rem;
         }
     }
+
+    & .mes_text {
+        & img {
+            max-height: 75dvh !important;
+        }
+    }
 }
 
 #form_sheld {
