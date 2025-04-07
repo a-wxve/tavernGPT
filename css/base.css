@@ -421,6 +421,10 @@ body.swipeAllMessages {
     &.last_mes {
         padding-bottom: 4.5rem !important;
 
+        body.hideChatAvatars &.last_mes:not(.smallSysMes) {
+            padding-bottom: 4.5rem !important;
+        }
+
         #sheld:has(#file_form:not(.displayNone)) & {
             padding-bottom: 6.5rem !important;
         }
