@@ -432,17 +432,9 @@ function loadBackgroundImage() {
 
 function setWaifuShift() {
     const checkWaifuVisibility = () => {
-        const $waifuImage = document.querySelector('#expression-image');
-        const $sheld = document.querySelector('#sheld');
-
-        if (
-            $waifuImage.getAttribute('src') !== '' &&
-            !document.body.classList.contains('waifuMode')
-        ) {
-            $sheld.classList.add('shifted');
-        } else if ($sheld.classList.contains('shifted')) {
-            $sheld.classList.remove('shifted');
-        }
+        const hasImage = document.querySelector('#expression-image').getAttribute('src') !== '';
+        const hasWaifuMode = document.body.classList.contains('waifuMode');
+        document.querySelector('#sheld').classList.toggle('shifted', hasImage && !hasWaifuMode);
     };
 
     eventSource.on(event_types.GENERATION_STARTED, checkWaifuVisibility);
