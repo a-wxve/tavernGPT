@@ -530,6 +530,7 @@ body.swipeAllMessages {
     }
 
     & img {
+        width: auto;
         max-height: 90dvh !important;
         border-radius: var(--borderRadiusSmol);
     }
