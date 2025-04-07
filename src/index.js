@@ -494,10 +494,11 @@ async function setDesktopUI() {
 async function editUI() {
     document.querySelector('#mes_example_div').remove();
 
+    const formCreate = document.querySelector('#form_create');
     const response = await fetch(`${extensionFolderPath}/html/example_mes.html`);
     const html = await response.text();
-    document.querySelector('#form_create')
-        .insertAdjacentHTML('beforeend', html);
+    formCreate.insertAdjacentHTML('beforeend', html);
+    formCreate.querySelector('#firstmessage_textarea').setAttribute('rows', '6');
 
     // get rid of bogus webkit scrollbar styling
     const stylesheet = Array.from(document.styleSheets).find(sheet => sheet.href && sheet.href.includes('style.css'));
