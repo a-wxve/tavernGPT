@@ -1,4 +1,4 @@
-import { DOMPurify } from '../../../../lib.js';
+import { DOMPurify } from '../../../../../lib.js';
 import {
     event_types,
     eventSource,
@@ -7,11 +7,11 @@ import {
     messageFormatting,
     printCharactersDebounced,
     processDroppedFiles,
-    this_chid
-} from '../../../../script.js';
-import { debounce_timeout } from '../../../constants.js';
-import { callGenericPopup, POPUP_TYPE } from '../../../popup.js';
-import { debounce } from '../../../utils.js';
+    this_chid,
+} from '../../../../../script.js';
+import { debounce_timeout } from '../../../../constants.js';
+import { callGenericPopup, POPUP_TYPE } from '../../../../popup.js';
+import { debounce } from '../../../../utils.js';
 import { extensionFolderPath, tavernGPT_settings } from './index.js';
 
 let characters = [];

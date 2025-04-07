@@ -6,9 +6,9 @@ import {
     name1,
     saveSettingsDebounced,
     user_avatar,
-} from '../../../../script.js';
-import { extension_settings } from '../../../extensions.js';
-import { power_user } from '../../../power-user.js';
+} from '../../../../../script.js';
+import { extension_settings } from '../../../../extensions.js';
+import { power_user } from '../../../../power-user.js';
 import { loadExplorePanel } from './explore.js';
 import { loadChatHistory } from './history.js';
 import { monkeyPatchDrawerToggle } from './monkeypatch.js';

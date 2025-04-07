@@ -1,4 +1,4 @@
-import { moment } from '../../../../lib.js';
+import { moment } from '../../../../../lib.js';
 import {
     characters,
     doNewChat,
@@ -11,19 +11,19 @@ import {
     saveCharacterDebounced,
     saveSettingsDebounced,
     this_chid,
-} from '../../../../script.js';
-import { debounce_timeout } from '../../../constants.js';
-import { getContext } from '../../../extensions.js';
+} from '../../../../../script.js';
+import { debounce_timeout } from '../../../../constants.js';
+import { getContext } from '../../../../extensions.js';
 import {
     deleteGroupChat,
     groups,
     openGroupChat,
     renameGroupChat,
     selected_group,
-} from '../../../group-chats.js';
-import { callGenericPopup, POPUP_TYPE } from '../../../popup.js';
-import { ToolManager } from '../../../tool-calling.js';
-import { debounce, timestampToMoment } from '../../../utils.js';
+} from '../../../../group-chats.js';
+import { callGenericPopup, POPUP_TYPE } from '../../../../popup.js';
+import { ToolManager } from '../../../../tool-calling.js';
+import { debounce, timestampToMoment } from '../../../../utils.js';
 import { extensionFolderPath, tavernGPT_settings } from './index.js';
 
 const group = selected_group ? groups.find((x) => x.id === selected_group) : null;

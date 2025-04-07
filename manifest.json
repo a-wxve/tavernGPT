@@ -3,7 +3,7 @@
     "loading_order": 9,
     "requires": [],
     "optional": [],
-    "js": "index.js",
+    "js": "src/index.js",
     "css": "css/index.css",
     "author": "a_wxve",
     "version": "1.0.0",

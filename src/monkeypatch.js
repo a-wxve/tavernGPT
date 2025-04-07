@@ -1,7 +1,7 @@
-import { DOMPurify, slideToggle } from '../../../../lib.js';
-import { default_avatar, getEntitiesList, getSlideToggleOptions, getThumbnailUrl, getUserAvatar } from '../../../../script.js';
-import { getGroupAvatar } from '../../../group-chats.js';
-import { INTERACTABLE_CONTROL_CLASS } from '../../../keyboard.js';
+import { DOMPurify, slideToggle } from '../../../../../lib.js';
+import { default_avatar, getEntitiesList, getSlideToggleOptions, getThumbnailUrl, getUserAvatar } from '../../../../../script.js';
+import { getGroupAvatar } from '../../../../group-chats.js';
+import { INTERACTABLE_CONTROL_CLASS } from '../../../../keyboard.js';
 
 let cachedFavorites = null;
 
@@ -131,7 +131,7 @@ function patchedFavsToHotswap() {
         cachedFavorites = currentFavorites;
     } else if (addedIDs.length > 0) {
         console.log(`Additions detected (${addedIDs.length} new). Appending only.`);
-        const newEntities = currentFavorites.filter(entity => addedIDs.includes(Number(entity.id)));
+        const newEntities = favorites.filter(entity => addedIDs.includes(entity.id));
         patchedBuildAvatarList(hotswapContainer, newEntities, {
             empty: false, interactable: true, highlight: false,
         });
