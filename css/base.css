@@ -252,11 +252,6 @@ body.swipeAllMessages {
     }
 }
 
-#firstmessage_textarea {
-    flex: none;
-    height: 20svh !important;
-}
-
 #creator_notes_spoiler {
     & img {
         max-width: 100%;
