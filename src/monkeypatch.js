@@ -155,7 +155,7 @@ async function patchedDoNavbarIconClick(event) {
     if (!(drawer instanceof HTMLElement)) return;
     if (drawer.classList.contains('resizing')) return;
 
-    const targetDrawerID = drawer.id;
+    const drawerID = drawer.id;
     const drawerOpen = drawer.classList.contains('openDrawer');
     const drawerPinned = drawer.classList.contains('pinnedOpen');
 
@@ -195,10 +195,10 @@ async function patchedDoNavbarIconClick(event) {
     const openDrawerCallback = (element) => {
         finishResize(element);
 
-        if (element === drawer && targetDrawerID === 'right-nav-panel') {
+        if (element === drawer && drawerID === 'right-nav-panel') {
             patchedFavsToHotswap();
             element.querySelector('#rm_print_characters_block').dispatchEvent(new Event('scroll'));
-        } else if (element === drawer && targetDrawerID === 'explore-block') {
+        } else if (element === drawer && drawerID === 'explore-block') {
             if (!element.dataset.initialized) {
                 element.querySelector('#characterSearchButton').click();
                 element.dataset.initialized = true;
