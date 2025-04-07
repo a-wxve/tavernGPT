@@ -197,7 +197,7 @@ async function patchedDoNavbarIconClick(event) {
 
         if (element === drawer && drawerID === 'right-nav-panel') {
             patchedFavsToHotswap();
-            element.querySelector('#rm_print_characters_block').dispatchEvent(new Event('scroll'));
+            element.style.display = 'flex';
         } else if (element === drawer && drawerID === 'explore-block') {
             if (!element.dataset.initialized) {
                 element.querySelector('#characterSearchButton').click();
