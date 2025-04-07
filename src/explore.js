@@ -576,7 +576,7 @@ function handleCharacterClick(event) {
             const index = Number(
                 target
                     .closest('.character-list-item')
-                    .getAttribute('data-index'),
+                    .dataset.index,
             );
             generateCharacterPopup(characters[index]);
             break;
@@ -584,7 +584,7 @@ function handleCharacterClick(event) {
         case downloadButtonClicked: {
             if (popupCloseButton) popupCloseButton.click();
 
-            downloadCharacter(target.closest('.download-btn').getAttribute('data-path'));
+            downloadCharacter(target.closest('.download-btn').dataset.path);
             break;
         }
         case tagClicked: {
