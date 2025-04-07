@@ -227,13 +227,12 @@ async function patchedDoNavbarIconClick(event) {
         if (!CSS.supports('field-sizing', 'content')) {
             const textareas = drawer.querySelectorAll('textarea.autoSetHeight');
             if (textareas.length > 0) {
-                const heights = [];
-                textareas.forEach(textarea => heights.push(textarea.scrollHeight));
                 requestAnimationFrame(() => {
                     console.log('requestAnimationFrame: Setting textarea heights');
                     textareas.forEach((textarea, index) => {
                         if (!(textarea instanceof HTMLTextAreaElement)) return;
-                        textarea.style.height = heights[index] + 'px';
+                        textarea.style.height = 'auto';
+                        textarea.style.height = (textarea.scrollHeight + 3) + 'px';
                     });
                 });
             }
