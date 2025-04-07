@@ -132,11 +132,10 @@ function setPersona() {
         if (avatar === lastAvatar && name === lastName) return;
 
         const newHTML = `<img class='persona_avatar' src='${avatar}'/><span>${name}</span>`;
-        if ($persona_icon.innerHTML !== newHTML) {
-            $persona_icon.innerHTML = newHTML;
-            lastAvatar = avatar;
-            lastName = name;
-        }
+
+        lastAvatar = avatar;
+        lastName = name;
+        $persona_icon.innerHTML = newHTML;
 
         Array.from($persona_icon.children).forEach((child) => {
             if (child instanceof HTMLElement) child.style.pointerEvents = 'none';
