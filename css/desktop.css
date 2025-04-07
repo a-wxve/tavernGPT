@@ -431,7 +431,7 @@ body.waifuMode .expression-holder {
     padding: 0 var(--insidePadding);
     height: 100dvh;
     max-height: 100dvh;
-    transition: var(--transition);
+    transition: var(--animatedTransition);
     will-change: left;
 
     &.collapsed {

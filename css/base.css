@@ -8,6 +8,7 @@
     --borderRadius: 1.5rem;
     --borderRadiusSmol: 0.625rem;
     --transition: all 0.1s ease-in-out;
+    --animatedTransition: all var(--animationDuration) ease-in-out;
     --backdropBlur: 0.5rem;
 }
 
