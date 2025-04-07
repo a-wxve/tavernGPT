@@ -104,8 +104,6 @@ async function displayChats(searchQuery) {
         chatCategories[category].push(chat);
     });
 
-    $selectChat.replaceChildren();
-
     const categoryEntries = Object.entries(chatCategories).filter(([, chats]) => chats.length > 0);
     categoryEntries.sort(([, aChats], [, bChats]) => {
         const a = aChats[0];
@@ -113,6 +111,8 @@ async function displayChats(searchQuery) {
         if (!a.last_mes || !b.last_mes) return 0;
         return sortTimeCategories(a, b);
     });
+
+    $selectChat.replaceChildren();
 
     for (const [category, chats] of categoryEntries) {
         $selectChat.insertAdjacentHTML('beforeend', `<h5 class=chat-category>${category}</h5>`);
@@ -357,8 +357,7 @@ function registerRenameChatTool() {
     ToolManager.registerFunctionTool({
         name: 'renameChat',
         displayName: 'Rename Chat',
-        description:
-            'Rename the current chat to a more descriptive title. Use this to change or create a name for the current conversation. If you see this tool, that means the chat needs to be renamed, so use it!',
+        description: 'Rename the current chat to a more descriptive title. Use this to change or create a name for the current conversation. If you see this tool, that means the chat needs to be renamed, so use it!',
         parameters: Object.freeze({
             $schema: 'https://json-schema.org/draft/2020-12/schema',
             type: 'object',
