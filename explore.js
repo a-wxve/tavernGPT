@@ -1,14 +1,13 @@
-import { DOMPurify, slideToggle } from '../../../../lib.js';
+import { DOMPurify } from '../../../../lib.js';
 import {
     event_types,
     eventSource,
     getOneCharacter,
     getRequestHeaders,
-    getSlideToggleOptions,
     messageFormatting,
     printCharactersDebounced,
     processDroppedFiles,
-    this_chid,
+    this_chid
 } from '../../../../script.js';
 import { debounce_timeout } from '../../../constants.js';
 import { callGenericPopup, POPUP_TYPE } from '../../../popup.js';
@@ -682,84 +681,9 @@ function setupExplorePanel() {
 }
 
 export async function loadExplorePanel() {
-    let exploreFirstOpen = true;
-    const $top_settings_holder = document.querySelector('#top-settings-holder');
-
+    const topSettingsHolder = document.querySelector('#top-settings-holder');
     const response = await fetch(`${extensionFolderPath}/html/explore.html`);
     const html = await response.text();
-    $top_settings_holder.insertAdjacentHTML('beforeend', html);
+    topSettingsHolder.insertAdjacentHTML('beforeend', html);
     setupExplorePanel();
-
-    const $explore_toggle = document.querySelector(
-        '#explore-button .drawer-toggle',
-    );
-    $explore_toggle.addEventListener('click', () => {
-        const icon = $explore_toggle.querySelector('.drawer-icon');
-        const drawer =
-            $explore_toggle.parentNode.querySelector('.drawer-content');
-        const drawerOpen = drawer.classList.contains('openDrawer');
-
-        if (!(drawer instanceof HTMLElement)) return;
-        if (drawer.classList.contains('resizing')) return;
-
-        if (!drawerOpen) {
-            $top_settings_holder
-                .querySelectorAll('.openDrawer')
-                .forEach((element) => {
-                    if (!(element instanceof HTMLElement)) return;
-                    if (!element.classList.contains('pinnedOpen')) {
-                        element.classList.add('resizing');
-                    }
-                    slideToggle(element, {
-                        ...getSlideToggleOptions(),
-                        onAnimationEnd: (element) => {
-                            element
-                                .closest('.drawer-content')
-                                .classList.remove('resizing');
-                        },
-                    });
-                });
-
-            if (
-                $top_settings_holder.querySelector(
-                    '.drawer:has(.openIcon):has(.openDrawer)',
-                )
-            ) {
-                $top_settings_holder
-                    .querySelector('.openIcon')
-                    .classList.replace('openIcon', 'closedIcon');
-                $top_settings_holder
-                    .querySelector('.openDrawer')
-                    .classList.replace('openDrawer', 'closedDrawer');
-            }
-
-            drawer.classList.add('resizing');
-            slideToggle(drawer, {
-                ...getSlideToggleOptions(),
-                onAnimationEnd: (element) => {
-                    element.classList.remove('resizing');
-                },
-            });
-
-            icon.classList.replace('closedIcon', 'openIcon');
-            drawer.classList.replace('closedDrawer', 'openDrawer');
-
-            if (exploreFirstOpen) {
-                searchElements.searchButton.click();
-                exploreFirstOpen = false;
-            }
-        } else if (drawerOpen) {
-            icon.classList.replace('openIcon', 'closedIcon');
-
-            drawer.classList.add('resizing');
-            slideToggle(drawer, {
-                ...getSlideToggleOptions(),
-                onAnimationEnd: (element) => {
-                    element.classList.remove('resizing');
-                },
-            });
-
-            drawer.classList.replace('openDrawer', 'closedDrawer');
-        }
-    });
 }
