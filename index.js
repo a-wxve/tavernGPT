@@ -274,9 +274,7 @@ function setMobileUI() {
 
     const classes = ['bubblechat', 'hideChatAvatars'];
     for (const className of classes) {
-        if (!body.classList.contains(className)) {
-            body.classList.add(className);
-        }
+        if (!body.classList.contains(className)) body.classList.add(className);
     }
 
     $sheld.insertAdjacentHTML(
@@ -334,9 +332,7 @@ function moveSwipeButtons() {
             case target.matches(`.mes[mesid="${lastUserMes}"] .mes_edit`): {
                 mesText = chat[lastUserMes]['mes'];
 
-                if (power_user.trim_spaces) {
-                    mesText = mesText.trim();
-                }
+                if (power_user.trim_spaces) mesText = mesText.trim();
                 break;
             }
         }
@@ -399,9 +395,7 @@ function loadBackgroundImage() {
             })
             .then(() => {
                 const bg = document.querySelector('#bg1');
-                if (bg instanceof HTMLElement) {
-                    bg.style.backgroundImage = `url(${backgroundURL})`;
-                }
+                if (bg instanceof HTMLElement) bg.style.backgroundImage = `url(${backgroundURL})`;
             })
             .catch((error) => {
                 console.error(`Background ${backgroundURL} could not be set:`, error);
@@ -416,13 +410,8 @@ function loadBackgroundImage() {
         $background_menu
             .querySelectorAll('.bg_randomizer')
             .forEach((background) => {
-                if (
-                    backgroundList.includes(
-                        background.parentElement.getAttribute('bgfile'),
-                    )
-                ) {
-                    background.setAttribute('checked', 'true');
-                }
+                const bgfile = background.parentElement.getAttribute('bgfile');
+                if (backgroundList.includes(bgfile)) background.setAttribute('checked', 'true');
             });
     }, { once: true });
 
