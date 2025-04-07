@@ -55,13 +55,17 @@ function lazyLoadSearchOptions(selectorMap) {
 function downloadCharacter(input) {
     const character = characters.find(char => char.fullPath === input.trim());
     const tagline = character?.tagline || '';
+    const name = character?.name || input.trim();
 
     downloadQueue.push({
         path: input.trim(),
         tagline,
+        name,
     });
 
-    if (!isProcessingQueue) {
+    if (isProcessingQueue) {
+        toastr.info(`${name} added to download queue (${downloadQueue.length} in queue).`);
+    } else {
         processDownloadQueue();
     }
 }
@@ -73,11 +77,11 @@ async function processDownloadQueue() {
     }
 
     isProcessingQueue = true;
-    const { path, tagline } = downloadQueue.shift();
+    const { path, tagline, name } = downloadQueue.shift();
     const timestamp = Date.now();
 
     const url = `https://www.chub.ai/characters/${path}`;
-    toastr.info(`Downloading ${path}...`);
+    toastr.info(`Downloading ${name}...`);
 
     const request = await fetch('/api/content/importURL', {
         method: 'POST',
