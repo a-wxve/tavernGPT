@@ -506,13 +506,11 @@ async function editUI() {
 
     // get rid of bogus webkit scrollbar styling
     const stylesheet = Array.from(document.styleSheets).find(sheet => sheet.href && sheet.href.includes('style.css'));
-    if (stylesheet) {
-        const rulesToDelete = Array.from(stylesheet.cssRules)
-            .map((rule, index) => ({ rule, index }))
-            .filter(({ rule }) => rule.cssText.includes('::-webkit-scrollbar'));
 
-        rulesToDelete.reverse().forEach(({ index }) => stylesheet.deleteRule(index));
-    }
+    const rulesToDelete = Array.from(stylesheet.cssRules)
+        .map((rule, index) => ({ rule, index }))
+        .filter(({ rule }) => rule.cssText.includes('::-webkit-scrollbar'));
+    rulesToDelete.reverse().forEach(({ index }) => stylesheet.deleteRule(index));
 }
 
 async function main() {
