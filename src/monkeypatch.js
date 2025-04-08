@@ -99,15 +99,18 @@ function patchedFavsToHotswap() {
 
     if (cachedFavorites === null) {
         console.warn('First run or cache cleared. Performing full favorites build.');
+
         if (favorites.length === 0) {
             displayEmptyFavsMessage(hotswapContainer);
             cachedFavorites = [];
-        } else {
-            patchedBuildAvatarList(hotswapContainer, favorites, {
-                empty: true, interactable: true, highlight: false,
-            });
-            cachedFavorites = currentFavorites;
+            return;
         }
+
+        patchedBuildAvatarList(hotswapContainer, favorites, {
+            empty: true, interactable: true, highlight: false,
+        });
+        cachedFavorites = currentFavorites;
+
         return;
     }
 
