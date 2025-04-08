@@ -29,8 +29,8 @@ function patchedBuildAvatarList(blockElement, entities, { templateID = 'inline_a
             this_avatar = getThumbnailUrl('avatar', entity.item.avatar);
         }
 
-        avatarNode.setAttribute('data-type', entity.type);
-        avatarNode.setAttribute('data-chid', id);
+        avatarNode.dataset.type = entity.type;
+        avatarNode.dataset.chid = id;
 
         const img = avatarNode.querySelector('img');
         img.setAttribute('src', this_avatar);
@@ -46,18 +46,15 @@ function patchedBuildAvatarList(blockElement, entities, { templateID = 'inline_a
 
         if (entity.type === 'group') {
             const grpTemplateContent = getGroupAvatar(entity.item);
-            if (grpTemplateContent instanceof HTMLElement) {
-                avatarNode.innerHTML = '';
-                avatarNode.setAttribute('class', grpTemplateContent.getAttribute('class'));
-                while (grpTemplateContent.firstChild) {
-                    avatarNode.appendChild(grpTemplateContent.firstChild);
-                }
-                avatarNode.setAttribute('data-grid', id);
-                avatarNode.removeAttribute('data-chid');
-                avatarNode.setAttribute('title', `[Group] ${entity.item.name}`);
-            }
+            if (!(grpTemplateContent instanceof HTMLElement)) return;
+            avatarNode.innerHTML = '';
+            avatarNode.setAttribute('class', grpTemplateContent.getAttribute('class'));
+            avatarNode.appendChild(grpTemplateContent.firstChild);
+            avatarNode.dataset.grid = id;
+            avatarNode.removeAttribute('data-chid');
+            avatarNode.setAttribute('title', `[Group] ${entity.item.name}`);
         } else if (entity.type === 'persona') {
-            avatarNode.setAttribute('data-pid', id);
+            avatarNode.dataset.pid = id;
             avatarNode.removeAttribute('data-chid');
             img.setAttribute('src', getUserAvatar(entity.item.avatar));
             avatarNode.setAttribute('title', `[Persona] ${entity.item.name}\nFile: ${entity.item.avatar}`);
@@ -72,10 +69,7 @@ function patchedBuildAvatarList(blockElement, entities, { templateID = 'inline_a
         fragment.appendChild(avatarNode);
     }
 
-    if (empty) {
-        blockElement.innerHTML = '';
-    }
-
+    if (empty) blockElement.innerHTML = '';
     blockElement.appendChild(fragment);
 }
 
@@ -145,10 +139,8 @@ function patchedFavsToHotswap() {
 }
 
 async function patchedDoNavbarIconClick(event) {
-    event.stopImmediatePropagation();
     console.log('Running PATCHED doNavbarIconClick');
 
-    const topSettingsHolder = document.querySelector('#top-settings-holder');
     const target = event.currentTarget;
     const parentDrawer = target.closest('.drawer');
     const icon = target.querySelector('.drawer-icon');
@@ -172,25 +164,6 @@ async function patchedDoNavbarIconClick(event) {
         }
     };
 
-    const closeOtherDrawers = (otherDrawer) => {
-        if (!(otherDrawer instanceof HTMLElement)) return;
-
-        const otherParent = otherDrawer.closest('.drawer');
-        const otherIcon = otherParent.querySelector('.drawer-icon');
-
-        setState(otherIcon, false);
-        otherDrawer.classList.add('resizing');
-
-        slideToggle(otherDrawer, {
-            ...getSlideToggleOptions(),
-            onAnimationEnd: (element) => {
-                closeDrawerCallback(element);
-            },
-        });
-
-        setState(otherDrawer, false);
-    };
-
     const finishResize = (element) => {
         element.classList.remove('resizing');
     };
@@ -198,22 +171,47 @@ async function patchedDoNavbarIconClick(event) {
     const openDrawerCallback = (element) => {
         finishResize(element);
 
-        if (element === drawer && drawerID === 'right-nav-panel') {
-            patchedFavsToHotswap();
-            element.style.display = 'flex';
-        } else if (element === drawer && drawerID === 'explore-block') {
-            if (!element.dataset.initialized) {
-                element.querySelector('#characterSearchButton').click();
-                element.dataset.initialized = true;
-            }
+        if (!(element === drawer)) return;
+        switch (drawerID) {
+            case 'right-nav-panel':
+                patchedFavsToHotswap();
+                element.style.display = 'flex';
+                break;
+            case 'explore-block':
+                if (!element.dataset.initialized) {
+                    element.querySelector('#characterSearchButton').click();
+                    element.dataset.initialized = true;
+                }
+                break;
         }
     };
 
     const closeDrawerCallback = finishResize;
 
+    const closeOtherDrawers = () => {
+        const otherOpenDrawers = document.querySelectorAll('.openDrawer:not(.pinnedOpen)');
+        otherOpenDrawers.forEach((otherDrawer) => {
+            if (!(otherDrawer instanceof HTMLElement)) return;
+
+            const otherParent = otherDrawer.closest('.drawer');
+            const otherIcon = otherParent.querySelector('.drawer-icon');
+
+            setState(otherIcon, false);
+            otherDrawer.classList.add('resizing');
+
+            slideToggle(otherDrawer, {
+                ...getSlideToggleOptions(),
+                onAnimationEnd: (element) => {
+                    closeDrawerCallback(element);
+                },
+            });
+
+            setState(otherDrawer, false);
+        });
+    };
+
     if (!drawerOpen) {
-        const otherOpenDrawers = topSettingsHolder.querySelectorAll('.openDrawer:not(.pinnedOpen)');
-        otherOpenDrawers.forEach((otherDrawer) => closeOtherDrawers(otherDrawer));
+        closeOtherDrawers();
 
         setState(icon, true);
         drawer.classList.add('resizing');
@@ -229,16 +227,15 @@ async function patchedDoNavbarIconClick(event) {
 
         if (!CSS.supports('field-sizing', 'content')) {
             const textareas = drawer.querySelectorAll('textarea.autoSetHeight');
-            if (textareas.length > 0) {
-                requestAnimationFrame(() => {
-                    console.log('requestAnimationFrame: Setting textarea heights');
-                    textareas.forEach((textarea, index) => {
-                        if (!(textarea instanceof HTMLTextAreaElement)) return;
-                        textarea.style.height = 'auto';
-                        textarea.style.height = (textarea.scrollHeight + 3) + 'px';
-                    });
+            if (!(textareas.length > 0)) return;
+            requestAnimationFrame(() => {
+                console.log('requestAnimationFrame: Setting textarea heights');
+                textareas.forEach((textarea, index) => {
+                    if (!(textarea instanceof HTMLTextAreaElement)) return;
+                    textarea.style.height = 'auto';
+                    textarea.style.height = (textarea.scrollHeight + 3) + 'px';
                 });
-            }
+            });
         }
     } else if (drawerOpen) {
         setState(icon, false);
@@ -252,8 +249,7 @@ async function patchedDoNavbarIconClick(event) {
                 },
             });
         } else {
-            const otherOpenDrawers = topSettingsHolder.querySelectorAll('.openDrawer:not(.pinnedOpen)');
-            otherOpenDrawers.forEach((otherDrawer) => closeOtherDrawers(otherDrawer));
+            closeOtherDrawers();
         }
 
         setState(drawer, false);
