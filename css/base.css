@@ -22,7 +22,8 @@
 .mes_edit_down,
 details summary::-webkit-details-marker,
 body.hideChatAvatars .mesAvatarWrapper,
-body.swipeAllMessages .mes:not(.last_mes) .swipe_right ~ .swipes-counter {
+body.swipeAllMessages .mes:not(.last_mes) .swipe_right ~ .swipes-counter,
+.mes_text:has([data-type="assistant_note"]) ~ .mes_buttons {
     display: none !important;
 }
 
