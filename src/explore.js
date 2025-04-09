@@ -557,10 +557,12 @@ function infiniteScroll(event) {
     if (isLoading) return;
     if (totalCharactersLoaded < searchElements.itemsPerPage.value) return;
 
-    const scrollThreshold = 50;
-    const distanceFromBottom = searchElements.characterList.scrollHeight - (searchElements.characterList.scrollTop + searchElements.characterList.clientHeight);
+    const triggerDistance = 50;
+    const characterList = searchElements.characterList;
+    const currentPosition = characterList.scrollTop + characterList.clientHeight;
+    const remainingDistance = characterList.scrollHeight - currentPosition;
 
-    if (distanceFromBottom <= scrollThreshold) {
+    if (remainingDistance <= triggerDistance) {
         isLoading = true;
         searchElements.page.value = Number(searchElements.page.value) + 1;
         search(event, false, true);
