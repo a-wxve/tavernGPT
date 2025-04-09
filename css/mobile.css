@@ -1,5 +1,5 @@
 :root {
-    --mobileMargin: calc(100dvh - var(--topBarBlockSize) - 1rem);
+    --mobileMargin: calc(100dvh - var(--topBarBlockSize) - 1.5rem);
 }
 
 body.hideChatAvatars .mes .ch_name.flex-container.justifySpaceBetween,
