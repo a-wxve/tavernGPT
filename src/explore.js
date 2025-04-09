@@ -569,16 +569,12 @@ function infiniteScroll(event) {
 
 function handleCharacterClick(event) {
     const target = event.target;
-    const nameClicked = target.matches('.name');
-    const avatarClicked = target.matches('.thumbnail img');
     const downloadButtonClicked = target.matches('.download-btn') || target.parentNode.matches('.download-btn');
-    const tagClicked = target.matches('.tag');
-    const creatorClicked = target.matches('.creator');
     const popupCloseButton = target.closest('dialog')?.querySelector('.popup-button-close');
 
     switch (true) {
-        case nameClicked:
-        case avatarClicked: {
+        case target.matches('.name'):
+        case target.matches('.thumbnail img'): {
             const index = Number(
                 target
                     .closest('.character-list-item')
@@ -608,7 +604,7 @@ function handleCharacterClick(event) {
             downloadCharacter(characterPath);
             break;
         }
-        case tagClicked: {
+        case target.matches('.tag'): {
             if (popupCloseButton) popupCloseButton.click();
 
             const tags = searchElements.includedTags;
@@ -632,7 +628,7 @@ function handleCharacterClick(event) {
             search(event, true, false);
             break;
         }
-        case creatorClicked: {
+        case target.matches('.creator'): {
             if (popupCloseButton) popupCloseButton.click();
 
             searchElements.searchTerm.value = '';
