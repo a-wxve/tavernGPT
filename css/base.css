@@ -627,19 +627,17 @@ details {
     visibility: hidden;
     transition:
         opacity 0.15s ease-in-out,
-        visibility 0s 0.15s;
+        visibility 0.15s allow-discrete;
     will-change: opacity, visibility;
 
     &.show {
         opacity: 1;
         visibility: visible;
-        transition:
-            opacity 0.15s ease-in-out,
-            visibility 0s 0s;
     }
 
     & i {
         position: relative;
+        top: 1px;
     }
 
     #sheld:has(#file_form:not(.displayNone)) & {
