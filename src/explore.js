@@ -484,8 +484,12 @@ async function fetchCharacters(searchOptions, resetCharacterList, resetLoadStatu
     characters.push(...newCharacters);
 
     if (newCharacters.length) {
+        if (searchElements.characterList.classList.contains('error')) {
+            searchElements.characterList.classList.remove('error');
+            searchElements.characterList.replaceChildren();
+        }
         updateCharacterList(newCharacters, resetCharacterList);
-        searchElements.characterList.classList.remove('searching', 'loading', 'error');
+        searchElements.characterList.classList.remove('searching', 'loading');
     } else {
         searchElements.characterList.classList.remove('searching', 'loading');
         searchElements.characterList.classList.add('error');
