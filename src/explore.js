@@ -588,9 +588,24 @@ function handleCharacterClick(event) {
             break;
         }
         case downloadButtonClicked: {
-            if (popupCloseButton) popupCloseButton.click();
+            const downloadBtn = target.closest('.download-btn');
+            const characterPath = downloadBtn.dataset.path;
+            const addedHTML = `
+                <i class="fa-solid fa-check-to-slot"></i>
+                <span data-i18n="Added to queue">Added to queue</span>
+            `;
 
-            downloadCharacter(target.closest('.download-btn').dataset.path);
+            downloadBtn.innerHTML = addedHTML;
+
+            if (popupCloseButton) {
+                popupCloseButton.click();
+                const cardButton = document.querySelector(`.character-list .download-btn[data-path="${characterPath}"]`);
+                if (cardButton) {
+                    cardButton.innerHTML = addedHTML;
+                }
+            }
+
+            downloadCharacter(characterPath);
             break;
         }
         case tagClicked: {
