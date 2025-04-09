@@ -118,7 +118,7 @@ body.hideChatAvatars .mes .ch_name.flex-container.justifySpaceBetween,
 
 #explore-button {
     & .character-list-item {
-        width: 100%;
+        width: 50%;
 
         & .download-btn {
             margin: -2rem auto 0.5rem;
