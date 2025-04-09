@@ -483,13 +483,17 @@ async function fetchCharacters(searchOptions, resetCharacterList, resetLoadStatu
     });
     characters.push(...newCharacters);
 
-    if (newCharacters && newCharacters.length > 0) {
+    if (newCharacters.length) {
         updateCharacterList(newCharacters, resetCharacterList);
+        searchElements.characterList.classList.remove('searching', 'loading', 'error');
     } else {
-        toastr.error('No characters found.');
+        searchElements.characterList.classList.remove('searching', 'loading');
+        searchElements.characterList.classList.add('error');
+        searchElements.characterList.innerHTML = `
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span data-i18n="No characters found.">No characters found.</span>
+        `;
     }
-
-    searchElements.characterList.classList.remove('loading', 'searching');
 
     if (resetLoadStatus) isLoading = false;
 }

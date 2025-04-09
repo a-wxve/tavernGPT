@@ -18,22 +18,23 @@
 .character-list {
     --grid-max-cols: 4;
     --grid-min-width: 200px;
-    --grid-col-size-calc: calc((100% - var(--insidePadding) * var(--grid-max-cols)) / var(--grid-max-cols));
-    --grid-col-min-size: min(100%, max(var(--grid-min-width), var(--grid-col-size-calc)));
+    --grid-col-size-calc: calc(
+        (100% - var(--insidePadding) * var(--grid-max-cols)) /
+            var(--grid-max-cols)
+    );
+    --grid-col-min-size: min(
+        100%,
+        max(var(--grid-min-width), var(--grid-col-size-calc))
+    );
 
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(var(--grid-col-min-size), 1fr));
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(var(--grid-col-min-size), 1fr)
+    );
     gap: var(--insidePadding, 1rem);
     padding-top: 0.25rem;
     overflow-y: auto;
-}
-
-.character-list-item {
-    display: inline-flex;
-    flex-flow: column;
-    align-items: flex-start;
-    gap: 0.125rem;
-    padding: 0.25rem;
 
     &.searching {
         filter: grayscale();
@@ -42,6 +43,28 @@
     &.loading {
         overflow: hidden;
     }
+
+    &.error {
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        justify-items: center;
+        font-size: 2rem;
+        opacity: 25%;
+
+        & i {
+            font-size: 8rem;
+            color: orange;
+        }
+    }
+}
+
+.character-list-item {
+    display: inline-flex;
+    flex-flow: column;
+    align-items: flex-start;
+    gap: 0.125rem;
+    padding: 0.25rem;
 
     & .thumbnail {
         width: 100%;
