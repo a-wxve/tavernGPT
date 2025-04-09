@@ -255,10 +255,12 @@ function generateCharacterPopup(character) {
 
     const popupHTML = `<div class="flex-container chub-popup">
             <div>
-                <img src="${character.url}" alt="${character.name}" width="360">
-                <div data-path="${character.fullPath}" class="menu_button menu_button_icon download-btn wide100p">
-                    <i class="fa-solid fa-cloud-arrow-down"></i>
-                    <span data-i18n="Download">Download</span>
+                <div>
+                    <img src="${character.url}" alt="${character.name}" width="360">
+                    <div data-path="${character.fullPath}" class="menu_button menu_button_icon download-btn wide100p">
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                        <span data-i18n="Download">Download</span>
+                    </div>
                 </div>
                 <div class="chub-text-align">
                     <i class="fa-solid fa-cake-candles"></i>
@@ -487,7 +489,7 @@ async function fetchCharacters(searchOptions, resetCharacterList, resetLoadStatu
         toastr.error('No characters found.');
     }
 
-    searchElements.characterList.classList.remove('searching');
+    searchElements.characterList.classList.remove('loading', 'searching');
 
     if (resetLoadStatus) isLoading = false;
 }

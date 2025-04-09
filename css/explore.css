@@ -1,8 +1,8 @@
 /* chub.ai character seach CSS. taken from the chubsearch extension */
 .list-and-search-wrapper {
+    display: flex;
     flex-direction: column;
     height: 100%;
-    display: flex;
 
     & .flex-container label {
         white-space: nowrap;
@@ -11,32 +11,66 @@
 }
 
 .search-container {
-    padding: 0 0.9rem;
     position: sticky;
+    padding: 0 1rem;
 }
 
 .character-list {
-    flex-flow: wrap;
-    display: flex;
+    --grid-max-cols: 4;
+    --grid-min-width: 200px;
+    --grid-col-size-calc: calc((100% - var(--insidePadding) * var(--grid-max-cols)) / var(--grid-max-cols));
+    --grid-col-min-size: min(100%, max(var(--grid-min-width), var(--grid-col-size-calc)));
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--grid-col-min-size), 1fr));
+    gap: var(--insidePadding, 1rem);
+    padding-top: 0.25rem;
     overflow-y: auto;
 }
 
 .character-list-item {
+    display: inline-flex;
     flex-flow: column;
     align-items: flex-start;
-    width: 25%;
-    padding: var(--insidePadding);
-    display: inline-flex;
-    overflow: auto;
+    gap: 0.125rem;
+    padding: 0.25rem;
+
+    &.searching {
+        filter: grayscale();
+    }
+
+    &.loading {
+        overflow: hidden;
+    }
 
     & .thumbnail {
         width: 100%;
+        position: relative;
+        transition: var(--transition);
+
+        &:hover {
+            transform: translateY(-0.25rem);
+            box-shadow: 0 0.25rem 0 0.125rem var(--grey5050a);
+            border-radius: var(--borderRadiusSmol);
+        }
 
         & img {
             object-fit: cover;
             border-radius: var(--borderRadiusSmol);
             width: 100%;
             cursor: pointer;
+        }
+
+        & .download-btn {
+            backdrop-filter: blur(var(--backdropBlur));
+            position: absolute;
+            bottom: 0.125rem;
+            left: 0.25rem;
+
+            &:hover {
+                background-color: var(--grey30a) !important;
+                backdrop-filter: contrast(0.1);
+            }
         }
     }
 
@@ -66,18 +100,37 @@
         }
 
         & .tagline {
-            overflow: hidden;
             display: -webkit-box;
-            -webkit-line-clamp: 9;
+            -webkit-line-clamp: 5;
             -webkit-box-orient: vertical;
+            line-clamp: 5;
+            overflow: hidden;
         }
 
         & .tags {
+            max-height: 6.5rem;
             margin-top: var(--insidePadding);
+
+            & .tag {
+                border-radius: var(--borderRadiusSmol);
+            }
 
             & .included {
                 color: green;
                 border-color: green;
+            }
+        }
+    }
+
+    @media (width < 768px) {
+        flex-direction: row;
+        gap: var(--insidePadding);
+
+        & .thumbnail {
+            width: 33%;
+
+            & .download-btn {
+                left: 0.75rem;
             }
         }
     }
@@ -96,16 +149,6 @@
     }
 }
 
-.download-btn {
-    margin: -2rem 0.25rem 0.5rem;
-    backdrop-filter: blur(var(--backdropBlur));
-
-    &:hover {
-        background-color: var(--grey30a) !important;
-        backdrop-filter: contrast(0.1);
-    }
-}
-
 .page-buttons {
     & .flex-container {
         flex: 1 1 auto;
@@ -115,18 +158,6 @@
     & .flex-container:last-child {
         flex-grow: 0;
     }
-}
-
-.searching {
-    filter: grayscale();
-}
-
-#loading {
-    display: flex;
-    flex-wrap: wrap;
-    max-height: 100%;
-    width: 100%;
-    overflow: hidden;
 }
 
 @keyframes shimmer {
@@ -207,6 +238,10 @@
     & > div:first-child {
         display: flex;
         flex-flow: column;
+
+        & > div:first-child {
+            position: relative;
+        }
     }
 
     & img {
@@ -214,8 +249,15 @@
     }
 
     & .download-btn {
-        margin: -2rem auto 0.5rem;
+        position: absolute;
+        bottom: 0.25rem;
+        left: 5%;
         width: 90%;
+
+        &:hover {
+            background-color: var(--grey30a) !important;
+            backdrop-filter: contrast(0.1);
+        }
     }
 
     & h3,
@@ -252,5 +294,23 @@
 
     & .tags {
         justify-content: center;
+    }
+
+    & .tag {
+        border-radius: var(--borderRadiusSmol);
+    }
+
+    @media (width < 768px) {
+        flex-wrap: wrap;
+        overflow-x: hidden;
+        overflow-y: scroll;
+
+        & img {
+            width: 100%;
+        }
+
+        & .chub-text-align {
+            overflow-x: hidden;
+        }
     }
 }

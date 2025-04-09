@@ -116,31 +116,6 @@ body.hideChatAvatars .mes .ch_name.flex-container.justifySpaceBetween,
     margin: unset;
 }
 
-#explore-button {
-    & .character-list-item {
-        width: 50%;
-
-        & .download-btn {
-            margin: -2rem auto 0.5rem;
-            width: 90%;
-        }
-    }
-}
-
-.chub-popup {
-    flex-wrap: wrap;
-    overflow-x: hidden;
-    overflow-y: scroll;
-
-    & img {
-        width: 100%;
-    }
-
-    & .chub-text-align {
-        overflow-x: hidden;
-    }
-}
-
 .chat-flex {
     display: none;
 }
