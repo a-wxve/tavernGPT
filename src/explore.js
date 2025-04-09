@@ -58,7 +58,7 @@ function downloadCharacter(input) {
     const name = character?.name || input.trim();
 
     downloadQueue.push({
-        path: input.trim(),
+        fullPath: input.trim(),
         tagline,
         name,
     });
@@ -77,10 +77,10 @@ async function processDownloadQueue() {
     }
 
     isProcessingQueue = true;
-    const { path, tagline, name } = downloadQueue.shift();
+    const { fullPath, tagline, name } = downloadQueue.shift();
     const timestamp = Date.now();
 
-    const url = `https://www.chub.ai/characters/${path}`;
+    const url = `https://www.chub.ai/characters/${fullPath}`;
     toastr.info(`Downloading ${name}...`);
 
     const request = await fetch('/api/content/importURL', {
@@ -117,7 +117,7 @@ async function processDownloadQueue() {
             processDroppedFiles([file])
                 .then(async () => {
                     if (tagline) {
-                        await updateMostRecentCharacter(timestamp, tagline);
+                        await updateMostRecentCharacter(timestamp, tagline, fullPath);
                     }
                 })
                 .catch((error) => {
@@ -140,9 +140,10 @@ async function processDownloadQueue() {
  * Updates the creator notes of the most recently added character (after the given timestamp)
  * @param {number} timestamp - The timestamp to compare against
  * @param {string} tagline - The tagline to add to creator notes
+ * @param {string} fullPath - The full path to the character on chub.ai
  * @returns {Promise<void>}
  */
-async function updateMostRecentCharacter(timestamp, tagline) {
+async function updateMostRecentCharacter(timestamp, tagline, fullPath) {
     const response = await fetch('/api/characters/all', {
         method: 'POST',
         headers: getRequestHeaders(),
@@ -167,21 +168,26 @@ async function updateMostRecentCharacter(timestamp, tagline) {
     recentCharacters.sort((a, b) => b.date_added - a.date_added);
     const targetCharacter = recentCharacters[0];
 
-    const updateResponse = await fetch('/api/characters/edit-attribute', {
-        method: 'POST',
-        headers: getRequestHeaders(),
-        body: JSON.stringify({
-            avatar_url: targetCharacter.avatar,
-            ch_name: targetCharacter.name,
-            field: 'creator_notes',
-            value: tagline,
-        }),
-        cache: 'no-cache',
-    });
+    const updateResponse = await fetch(
+        '/api/characters/merge-attributes', {
+            method: 'POST',
+            headers: getRequestHeaders(),
+            body: JSON.stringify({
+                avatar: targetCharacter.avatar,
+                data: {
+                    creator_notes: tagline,
+                    extensions: {
+                        chub: {
+                            full_path: fullPath,
+                        },
+                    },
+                },
+            }),
+        });
 
     if (!updateResponse.ok) {
-        console.error('Failed to update character notes:', updateResponse.status, updateResponse.statusText);
-        toastr.error(`${updateResponse.status} ${updateResponse.statusText}`, `Failed to add tagline to ${targetCharacter.name}`);
+        console.error('Failed to update:', targetCharacter.name, updateResponse.status, updateResponse.statusText);
+        toastr.error(`${updateResponse.status} ${updateResponse.statusText}`, `Failed to update ${targetCharacter.name}`);
         return;
     }
 
