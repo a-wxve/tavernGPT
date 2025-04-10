@@ -1,4 +1,3 @@
-import { update } from 'node-persist';
 import { DOMPurify } from '../../../../../lib.js';
 import {
     event_types,
