@@ -11,7 +11,7 @@ import { extension_settings } from '../../../../extensions.js';
 import { power_user } from '../../../../power-user.js';
 import { loadExplorePanel } from './explore.js';
 import { loadChatHistory } from './history.js';
-import { monkeyPatchDrawerToggle } from './monkeypatch.js';
+import { monkeyPatch } from './monkeypatch.js';
 import { splashes } from './splashes.js';
 
 export const extensionName = 'tavernGPT';
@@ -519,7 +519,7 @@ async function main() {
 
     await loadExplorePanel();
     loadSplashText();
-    monkeyPatchDrawerToggle();
+    monkeyPatch();
 
     loadBackgroundImage();
     setWaifuShift();
