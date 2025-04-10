@@ -1,3 +1,4 @@
+import { update } from 'node-persist';
 import { DOMPurify } from '../../../../../lib.js';
 import {
     event_types,
@@ -16,9 +17,18 @@ import { extensionFolderPath, tavernGPT_settings } from './index.js';
 
 let characters = [];
 let totalCharactersLoaded = 0;
+let characterPaths = new Set();
 let isLoading = false;
 const downloadQueue = [];
 let isProcessingQueue = false;
+const BUTTON_STATE = {
+    READY_DOWNLOAD: 'ready_download',
+    READY_UPDATE: 'ready_update',
+    IN_QUEUE: 'in_queue',
+    DOWNLOADING: 'downloading',
+    DONE: 'done',
+    ERROR: 'error',
+};
 const searchElements = lazyLoadSearchOptions({
     searchWrapper: '#list-and-search-wrapper',
     characterList: '#list-and-search-wrapper .character-list',
@@ -52,6 +62,101 @@ function lazyLoadSearchOptions(selectorMap) {
     });
 }
 
+function updateButtonState(fullPath, state, errorMessage = '') {
+    const buttons = document.querySelectorAll(`.download-btn[data-path="${fullPath}"]`);
+
+    buttons.forEach(button => {
+        if (!(button instanceof HTMLElement)) {
+            console.error(`Invalid button element for path: ${fullPath}`);
+            return;
+        }
+
+        const parentElement = button.closest('.character-list-item, .chub-popup');
+        if (!(parentElement instanceof HTMLElement)) {
+            console.error(`Invalid parent element element for button: ${fullPath}`);
+            return;
+        }
+
+        if (state === BUTTON_STATE.READY_UPDATE || state === BUTTON_STATE.DONE) {
+            parentElement.dataset.downloaded = 'true';
+        } else if (state === BUTTON_STATE.READY_DOWNLOAD) {
+            parentElement.dataset.downloaded = 'false';
+        }
+
+        switch (state) {
+            case BUTTON_STATE.READY_DOWNLOAD:
+                button.innerHTML = `
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                        <span data-i18n="Download">Download</span>
+                    `;
+                break;
+            case BUTTON_STATE.READY_UPDATE:
+                button.innerHTML = `
+                        <i class="fa-solid fa-file-circle-check"></i>
+                        <span data-i18n="Update">Update</span>
+                    `;
+                break;
+            case BUTTON_STATE.IN_QUEUE:
+                button.innerHTML = `
+                        <i class="fa-solid fa-check-to-slot"></i>
+                        <span data-i18n="Added to queue">Added to queue</span>
+                    `;
+                break;
+            case BUTTON_STATE.DOWNLOADING:
+                button.innerHTML = `
+                        <i class="fa-solid fa-spinner fa-spin-pulse"></i>
+                        <span data-i18n="Downloading">Downloading...</span>
+                    `;
+                break;
+            case BUTTON_STATE.DONE:
+                button.innerHTML = `
+                        <i class="fa-solid fa-check"></i>
+                        <span data-i18n="Done">Done</span>
+                    `;
+                setTimeout(() => {
+                    updateButtonState(fullPath, BUTTON_STATE.READY_UPDATE);
+                }, 5000);
+                break;
+            case BUTTON_STATE.ERROR:
+                button.innerHTML = `
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span data-i18n="Error">Error</span>
+                    `;
+                button.title = errorMessage;
+                setTimeout(() => {
+                    updateButtonState(fullPath,
+                        characterPaths.has(fullPath) ?
+                            BUTTON_STATE.READY_UPDATE :
+                            BUTTON_STATE.READY_DOWNLOAD,
+                    );
+                }, 5000);
+                break;
+        }
+    });
+}
+
+async function updateCharacterPaths() {
+    const response = await fetch('/api/characters/all', {
+        method: 'POST',
+        headers: getRequestHeaders(),
+    });
+
+    if (!response.ok) {
+        console.error('Failed to get existing characters');
+        return;
+    }
+
+    const characters = await response.json();
+    characterPaths.clear();
+    characters
+        .filter(character => character.data?.extensions?.chub?.full_path)
+        .forEach(character => characterPaths.add(character.data.extensions.chub.full_path));
+
+    if (characterPaths.size === 0) {
+        toastr.warning('Please make sure lazyLoadCharacters is set to false in config.yaml. Character download buttons will be broken.', 'No character paths found!');
+    }
+}
+
 function downloadCharacter(input) {
     const character = characters.find(char => char.fullPath === input.trim());
     const tagline = character?.tagline || '';
@@ -62,6 +167,8 @@ function downloadCharacter(input) {
         tagline,
         name,
     });
+
+    updateButtonState(input.trim(), BUTTON_STATE.IN_QUEUE);
 
     if (isProcessingQueue) {
         toastr.info(`${name} added to download queue (${downloadQueue.length} in queue).`);
@@ -79,10 +186,12 @@ async function processDownloadQueue() {
     isProcessingQueue = true;
     const { fullPath, tagline, name } = downloadQueue.shift();
     const timestamp = Date.now();
+    const isUpdate = characterPaths.has(fullPath);
+
+    updateButtonState(fullPath, BUTTON_STATE.DOWNLOADING);
+    toastr.info(`${isUpdate ? 'Updating' : 'Downloading'} ${name}...`);
 
     const url = `https://www.chub.ai/characters/${fullPath}`;
-    toastr.info(`Downloading ${name}...`);
-
     const request = await fetch('/api/content/importURL', {
         method: 'POST',
         headers: getRequestHeaders(),
@@ -90,15 +199,18 @@ async function processDownloadQueue() {
     });
 
     if (!request.ok) {
-        toastr.info(
-            'Click to go to the character page',
-            'Custom content import failed',
-            { onclick: () => window.open(url, '_blank') },
-        );
+        const errorMessage = isUpdate ? 'Update failed' : 'Download failed';
+
         console.error(
             'Custom content import failed',
             request.status,
             request.statusText,
+        );
+        updateButtonState(fullPath, BUTTON_STATE.ERROR, errorMessage);
+        toastr.error(
+            'Click to go to the character page',
+            errorMessage,
+            { onclick: () => window.open(url, '_blank') },
         );
         processDownloadQueue();
         return;
@@ -106,34 +218,33 @@ async function processDownloadQueue() {
 
     const data = await request.blob();
     const customContentType = request.headers.get('X-Custom-Content-Type');
+    if (customContentType !== 'character') {
+        console.error('Unknown content type', customContentType);
+        updateButtonState(fullPath, BUTTON_STATE.ERROR, 'Unknown content type');
+        toastr.error('Unknown content type', customContentType);
+        return false;
+    }
+
     const fileName = request.headers
         .get('Content-Disposition')
         .split('filename=')[1]
         .replace(/"/g, '');
     const file = new File([data], fileName, { type: data.type });
 
-    switch (customContentType) {
-        case 'character':
-            processDroppedFiles([file])
-                .then(async () => {
-                    if (tagline) {
-                        await updateMostRecentCharacter(timestamp, tagline, fullPath);
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error processing dropped files:', error);
-                    toastr.error(error, 'Error processing dropped files');
-                })
-                .finally(() => {
-                    processDownloadQueue();
-                });
-            break;
-        default:
-            console.error('Unknown content type', customContentType);
-            toastr.error('Unknown content type', customContentType);
+    processDroppedFiles([file])
+        .then(async () => {
+            await updateMostRecentCharacter(timestamp, tagline, fullPath);
+            characterPaths.add(fullPath);
+            updateButtonState(fullPath, BUTTON_STATE.DONE);
+        })
+        .catch((error) => {
+            console.error('Error processing dropped files:', error);
+            updateButtonState(fullPath, BUTTON_STATE.ERROR, error.message);
+            toastr.error(error, 'Error processing dropped files');
+        })
+        .finally(() => {
             processDownloadQueue();
-            break;
-    }
+        });
 }
 
 /**
@@ -151,6 +262,7 @@ async function updateMostRecentCharacter(timestamp, tagline, fullPath) {
 
     if (!response.ok) {
         console.error(`Failed to get character list: ${response.status} ${response.statusText}`);
+        updateButtonState(fullPath, BUTTON_STATE.ERROR, response.statusText);
         toastr.error(`${response.status} ${response.statusText}`, 'Failed to get character list');
         return;
     }
@@ -160,33 +272,35 @@ async function updateMostRecentCharacter(timestamp, tagline, fullPath) {
     const recentCharacters = allCharacters.filter(char => char.date_added > timestamp);
 
     if (recentCharacters.length === 0) {
-        console.error('No recently added characters found');
-        toastr.error('Could not identify the imported character');
+        const errorMessage = 'Could not identify the imported character';
+        console.error(errorMessage);
+        updateButtonState(fullPath, BUTTON_STATE.ERROR, errorMessage);
+        toastr.error(errorMessage);
         return;
     }
 
     recentCharacters.sort((a, b) => b.date_added - a.date_added);
     const targetCharacter = recentCharacters[0];
 
-    const updateResponse = await fetch(
-        '/api/characters/merge-attributes', {
-            method: 'POST',
-            headers: getRequestHeaders(),
-            body: JSON.stringify({
-                avatar: targetCharacter.avatar,
-                data: {
-                    creator_notes: tagline,
-                    extensions: {
-                        chub: {
-                            full_path: fullPath,
-                        },
+    const updateResponse = await fetch('/api/characters/merge-attributes', {
+        method: 'POST',
+        headers: getRequestHeaders(),
+        body: JSON.stringify({
+            avatar: targetCharacter.avatar,
+            data: {
+                creator_notes: tagline,
+                extensions: {
+                    chub: {
+                        full_path: fullPath,
                     },
                 },
-            }),
-        });
+            },
+        }),
+    });
 
     if (!updateResponse.ok) {
-        console.error('Failed to update:', targetCharacter.name, updateResponse.status, updateResponse.statusText);
+        console.error(`Failed to update ${targetCharacter.name}:`, updateResponse.status, updateResponse.statusText);
+        updateButtonState(fullPath, BUTTON_STATE.ERROR, updateResponse.statusText);
         toastr.error(`${updateResponse.status} ${updateResponse.statusText}`, `Failed to update ${targetCharacter.name}`);
         return;
     }
@@ -198,24 +312,41 @@ async function updateMostRecentCharacter(timestamp, tagline, fullPath) {
     printCharactersDebounced();
 }
 
-function generateCharacterListItem(character, index) {
+function generateTagsHTML(tags) {
     const includedTagsValue = searchElements.includedTags.value.toLowerCase();
     const includedTags = includedTagsValue.split(',').map(tag => tag.trim());
 
-    const tagsHTML = character.tags.map(tag => {
+    const tagsHTML = tags.map(tag => {
         const isIncluded = includedTags.includes(tag.toLowerCase());
         const tagClass = isIncluded ? 'tag included' : 'tag';
         return `<span class="${tagClass}">${tag}</span>`;
     }).join('');
 
+    return tagsHTML;
+}
+
+function generateDownloadHTML(fullPath) {
+    const isDownloaded = characterPaths.has(fullPath);
+    const title = isDownloaded ? 'Already downloaded' : '';
+    const icon = isDownloaded ? 'fa-file-circle-check' : 'fa-cloud-arrow-down';
+    const text = isDownloaded ? 'Update' : 'Download';
+
+    const downloadHTML = `
+        <div class="menu_button menu_button_icon download-btn" title="${title}" data-path="${fullPath}">
+            <i class="fa-solid ${icon}"></i>
+            <span data-i18n="${text}">${text}</span>
+        </div>
+    `;
+
+    return downloadHTML;
+}
+
+function generateCharacterListItem(character, index) {
     const htmlString = `
-        <div class="character-list-item" data-index="${index}">
+        <div class="character-list-item" data-index="${index}" data-downloaded="${characterPaths.has(character.fullPath)}">
             <div class="thumbnail">
                 <img src="${character.avatar}">
-                <div data-path="${character.fullPath}" class="menu_button menu_button_icon download-btn">
-                    <i class="fa-solid fa-cloud-arrow-down"></i>
-                    <span data-i18n="Download">Download</span>
-                </div>
+                ${generateDownloadHTML(character.fullPath)}
             </div>
             <div class="info">
                 <div class="name">${character.name}</div>
@@ -227,7 +358,9 @@ function generateCharacterListItem(character, index) {
                     </div>
                 </div>
                 <div class="tagline">${character.tagline}</div>
-                <div class="tags">${tagsHTML}</div>
+                <div class="tags">
+                    ${generateTagsHTML(character.tags)}
+                </div>
             </div>
         </div>
     `;
@@ -237,16 +370,7 @@ function generateCharacterListItem(character, index) {
 }
 
 function generateCharacterPopup(character) {
-    const includedTagsValue = searchElements.includedTags.value.toLowerCase();
-    const includedTags = includedTagsValue.split(',').map(tag => tag.trim());
-
-    const tagsHTML = character.tags.map(tag => {
-        const isIncluded = includedTags.includes(tag.toLowerCase());
-        const tagClass = isIncluded ? 'tag included' : 'tag';
-        return `<span class="${tagClass}">${tag}</span>`;
-    }).join('');
-
-    const generateStarHTML = (rating) => {
+    const generateStarsHTML = (rating) => {
         let starsHTML = '';
         for (let i = 0; i < Math.floor(rating); i++) {
             starsHTML += '<i class="fa-solid fa-star" style="color: gold"></i>';
@@ -259,14 +383,11 @@ function generateCharacterPopup(character) {
         return starsHTML;
     };
 
-    const popupHTML = `<div class="flex-container chub-popup">
+    const popupHTML = `<div class="flex-container chub-popup" data-downloaded="${characterPaths.has(character.fullPath)}">
             <div>
                 <div>
                     <img src="${character.url}" alt="${character.name}" width="360">
-                    <div data-path="${character.fullPath}" class="menu_button menu_button_icon download-btn wide100p">
-                        <i class="fa-solid fa-cloud-arrow-down"></i>
-                        <span data-i18n="Download">Download</span>
-                    </div>
+                    ${generateDownloadHTML(character.fullPath)}
                 </div>
                 <div class="chub-text-align">
                     <i class="fa-solid fa-cake-candles"></i>
@@ -281,7 +402,7 @@ function generateCharacterPopup(character) {
                 </div>
                 <div class="chub-info">
                     <div class="chub-text-align">
-                        ${generateStarHTML(character.rating)}
+                        ${generateStarsHTML(character.rating)}
                         <span>${character.numRatings} ratings</span>
                     </div>
                     <div class="chub-text-align">
@@ -303,7 +424,7 @@ function generateCharacterPopup(character) {
                     <h3><a href="https://www.chub.ai/characters/${character.fullPath}" target="_blank" rel="noopener noreferrer">${character.name}</a></h3>
                 </div>
                 <p class="tags">
-                    ${tagsHTML}
+                    ${generateTagsHTML(character.tags)}
                 </p>
                 <div class="chub-text-align">
                     <strong>${character.tagline}</strong>
@@ -323,12 +444,12 @@ function generateCharacterPopup(character) {
 
 /**
 * Fetches a character from the primary API, falling back to the backup if needed
-* @param {Object} node - Character node data from search results
+* @param {Object} character - Character node data from search results
 * @returns {Promise<{success: boolean, data: Blob?, error: string?}>} - Promise resolving to result object
 */
-async function fetchCharacterData(node) {
+async function fetchCharacterData(character) {
     const endpoint = 'https://api.chub.ai/api/characters/download';
-    const backupEndpoint = `https://avatars.charhub.io/avatars/${node.fullPath}/avatar.webp`;
+    const backupEndpoint = `https://avatars.charhub.io/avatars/${character.fullPath}/avatar.webp`;
 
     const headers = new Headers({
         'Content-Type': 'application/json',
@@ -338,7 +459,7 @@ async function fetchCharacterData(node) {
         method: 'POST',
         headers: headers,
         body: JSON.stringify({
-            fullPath: node.fullPath,
+            fullPath: character.fullPath,
             format: 'tavern',
             version: 'main',
         }),
@@ -349,9 +470,9 @@ async function fetchCharacterData(node) {
         return { success: true, data: blob, error: null };
     }
 
-    console.warn('Primary API failed for', node.fullPath, ':', primaryResponse.status, primaryResponse.statusText);
+    console.warn('Primary API failed for', character.fullPath, ':', primaryResponse.status, primaryResponse.statusText);
     toastr.warning(
-        `Using backup source for ${node.name || node.fullPath}`,
+        `Using backup source for ${character.name || character.fullPath}`,
         'API Fallback',
     );
 
@@ -365,7 +486,7 @@ async function fetchCharacterData(node) {
         return { success: true, data: blob, error: null };
     }
 
-    const errorMessage = `Failed to fetch character "${node.name || node.fullPath}" from both primary and backup sources`;
+    const errorMessage = `Failed to fetch character "${character.name || character.fullPath}" from both primary and backup sources`;
     console.error(errorMessage, backupResponse.status, backupResponse.statusText);
     return { success: false, data: null, error: errorMessage };
 }
@@ -399,6 +520,7 @@ function updateCharacterList(characters, reset = false) {
 */
 async function fetchCharacters(searchOptions, resetCharacterList, resetLoadStatus = false) {
     if (resetCharacterList) {
+        await updateCharacterPaths();
         characters = [];
         totalCharactersLoaded = 0;
     }
@@ -489,7 +611,7 @@ async function fetchCharacters(searchOptions, resetCharacterList, resetLoadStatu
     });
     characters.push(...newCharacters);
 
-    if (newCharacters.length) {
+    if (newCharacters.length > 0) {
         if (searchElements.characterList.classList.contains('error')) {
             searchElements.characterList.classList.remove('error');
             searchElements.characterList.replaceChildren();
@@ -583,7 +705,7 @@ function infiniteScroll(event) {
     }
 }
 
-function handleCharacterClick(event) {
+async function handleCharacterClick(event) {
     const target = event.target;
     const downloadButtonClicked = target.matches('.download-btn') || target.parentNode.matches('.download-btn');
     const popupCloseButton = target.closest('dialog')?.querySelector('.popup-button-close');
@@ -601,21 +723,20 @@ function handleCharacterClick(event) {
         }
         case downloadButtonClicked: {
             const downloadBtn = target.closest('.download-btn');
+            if (!downloadBtn) return;
+
             const characterPath = downloadBtn.dataset.path;
-            const addedHTML = `
-                <i class="fa-solid fa-check-to-slot"></i>
-                <span data-i18n="Added to queue">Added to queue</span>
-            `;
+            const isDownloaded = characterPaths.has(characterPath);
 
-            downloadBtn.innerHTML = addedHTML;
+            if (isDownloaded) {
+                const confirmed = await callGenericPopup('<h3>This character is already downloaded.</h3>Would you like to update it?', POPUP_TYPE.CONFIRM);
 
-            if (popupCloseButton) {
-                popupCloseButton.click();
-                const cardButton = document.querySelector(`.character-list .download-btn[data-path="${characterPath}"]`);
-                if (cardButton) {
-                    cardButton.innerHTML = addedHTML;
+                if (!confirmed) {
+                    return;
                 }
             }
+
+            if (popupCloseButton) popupCloseButton.click();
 
             downloadCharacter(characterPath);
             break;
@@ -714,9 +835,8 @@ function setupExplorePanel() {
 }
 
 export async function loadExplorePanel() {
-    const topSettingsHolder = document.querySelector('#top-settings-holder');
     const response = await fetch(`${extensionFolderPath}/html/explore.html`);
     const html = await response.text();
-    topSettingsHolder.insertAdjacentHTML('beforeend', html);
+    document.querySelector('#top-settings-holder').insertAdjacentHTML('beforeend', html);
     setupExplorePanel();
 }
