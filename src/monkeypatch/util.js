@@ -1,8 +1,8 @@
-import { DOMPurify } from '../../../../../../lib';
-import { default_avatar, getEntitiesList } from '../../../../../../script';
-import { getGroupAvatar } from '../../../../../group-chats';
-import { INTERACTABLE_CONTROL_CLASS } from '../../../../../keyboard';
-import { getUserAvatar } from '../../../../../personas';
+import { DOMPurify } from '../../../../../../lib.js';
+import { default_avatar, getEntitiesList } from '../../../../../../script.js';
+import { getGroupAvatar } from '../../../../../group-chats.js';
+import { INTERACTABLE_CONTROL_CLASS } from '../../../../../keyboard.js';
+import { getUserAvatar } from '../../../../../personas.js';
 
 let cachedFavorites = null;
 
