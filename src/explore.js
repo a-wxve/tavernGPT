@@ -490,6 +490,113 @@ async function fetchCharacterData(character) {
     return { success: false, data: null, error: errorMessage };
 }
 
+function limitTagRows(startIndex, endIndex) {
+    const listItems = Array.from(searchElements.characterList.querySelectorAll('.character-list-item'));
+    const newItems = listItems.slice(startIndex, endIndex);
+    if (!newItems.length) return;
+
+    let currentRow = [];
+    const rows = [currentRow];
+    let lastTop = newItems[0].getBoundingClientRect().top;
+
+    listItems.forEach(item => {
+        const itemTop = item.getBoundingClientRect().top;
+        if (Math.abs(itemTop - lastTop) <= 5) {
+            currentRow.push(item);
+        }
+    });
+
+    newItems.forEach(item => {
+        const itemTop = item.getBoundingClientRect().top;
+        if (Math.abs(itemTop - lastTop) > 5) {
+            currentRow = [item];
+            rows.push(currentRow);
+            lastTop = itemTop;
+        } else {
+            currentRow.push(item);
+        }
+    });
+
+    rows.forEach(row => {
+        const rowData = {
+            lowestFirstTagPosition: -Infinity,
+            avgTagHeight: 0,
+            itemsToProcess: [],
+        };
+
+        let totalTagHeight = 0;
+        let tagCount = 0;
+
+        row.forEach(item => {
+            const tagsContainer = item.querySelector('.tags');
+            const tags = Array.from(tagsContainer.querySelectorAll('.tag'));
+            if (!tags.length) return;
+
+            const firstTag = tags[0];
+            const firstTagTop = firstTag.getBoundingClientRect().top;
+            const firstTagHeight = firstTag.getBoundingClientRect().height;
+
+            if (firstTagTop > rowData.lowestFirstTagPosition) {
+                rowData.lowestFirstTagPosition = firstTagTop;
+            }
+
+            totalTagHeight += firstTagHeight;
+            tagCount++;
+
+            rowData.itemsToProcess.push({
+                container: tagsContainer,
+                tags: tags,
+                measurements: tags.map(tag => ({
+                    bottom: tag.getBoundingClientRect().bottom,
+                    element: tag,
+                })),
+            });
+        });
+
+        rowData.avgTagHeight = tagCount > 0 ? totalTagHeight / tagCount : 0;
+
+        const maxTagBottom = rowData.lowestFirstTagPosition + rowData.avgTagHeight + 5;
+
+        rowData.itemsToProcess.forEach(item => {
+            const { container, tags, measurements } = item;
+
+            let visibleCount = 0;
+            for (let i = 0; i < measurements.length; i++) {
+                if (measurements[i].bottom <= maxTagBottom) {
+                    visibleCount++;
+                } else {
+                    break;
+                }
+            }
+
+            if (visibleCount === tags.length) return;
+
+            const fragment = document.createDocumentFragment();
+            const hiddenCount = tags.length - visibleCount;
+
+            for (let i = 0; i < visibleCount; i++) {
+                fragment.appendChild(tags[i].cloneNode(true));
+            }
+
+            const moreTag = document.createElement('span');
+            moreTag.className = 'tag more-tags';
+            moreTag.textContent = `+${hiddenCount} more`;
+            fragment.appendChild(moreTag);
+
+            container.innerHTML = '';
+            container.appendChild(fragment);
+
+            if (moreTag.getBoundingClientRect().bottom > maxTagBottom && visibleCount > 0) {
+                const lastTag = container.children[container.children.length - 2];
+                if (lastTag) {
+                    container.removeChild(lastTag);
+                    moreTag.textContent = `+${hiddenCount + 1} more`;
+                }
+            }
+        });
+    });
+}
+
 function updateCharacterList(characters, reset = false) {
     if (reset) {
         searchElements.characterList.innerHTML = '';
@@ -506,6 +613,7 @@ function updateCharacterList(characters, reset = false) {
     });
 
     searchElements.characterList.appendChild(fragment);
+    limitTagRows(totalCharactersLoaded, totalCharactersLoaded + characters.length);
 
     totalCharactersLoaded += characters.length;
 }
@@ -711,7 +819,8 @@ async function handleCharacterClick(event) {
 
     switch (true) {
         case target.matches('.name'):
-        case target.matches('.thumbnail img'): {
+        case target.matches('.thumbnail img'):
+        case target.matches('.tag.more-tags'): {
             const index = Number(
                 target
                     .closest('.character-list-item')
