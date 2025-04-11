@@ -223,16 +223,24 @@ function loadSplashText() {
             '#version_display_welcome',
         );
 
-        if (!welcomeElement) return;
+        if (!welcomeElement || !(welcomeElement instanceof HTMLElement)) return;
 
         observer.disconnect();
 
-        const splashText = document.createElement('p');
-        splashText.id = 'splash';
+        const welcomeRightEdge = welcomeElement.offsetLeft + welcomeElement.offsetWidth;
+        const desiredTop = welcomeElement.offsetTop + welcomeElement.offsetHeight / 2;
 
+        const splashWrapper = document.createElement('div');
+        splashWrapper.id = 'splash-wrapper';
+        const splashText = document.createElement('span');
+        splashText.id = 'splash';
+        splashWrapper.appendChild(splashText);
+
+        splashWrapper.style.left = `${welcomeRightEdge}px`;
+        splashWrapper.style.top = `${desiredTop}px`;
         splashText.textContent = getRandomSplash();
 
-        welcomeElement.after(splashText);
+        welcomeElement.after(splashWrapper);
 
         splashText.addEventListener('click', () => {
             splashText.textContent = getRandomSplash();
