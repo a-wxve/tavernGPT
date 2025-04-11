@@ -38,6 +38,7 @@
 
     &.searching {
         filter: grayscale();
+        transition: var(--transition);
     }
 
     &.loading {
@@ -50,7 +51,7 @@
         align-items: center;
         justify-items: center;
         font-size: 2rem;
-        opacity: 25%;
+        opacity: 0.5;
 
         & i {
             font-size: 8rem;
@@ -63,8 +64,7 @@
     display: inline-flex;
     flex-flow: column;
     align-items: flex-start;
-    gap: 0.125rem;
-    padding: 0.25rem;
+    gap: 0.25rem;
 
     & .thumbnail {
         width: 100%;
@@ -83,18 +83,6 @@
             width: 100%;
             cursor: pointer;
         }
-
-        & .download-btn {
-            backdrop-filter: blur(var(--backdropBlur));
-            position: absolute;
-            bottom: 0.125rem;
-            left: 0.25rem;
-
-            &:hover {
-                background-color: var(--grey30a) !important;
-                backdrop-filter: contrast(0.1);
-            }
-        }
     }
 
     & .info {
@@ -110,13 +98,14 @@
             text-align: left;
             color: var(--SmartThemeBodyColor);
             font-weight: 700;
+            margin-bottom: 0.125rem;
         }
 
         & .subtitle {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.125rem;
             color: var(--SmartThemeEmColor);
             font-size: 0.85rem;
             font-weight: 600;
@@ -129,32 +118,54 @@
             line-clamp: 5;
             overflow: hidden;
         }
+    }
+}
 
-        & .tags {
-            max-height: 6.5rem;
-            margin-top: var(--insidePadding);
+.download-btn {
+    backdrop-filter: blur(var(--backdropBlur));
+    border-radius: 0.5rem;
+    position: absolute;
+    opacity: 0.8;
+    transition: var(--transition);
+    font-weight: 500;
 
-            & .tag {
-                border-radius: var(--borderRadiusSmol);
-            }
-
-            & .included {
-                color: green;
-                border-color: green;
-            }
-        }
+    .character-list-item & {
+        bottom: 0.125rem;
+        left: 0.25rem;
     }
 
-    @media (width < 768px) {
-        flex-direction: row;
-        gap: var(--insidePadding);
+    .chub-popup & {
+        bottom: 0.25rem;
+        left: 5%;
+        width: 90%;
+    }
 
-        & .thumbnail {
-            width: 33%;
+    &:hover {
+        background-color: var(--grey30a) !important;
+        backdrop-filter: contrast(0.1);
+        opacity: 1;
+    }
+}
 
-            & .download-btn {
-                left: 0.75rem;
-            }
+.tags {
+    margin-top: var(--insidePadding);
+
+    & .tag {
+        border: 1px solid transparent;
+        border-radius: var(--borderRadius);
+        font-size: 0.85rem;
+        font-weight: 500;
+        padding: 0.25rem 0.5rem;
+        transition: var(--transition);
+
+        &:not(.skeleton-text) {
+            background-color: var(--black60a);
+        }
+
+        &.included {
+            color: green;
+            background-color: rgb(from green r g b / 0.1);
+            border-color: green;
         }
     }
 }
@@ -196,7 +207,7 @@
 .skeleton-text {
     position: relative;
     border-radius: var(--borderRadiusSmol);
-    background-color: dimgray;
+    background-color: rgb(from dimgray r g b / 0.5);
     overflow: hidden;
 
     &::after {
@@ -209,7 +220,7 @@
         background: linear-gradient(
             90deg,
             transparent,
-            rgba(200, 200, 200, 0.8),
+            rgba(200, 200, 200, 0.25),
             transparent
         );
         animation: shimmer 2s ease-in-out infinite;
@@ -231,8 +242,7 @@
     margin-bottom: 0.25rem;
 }
 
-.creator.skeleton-text,
-.favorites.skeleton-text {
+:is(.creator, .favorites).skeleton-text {
     height: 0.85rem;
     width: 33%;
 }
@@ -243,7 +253,7 @@
 }
 
 .tag.skeleton-text {
-    height: 1rem;
+    height: 1.5rem;
     width: 25%;
 }
 
@@ -318,12 +328,23 @@
     & .tags {
         justify-content: center;
     }
+}
 
-    & .tag {
-        border-radius: var(--borderRadiusSmol);
+@media (width < 768px) {
+    .character-list-item {
+        flex-direction: row;
+        gap: var(--insidePadding);
+
+        & .thumbnail {
+            width: 33%;
+
+            & .download-btn {
+                left: 0.75rem;
+            }
+        }
     }
 
-    @media (width < 768px) {
+    .chub-popup {
         flex-wrap: wrap;
         overflow-x: hidden;
         overflow-y: scroll;
