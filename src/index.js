@@ -173,7 +173,7 @@ function addSidebarToggle() {
 }
 
 function addScrollButton() {
-    const $chat = document.querySelector('#chat');
+    const chat = document.querySelector('#chat');
 
     const scrollButton = document.createElement('div');
     scrollButton.id = 'scrollToBottom';
@@ -187,19 +187,29 @@ function addScrollButton() {
     scrollButton.appendChild(span);
     scrollButton.appendChild(icon);
 
-    $chat.after(scrollButton);
+    chat.after(scrollButton);
 
     let checking = false;
     const checkScrollPosition = () => {
-        const hasScrollbar = $chat.scrollHeight > $chat.clientHeight;
-        const currentHeight = $chat.scrollHeight - $chat.scrollTop - $chat.clientHeight;
+        const hasScrollbar = chat.scrollHeight > chat.clientHeight;
+        const currentHeight = chat.scrollHeight - chat.scrollTop - chat.clientHeight;
         const atBottom = hasScrollbar ? currentHeight < 50 : true;
 
         atBottom ? scrollButton.classList.remove('show') : scrollButton.classList.add('show');
         checking = false;
     };
 
-    $chat.addEventListener('scroll', () => {
+    const formSheld = document.getElementById('form_sheld');
+    const resizeObserver = new ResizeObserver(entries => {
+        for (let entry of entries) {
+            const newHeight = entry.contentRect.height;
+
+            scrollButton.style.bottom = `${newHeight + 25}px`;
+        }
+    });
+    resizeObserver.observe(formSheld);
+
+    chat.addEventListener('scroll', () => {
         if (!checking) {
             checking = true;
             requestAnimationFrame(checkScrollPosition);
@@ -207,8 +217,8 @@ function addScrollButton() {
     });
 
     scrollButton.addEventListener('click', () => {
-        $chat.scrollTo({
-            top: $chat.scrollHeight,
+        chat.scrollTo({
+            top: chat.scrollHeight,
             behavior: 'smooth',
         });
     });

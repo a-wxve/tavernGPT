@@ -615,7 +615,6 @@ details {
     position: fixed;
     background-color: var(--black30a);
     color: var(--SmartThemeBodyColor);
-    bottom: 4rem;
     align-self: center;
     align-items: center;
     z-index: 100;
@@ -639,10 +638,6 @@ details {
     & i {
         position: relative;
         top: 1px;
-    }
-
-    #sheld:has(#file_form:not(.displayNone)) & {
-        bottom: 6.5rem;
     }
 }
 
