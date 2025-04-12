@@ -33,7 +33,7 @@
         minmax(var(--grid-col-min-size), 1fr)
     );
     gap: var(--insidePadding, 1rem);
-    padding-top: 0.25rem;
+    padding: 0.25rem 0.25rem 0;
     overflow-y: auto;
 
     &.searching {
@@ -184,7 +184,7 @@
 .skeleton-text {
     position: relative;
     border-radius: var(--borderRadiusSmol);
-    background-color: rgb(from dimgray r g b / 0.5);
+    background-color: rgb(from dimgray r g b / 0.75);
     overflow: hidden;
 
     &::after {
@@ -206,7 +206,6 @@
 
 .skeleton-image {
     aspect-ratio: 1;
-    margin-bottom: 0.5rem;
 }
 
 .skeleton-text {
