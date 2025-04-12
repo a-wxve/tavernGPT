@@ -147,29 +147,6 @@
     }
 }
 
-.tags {
-    margin-top: var(--insidePadding);
-
-    & .tag {
-        border: 1px solid transparent;
-        border-radius: var(--borderRadius);
-        font-size: 0.85rem;
-        font-weight: 500;
-        padding: 0.25rem 0.5rem;
-        transition: var(--transition);
-
-        &:not(.skeleton-text) {
-            background-color: var(--black60a);
-        }
-
-        &.included {
-            color: green;
-            background-color: rgb(from green r g b / 0.1);
-            border-color: green;
-        }
-    }
-}
-
 .character-list-item .name,
 .character-list-item .creator,
 .character-list-item .tag,

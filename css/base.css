@@ -272,6 +272,35 @@ body.swipeAllMessages {
     }
 }
 
+.tags {
+    &:not(.tags_inline) {
+        margin-top: var(--insidePadding);
+    }
+
+    &.tags_line {
+        opacity: 0.8;
+    }
+
+    & .tag {
+        border: 1px solid transparent;
+        border-radius: var(--borderRadius);
+        font-size: 0.85rem;
+        font-weight: 500;
+        padding: 0.125rem 0.25rem;
+        transition: var(--transition);
+
+        &:not(.skeleton-text) {
+            background-color: var(--black70a);
+        }
+
+        &.included {
+            color: green;
+            background-color: rgb(from green r g b / 0.1);
+            border-color: green;
+        }
+    }
+}
+
 #sheld {
     top: 0;
     background-color: var(--SmartThemeChatTintColor);
