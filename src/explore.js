@@ -65,74 +65,64 @@ function lazyLoadSearchOptions(selectorMap) {
 function updateButtonState(fullPath, state, errorMessage = '') {
     const buttons = document.querySelectorAll(`.download-btn[data-path="${fullPath}"]`);
 
+    let classes, text;
+    switch (state) {
+        case BUTTON_STATE.READY_DOWNLOAD:
+            classes = 'fa-solid fa-cloud-arrow-down';
+            text = 'Download';
+            break;
+        case BUTTON_STATE.READY_UPDATE:
+            classes = 'fa-solid fa-file-circle-check';
+            text = 'Update';
+            break;
+        case BUTTON_STATE.IN_QUEUE:
+            classes = 'fa-solid fa-check-to-slot';
+            text = 'Added to queue';
+            break;
+        case BUTTON_STATE.DOWNLOADING:
+            classes = 'fa-solid fa-spinner fa-spin-pulse';
+            text = 'Downloading...';
+            break;
+        case BUTTON_STATE.DONE:
+            classes = 'fa-solid fa-check';
+            text = 'Done';
+            break;
+        case BUTTON_STATE.ERROR:
+            classes = 'fa-solid fa-triangle-exclamation';
+            text = 'Error';
+            break;
+    }
+
     buttons.forEach(button => {
-        if (!(button instanceof HTMLElement)) {
-            console.error(`Invalid button element for path: ${fullPath}`);
-            return;
-        }
+        if (!(button instanceof HTMLElement)) return;
 
         const parentElement = button.closest('.character-list-item, .chub-popup');
-        if (!(parentElement instanceof HTMLElement)) {
-            console.error(`Invalid parent element element for button: ${fullPath}`);
-            return;
-        }
+        if (!(parentElement instanceof HTMLElement)) return;
 
-        if (state === BUTTON_STATE.READY_UPDATE || state === BUTTON_STATE.DONE) {
-            parentElement.dataset.downloaded = 'true';
-        } else if (state === BUTTON_STATE.READY_DOWNLOAD) {
-            parentElement.dataset.downloaded = 'false';
-        }
+        parentElement.dataset.downloaded = (state === BUTTON_STATE.READY_UPDATE || state === BUTTON_STATE.DONE) ? 'true' : 'false';
 
-        switch (state) {
-            case BUTTON_STATE.READY_DOWNLOAD:
-                button.innerHTML = `
-                        <i class="fa-solid fa-cloud-arrow-down"></i>
-                        <span data-i18n="Download">Download</span>
-                    `;
-                break;
-            case BUTTON_STATE.READY_UPDATE:
-                button.innerHTML = `
-                        <i class="fa-solid fa-file-circle-check"></i>
-                        <span data-i18n="Update">Update</span>
-                    `;
-                break;
-            case BUTTON_STATE.IN_QUEUE:
-                button.innerHTML = `
-                        <i class="fa-solid fa-check-to-slot"></i>
-                        <span data-i18n="Added to queue">Added to queue</span>
-                    `;
-                break;
-            case BUTTON_STATE.DOWNLOADING:
-                button.innerHTML = `
-                        <i class="fa-solid fa-spinner fa-spin-pulse"></i>
-                        <span data-i18n="Downloading">Downloading...</span>
-                    `;
-                break;
-            case BUTTON_STATE.DONE:
-                button.innerHTML = `
-                        <i class="fa-solid fa-check"></i>
-                        <span data-i18n="Done">Done</span>
-                    `;
-                setTimeout(() => {
-                    updateButtonState(fullPath, BUTTON_STATE.READY_UPDATE);
-                }, 5000);
-                break;
-            case BUTTON_STATE.ERROR:
-                button.innerHTML = `
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        <span data-i18n="Error">Error</span>
-                    `;
-                button.title = errorMessage;
-                setTimeout(() => {
-                    updateButtonState(fullPath,
-                        characterPaths.has(fullPath) ?
-                            BUTTON_STATE.READY_UPDATE :
-                            BUTTON_STATE.READY_DOWNLOAD,
-                    );
-                }, 5000);
-                break;
+        button.querySelector('i').className = classes;
+        const span = button.querySelector('span');
+        span.dataset.i18n = text;
+        span.textContent = text;
+
+        if (state === BUTTON_STATE.ERROR) {
+            button.title = errorMessage;
         }
     });
+
+    if (state === BUTTON_STATE.DONE) {
+        setTimeout(() => {
+            updateButtonState(fullPath, BUTTON_STATE.READY_UPDATE);
+        }, 5000);
+    } else if (state === BUTTON_STATE.ERROR) {
+        setTimeout(() => {
+            updateButtonState(
+                fullPath,
+                characterPaths.has(fullPath) ? BUTTON_STATE.READY_UPDATE : BUTTON_STATE.READY_DOWNLOAD,
+            );
+        }, 5000);
+    }
 }
 
 async function updateCharacterPaths() {
