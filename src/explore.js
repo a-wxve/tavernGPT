@@ -15,6 +15,7 @@ import { debounce } from '../../../../utils.js';
 import { extensionFolderPath, tavernGPT_settings } from './index.js';
 
 let characters = [];
+let urls = [];
 let totalCharactersLoaded = 0;
 let characterPaths = new Set();
 let isLoading = false;
@@ -630,6 +631,8 @@ async function fetchCharacters(searchOptions, resetCharacterList, resetLoadStatu
         await updateCharacterPaths();
         characters = [];
         totalCharactersLoaded = 0;
+        urls.forEach(url => URL.revokeObjectURL(url));
+        urls = [];
     }
 
     searchElements.characterList.classList.add('searching');
@@ -697,9 +700,10 @@ async function fetchCharacters(searchOptions, resetCharacterList, resetLoadStatu
             return;
         }
 
-        let imageUrl = URL.createObjectURL(result.data);
+        let imageURL = URL.createObjectURL(result.data);
+        urls.push(imageURL);
         newCharacters.push({
-            url: imageUrl,
+            url: imageURL,
             avatar: node.avatar_url,
             description: node.description,
             tagline: sanitize(node.tagline),
