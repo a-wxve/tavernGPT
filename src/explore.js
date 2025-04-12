@@ -483,89 +483,102 @@ async function fetchCharacterData(character) {
 
 function limitTagRows(startIndex, endIndex) {
     const listItems = Array.from(searchElements.characterList.querySelectorAll('.character-list-item'));
-    const newItems = listItems.slice(startIndex, endIndex);
-    if (!newItems.length) return;
+    const itemsToProcess = listItems.slice(startIndex, endIndex);
+    if (!itemsToProcess.length) return;
 
-    let currentRow = [];
-    const rows = [currentRow];
-    let lastTop = newItems[0].getBoundingClientRect().top;
+    const measurements = itemsToProcess.map(item => {
+        const tagContainer = item.querySelector('.tags');
+        const tags = tagContainer ? Array.from(tagContainer.querySelectorAll('.tag')) : [];
 
-    listItems.forEach(item => {
-        const itemTop = item.getBoundingClientRect().top;
-        if (Math.abs(itemTop - lastTop) <= 5) {
-            currentRow.push(item);
-        }
+        return {
+            item,
+            rect: item.getBoundingClientRect(),
+            tagContainer,
+            tags,
+        };
     });
 
-    newItems.forEach(item => {
-        const itemTop = item.getBoundingClientRect().top;
-        if (Math.abs(itemTop - lastTop) > 5) {
-            currentRow = [item];
-            rows.push(currentRow);
-            lastTop = itemTop;
+    if (!measurements.length) return;
+
+    let currentRowItems = [];
+    const rows = [];
+    const rowTolerance = 5;
+    let lastTop = measurements[0].rect.top;
+
+    measurements.forEach(measurement => {
+        if (Math.abs(measurement.rect.top - lastTop) > rowTolerance) {
+            if (currentRowItems.length) rows.push(currentRowItems);
+            currentRowItems = [measurement];
+            lastTop = measurement.rect.top;
         } else {
-            currentRow.push(item);
+            currentRowItems.push(measurement);
         }
     });
+
+    if (currentRowItems.length) rows.push(currentRowItems);
 
     rows.forEach(row => {
-        const rowData = {
-            lowestFirstTagPosition: -Infinity,
-            avgTagHeight: 0,
-            itemsToProcess: [],
-        };
+        let maxFirstTagBottom = -Infinity;
+        const rowData = [];
 
-        let totalTagHeight = 0;
-        let tagCount = 0;
-
-        row.forEach(item => {
-            const tagsContainer = item.querySelector('.tags');
-            const tags = Array.from(tagsContainer.querySelectorAll('.tag'));
-            if (!tags.length) return;
-
-            const firstTag = tags[0];
-            const firstTagTop = firstTag.getBoundingClientRect().top;
-            const firstTagHeight = firstTag.getBoundingClientRect().height;
-
-            if (firstTagTop > rowData.lowestFirstTagPosition) {
-                rowData.lowestFirstTagPosition = firstTagTop;
+        row.forEach(itemData => {
+            const { tags } = itemData;
+            if (!tags.length) {
+                rowData.push({ ...itemData, tagMeasurements: [] });
+                return;
             }
 
-            totalTagHeight += firstTagHeight;
-            tagCount++;
+            const tagMeasurements = tags.map(tag => ({
+                element: tag,
+                rect: tag.getBoundingClientRect(),
+            }));
 
-            rowData.itemsToProcess.push({
-                container: tagsContainer,
-                tags: tags,
-                measurements: tags.map(tag => ({
-                    bottom: tag.getBoundingClientRect().bottom,
-                    element: tag,
-                })),
-            });
+            const firstTagBottom = tagMeasurements[0].rect.bottom;
+            if (firstTagBottom > maxFirstTagBottom) {
+                maxFirstTagBottom = firstTagBottom;
+            }
+            rowData.push({ ...itemData, tagMeasurements });
         });
 
-        rowData.avgTagHeight = tagCount > 0 ? totalTagHeight / tagCount : 0;
+        if (maxFirstTagBottom === -Infinity) return;
 
-        const maxTagBottom = rowData.lowestFirstTagPosition + rowData.avgTagHeight + 5;
+        const cutoffBottom = maxFirstTagBottom;
 
-        rowData.itemsToProcess.forEach(item => {
-            const { container, tags, measurements } = item;
+        rowData.forEach(data => {
+            const { tagContainer, tags, tagMeasurements } = data;
+
+            if (!tags.length) return;
 
             let visibleCount = 0;
-            for (let i = 0; i < measurements.length; i++) {
-                if (measurements[i].bottom <= maxTagBottom) {
+            for (let i = 0; i < tagMeasurements.length; i++) {
+                if (tagMeasurements[i].rect.bottom <= cutoffBottom) {
                     visibleCount++;
                 } else {
                     break;
                 }
             }
 
-            if (visibleCount === tags.length) return;
+            const needsTruncation = visibleCount < tags.length;
+
+            if (!needsTruncation) return;
+
+            let finalVisibleCount = visibleCount;
+            const totalTags = tags.length;
+            let hiddenCount = totalTags - finalVisibleCount;
+
+            if (needsTruncation && finalVisibleCount > 0 && finalVisibleCount < totalTags) {
+                const lastVisibleTagTop = tagMeasurements[finalVisibleCount - 1].rect.top;
+                const firstHiddenTagTop = tagMeasurements[finalVisibleCount].rect.top;
+                const lineBreakTolerance = 2;
+
+                if (firstHiddenTagTop > lastVisibleTagTop + lineBreakTolerance) {
+                    finalVisibleCount--;
+                    hiddenCount = totalTags - finalVisibleCount;
+                }
+            }
 
             const fragment = document.createDocumentFragment();
-            const hiddenCount = tags.length - visibleCount;
-
-            for (let i = 0; i < visibleCount; i++) {
+            for (let i = 0; i < finalVisibleCount; i++) {
                 fragment.appendChild(tags[i].cloneNode(true));
             }
 
@@ -574,16 +587,8 @@ function limitTagRows(startIndex, endIndex) {
             moreTag.textContent = `+${hiddenCount} more`;
             fragment.appendChild(moreTag);
 
-            container.innerHTML = '';
-            container.appendChild(fragment);
-
-            if (moreTag.getBoundingClientRect().bottom > maxTagBottom && visibleCount > 0) {
-                const lastTag = container.children[container.children.length - 2];
-                if (lastTag) {
-                    container.removeChild(lastTag);
-                    moreTag.textContent = `+${hiddenCount + 1} more`;
-                }
-            }
+            tagContainer.innerHTML = '';
+            tagContainer.appendChild(fragment);
         });
     });
 }
