@@ -258,7 +258,6 @@ async function updateMostRecentCharacter(timestamp, tagline, fullPath) {
     }
 
     const allCharacters = await response.json();
-
     const recentCharacters = allCharacters.filter(char => char.date_added > timestamp);
 
     if (recentCharacters.length === 0) {
@@ -630,7 +629,8 @@ async function fetchCharacters(searchOptions, resetCharacterList, resetLoadStatu
         urls = [];
     }
 
-    searchElements.characterList.classList.add('searching');
+    const characterList = searchElements.characterList;
+    characterList.classList.add('searching');
 
     console.log('Search options:', searchOptions);
     toastr.info('Searching...');
@@ -663,12 +663,12 @@ async function fetchCharacters(searchOptions, resetCharacterList, resetLoadStatu
         searchParams.append('exclude_tags', excludedTags.join(',').slice(0, 100));
     }
 
-    const chubApiKey = tavernGPT_settings.api_key_chub;
+    const chubAPIKey = tavernGPT_settings.api_key_chub;
     const response = await fetch(`https://gateway.chub.ai/search?${String(searchParams)}`, {
         method: 'GET',
         headers: new Headers({
-            'CH-API-KEY': chubApiKey,
-            samwise: chubApiKey,
+            'CH-API-KEY': chubAPIKey,
+            samwise: chubAPIKey,
         }),
     });
     const searchResults = await response.json();
@@ -717,17 +717,17 @@ async function fetchCharacters(searchOptions, resetCharacterList, resetLoadStatu
     });
     characters.push(...newCharacters);
 
-    if (newCharacters.length > 0) {
-        if (searchElements.characterList.classList.contains('error')) {
-            searchElements.characterList.classList.remove('error');
-            searchElements.characterList.replaceChildren();
+    if (newCharacters.length) {
+        if (characterList.classList.contains('error')) {
+            characterList.classList.remove('error');
+            characterList.replaceChildren();
         }
         updateCharacterList(newCharacters, resetCharacterList);
-        searchElements.characterList.classList.remove('searching', 'loading');
+        characterList.classList.remove('searching', 'loading');
     } else {
-        searchElements.characterList.classList.remove('searching', 'loading');
-        searchElements.characterList.classList.add('error');
-        searchElements.characterList.innerHTML = `
+        characterList.classList.remove('searching', 'loading');
+        characterList.classList.add('error');
+        characterList.innerHTML = `
             <i class="fa-solid fa-triangle-exclamation"></i>
             <span data-i18n="No characters found.">No characters found.</span>
         `;

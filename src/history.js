@@ -247,12 +247,10 @@ async function renameChat(oldFilename, newFilename) {
 
     if (selected_group) {
         await renameGroupChat(selected_group, oldFilename, newFilename);
-    } else {
-        if (characters[this_chid].chat == oldFilename) {
-            characters[this_chid].chat = newFilename;
-            document.querySelector('#selected_chat_pole').setAttribute('value', characters[this_chid].chat);
-            saveCharacterDebounced();
-        }
+    } else if (characters[this_chid].chat == oldFilename) {
+        characters[this_chid].chat = newFilename;
+        document.querySelector('#selected_chat_pole').setAttribute('value', characters[this_chid].chat);
+        saveCharacterDebounced();
     }
 
     displayChats('');

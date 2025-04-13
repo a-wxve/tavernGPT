@@ -122,12 +122,11 @@ async function initSettings() {
 }
 
 function setPersona() {
-    let lastAvatar = '';
-    let lastName = '';
     const $persona_icon = document.querySelector(
         '#persona-management-button .drawer-icon.fa-solid.fa-face-smile',
     );
 
+    let lastAvatar, lastName;
     const updatePersona = (avatar, name) => {
         if (avatar === lastAvatar && name === lastName) return;
 
@@ -142,11 +141,11 @@ function setPersona() {
         });
     };
 
-    updatePersona(getUserAvatar(user_avatar), name1);
-
     eventSource.on(event_types.SETTINGS_UPDATED, () => {
         updatePersona(getUserAvatar(user_avatar), name1);
     });
+
+    updatePersona(getUserAvatar(user_avatar), name1);
 }
 
 function addSidebarToggle() {
@@ -307,8 +306,6 @@ function setMobileUI() {
 }
 
 function moveSwipeButtons() {
-    let mesText;
-
     const $chat = document.querySelector('#chat');
     const $mesTemplate = document.querySelector('#message_template');
     const $mesButtons = $mesTemplate.querySelector('.mes_buttons');
@@ -332,6 +329,7 @@ function moveSwipeButtons() {
     $mesTemplate.querySelector('.mes_text').after($mesButtons, $mesEditButtons);
 
     // TODO: append new message content as a swipe (?)
+    let mesText;
     $chat.addEventListener('click', (event) => {
         if (!(event.target instanceof HTMLElement)) return;
 
@@ -352,7 +350,7 @@ function moveSwipeButtons() {
 
     document.addEventListener('keydown', (event) => {
         const activeElement = document.activeElement;
-        const isTextInput = activeElement instanceof HTMLTextAreaElement || activeElement instanceof HTMLInputElement;
+        const isTextInput = activeElement instanceof (HTMLTextAreaElement || HTMLInputElement);
         const inputFocused = activeElement.matches('textarea, input, [contenteditable]');
         const inputEmpty = isTextInput ? activeElement.value.trim().length === 0 : false;
 
@@ -380,12 +378,12 @@ function moveSwipeButtons() {
         const idMatch = Number($chat.querySelector('.last_mes').getAttribute('mesid')) === Number(mes_id) + 1;
         const mesTextChanged = chat[mes_id]['mes'] !== mesText;
 
-        if (idMatch && mesTextChanged) {
-            eventSource.once(event_types.GENERATE_AFTER_DATA, () => {
-                const swipeRight = $chat.querySelector('.last_mes .swipe_right');
-                if (swipeRight instanceof HTMLElement) swipeRight.click();
-            });
-        }
+        if (!(idMatch && mesTextChanged)) return;
+
+        eventSource.once(event_types.GENERATE_AFTER_DATA, () => {
+            const swipeRight = $chat.querySelector('.last_mes .swipe_right');
+            if (swipeRight instanceof HTMLElement) swipeRight.click();
+        });
     });
 }
 
