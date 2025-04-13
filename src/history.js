@@ -70,7 +70,10 @@ function sortTimeCategories(a, b) {
 }
 
 async function displayChats(searchQuery) {
-    const $selectChat = document.querySelector('#select_chat_div');
+    const chatCategories = {};
+    for (const [category] of timeMap) {
+        chatCategories[category] = [];
+    }
 
     const response = await fetch('/api/chats/search', {
         method: 'POST',
@@ -89,12 +92,6 @@ async function displayChats(searchQuery) {
     }
 
     const data = await response.json();
-
-    const chatCategories = {};
-    for (const [category] of timeMap) {
-        chatCategories[category] = [];
-    }
-
     data.forEach((chat) => {
         const lastMesDate = timestampToMoment(chat.last_mes);
         const category = getTimeCategory(lastMesDate);
@@ -104,6 +101,7 @@ async function displayChats(searchQuery) {
         chatCategories[category].push(chat);
     });
 
+
     const categoryEntries = Object.entries(chatCategories).filter(([, chats]) => chats.length > 0);
     categoryEntries.sort(([, aChats], [, bChats]) => {
         const a = aChats[0];
@@ -112,10 +110,15 @@ async function displayChats(searchQuery) {
         return sortTimeCategories(a, b);
     });
 
-    $selectChat.replaceChildren();
+    const selectChat = document.querySelector('#select_chat_div');
+    selectChat.replaceChildren();
 
+    const fragment = document.createDocumentFragment();
     for (const [category, chats] of categoryEntries) {
-        $selectChat.insertAdjacentHTML('beforeend', `<h5 class=chat-category>${category}</h5>`);
+        const header = document.createElement('h5');
+        header.classList.add('chat-category');
+        header.textContent = category;
+        fragment.append(header);
 
         for (const chat of chats) {
             const template = document
@@ -137,9 +140,11 @@ async function displayChats(searchQuery) {
                 selectChatBlock.setAttribute('highlight', 'true');
             }
 
-            $selectChat.append(template);
+            fragment.append(template);
         }
     }
+
+    selectChat.append(fragment);
 }
 
 async function overrideChatButtons(event) {
