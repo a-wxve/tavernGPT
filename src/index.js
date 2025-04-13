@@ -1,5 +1,4 @@
 import {
-    chat,
     eventSource,
     event_types,
     getUserAvatar,
@@ -26,103 +25,102 @@ const default_settings = {
 };
 
 async function initSettings() {
-    const $settings = document.querySelector('#extensions_settings2');
+    const settings = document.querySelector('#extensions_settings2');
 
     const response = await fetch(`${extensionFolderPath}/html/settings.html`);
     const html = await response.text();
-    $settings.insertAdjacentHTML('beforeend', html);
+    settings.insertAdjacentHTML('beforeend', html);
 
     tavernGPT_settings = tavernGPT_settings || {};
 
     let settingsChanged = false;
     for (const key in default_settings) {
-        if (!(key in tavernGPT_settings)) {
-            tavernGPT_settings[key] = default_settings[key];
-            settingsChanged = true;
-        }
+        if (key in tavernGPT_settings) return;
+
+        tavernGPT_settings[key] = default_settings[key];
+        settingsChanged = true;
     }
 
     for (const key in tavernGPT_settings) {
-        if (!(key in default_settings)) {
-            delete tavernGPT_settings[key];
-            settingsChanged = true;
-            console.log(
-                `Removed obsolete setting: ${key} from ${extensionName}`,
-            );
-        }
+        if (key in default_settings) return;
+
+        delete tavernGPT_settings[key];
+        settingsChanged = true;
+        console.log(`Removed obsolete setting: ${key} from ${extensionName}`);
     }
 
     if (settingsChanged) saveSettingsDebounced();
 
-    const $rename_chats = $settings.querySelector('#rename_chats');
-    const $rename_method_container = $settings.querySelector(
+    const rename_chats = settings.querySelector('#rename_chats');
+    const rename_method_container = settings.querySelector(
         '.rename_method_container',
     );
-    const $rename_method_function = $settings.querySelector(
+    const rename_method_function = settings.querySelector(
         '#rename_method_function',
     );
-    const $rename_method_system = $settings.querySelector(
+    const rename_method_system = settings.querySelector(
         '#rename_method_system',
     );
-    const $api_key_chub = $settings.querySelector('#api_key_chub');
+    const api_key_chub = settings.querySelector('#api_key_chub');
 
     if (tavernGPT_settings.rename_chats) {
-        $rename_chats.setAttribute('checked', 'true');
-        if ($rename_method_container instanceof HTMLElement) {
-            $rename_method_container.style.display = 'block';
+        rename_chats.setAttribute('checked', 'true');
+        if (rename_method_container instanceof HTMLElement) {
+            rename_method_container.style.display = 'block';
         }
     }
 
     if (tavernGPT_settings.rename_method === 'function') {
-        $rename_method_function.setAttribute('checked', 'true');
+        rename_method_function.setAttribute('checked', 'true');
     } else {
-        $rename_method_system.setAttribute('checked', 'true');
+        rename_method_system.setAttribute('checked', 'true');
     }
 
     if (tavernGPT_settings.api_key_chub) {
-        $api_key_chub.setAttribute('value', tavernGPT_settings.api_key_chub);
+        api_key_chub.setAttribute('value', tavernGPT_settings.api_key_chub);
     }
 
-    $rename_chats.addEventListener('click', () => {
-        tavernGPT_settings.rename_chats = $rename_chats.getAttribute('checked');
-        if ($rename_method_container instanceof HTMLElement) {
-            const checked = $rename_chats.getAttribute('checked') === 'true';
-            $rename_method_container.style.display = checked ? 'block' : 'none';
+    rename_chats.addEventListener('click', () => {
+        tavernGPT_settings.rename_chats = rename_chats.getAttribute('checked');
+        if (rename_method_container instanceof HTMLElement) {
+            const checked = rename_chats.getAttribute('checked') === 'true';
+            rename_method_container.style.display = checked ? 'block' : 'none';
         }
         saveSettingsDebounced();
     });
 
-    $rename_method_container.addEventListener('click', (event) => {
+    rename_method_container.addEventListener('click', (event) => {
         switch (event.target) {
-            case $rename_method_function:
+            case rename_method_function:
                 tavernGPT_settings.rename_method = 'function';
                 saveSettingsDebounced();
                 break;
-            case $rename_method_system:
+            case rename_method_system:
                 tavernGPT_settings.rename_method = 'system';
                 saveSettingsDebounced();
                 break;
         }
     });
 
-    $api_key_chub.addEventListener('change', () => {
-        tavernGPT_settings.api_key_chub = $api_key_chub.getAttribute('value');
+    api_key_chub.addEventListener('change', () => {
+        tavernGPT_settings.api_key_chub = api_key_chub.getAttribute('value');
         saveSettingsDebounced();
     });
 
-    $api_key_chub.nextElementSibling.addEventListener('click', (event) => {
+    api_key_chub.nextElementSibling.addEventListener('click', (event) => {
         if (!(event.currentTarget instanceof HTMLElement)) return;
-        const eyeIcon = event.currentTarget;
-        const isPassword = $api_key_chub.getAttribute('type') === 'password';
 
-        $api_key_chub.setAttribute('type', isPassword ? 'text' : 'password');
+        const eyeIcon = event.currentTarget;
+        const isPassword = api_key_chub.getAttribute('type') === 'password';
+
+        api_key_chub.setAttribute('type', isPassword ? 'text' : 'password');
         eyeIcon.classList.toggle('fa-eye', isPassword);
         eyeIcon.classList.toggle('fa-eye-slash', !isPassword);
     });
 }
 
 function setPersona() {
-    const $persona_icon = document.querySelector(
+    const personaIcon = document.querySelector(
         '#persona-management-button .drawer-icon.fa-solid.fa-face-smile',
     );
 
@@ -130,13 +128,19 @@ function setPersona() {
     const updatePersona = (avatar, name) => {
         if (avatar === lastAvatar && name === lastName) return;
 
-        const newHTML = `<img class='persona_avatar' src='${avatar}'/><span>${name}</span>`;
-
         lastAvatar = avatar;
         lastName = name;
-        $persona_icon.innerHTML = newHTML;
 
-        Array.from($persona_icon.children).forEach((child) => {
+        const img = document.createElement('img');
+        img.className = 'persona_avatar';
+        img.src = avatar;
+
+        const span = document.createElement('span');
+        span.textContent = name;
+
+        personaIcon.replaceChildren(img, span);
+
+        Array.from(personaIcon.children).forEach((child) => {
             if (child instanceof HTMLElement) child.style.pointerEvents = 'none';
         });
     };
@@ -149,8 +153,8 @@ function setPersona() {
 }
 
 function addSidebarToggle() {
-    const $settings_holder = document.querySelector('#top-settings-holder');
-    const $sheld = document.querySelector('#sheld');
+    const settingsHolder = document.querySelector('#top-settings-holder');
+    const sheld = document.querySelector('#sheld');
 
     const toggleButton = document.createElement('button');
     toggleButton.id = 'sidebarToggle';
@@ -160,15 +164,14 @@ function addSidebarToggle() {
     const arrow2 = document.createElement('div');
     arrow2.className = 'arrow2';
 
-    toggleButton.appendChild(arrow1);
-    toggleButton.appendChild(arrow2);
+    toggleButton.append(arrow1, arrow2);
 
     toggleButton.addEventListener('click', () => {
-        $settings_holder.classList.toggle('collapsed');
-        $sheld.classList.toggle('collapsed');
+        settingsHolder.classList.toggle('collapsed');
+        sheld.classList.toggle('collapsed');
     });
 
-    $settings_holder.appendChild(toggleButton);
+    settingsHolder.append(toggleButton);
 }
 
 function addScrollButton() {
@@ -183,9 +186,7 @@ function addScrollButton() {
     const icon = document.createElement('i');
     icon.className = 'fa-xl fa-solid fa-circle-chevron-down';
 
-    scrollButton.appendChild(span);
-    scrollButton.appendChild(icon);
-
+    scrollButton.append(span, icon);
     chat.after(scrollButton);
 
     let checking = false;
@@ -209,10 +210,10 @@ function addScrollButton() {
     resizeObserver.observe(formSheld);
 
     chat.addEventListener('scroll', () => {
-        if (!checking) {
-            checking = true;
-            requestAnimationFrame(checkScrollPosition);
-        }
+        if (checking) return;
+
+        checking = true;
+        requestAnimationFrame(checkScrollPosition);
     });
 
     scrollButton.addEventListener('click', () => {
@@ -236,18 +237,18 @@ function loadSplashText() {
 
         observer.disconnect();
 
-        const welcomeRightEdge = welcomeElement.offsetLeft + welcomeElement.offsetWidth;
         const desiredTop = welcomeElement.offsetTop + welcomeElement.offsetHeight / 2;
+        const welcomeRightEdge = welcomeElement.offsetLeft + welcomeElement.offsetWidth;
 
         const splashWrapper = document.createElement('div');
         splashWrapper.id = 'splash-wrapper';
+        splashWrapper.style.top = `${desiredTop}px`;
+        splashWrapper.style.left = `${welcomeRightEdge}px`;
+
         const splashText = document.createElement('span');
         splashText.id = 'splash';
-        splashWrapper.appendChild(splashText);
-
-        splashWrapper.style.left = `${welcomeRightEdge}px`;
-        splashWrapper.style.top = `${desiredTop}px`;
         splashText.textContent = getRandomSplash();
+        splashWrapper.append(splashText);
 
         welcomeElement.after(splashWrapper);
 
@@ -262,31 +263,31 @@ function loadSplashText() {
 }
 
 function setMobileUI() {
+    const sheld = document.querySelector('#sheld');
     const addChatHeader = () => {
-        const $chat_header = $sheld.querySelector('#chat_header');
-        const $last_mes = $sheld.querySelector('.last_mes');
+        const chatHeader = sheld.querySelector('#chat_header');
+        const last_mes = sheld.querySelector('.last_mes');
 
-        $chat_header.replaceChildren();
-        const avatarImg = $last_mes.querySelector('.avatar').cloneNode(true);
-        const charName = $last_mes.querySelector('.ch_name').cloneNode(true);
-        const mesID = $last_mes.querySelector('.mesIDDisplay').cloneNode(true);
-        const mesTimer = $last_mes.querySelector('.mes_timer').cloneNode(true);
-        const tokenCount = $last_mes
+        const avatarImg = last_mes.querySelector('.avatar').cloneNode(true);
+        const charName = last_mes.querySelector('.ch_name').cloneNode(true);
+        const mesID = last_mes.querySelector('.mesIDDisplay').cloneNode(true);
+        const mesTimer = last_mes.querySelector('.mes_timer').cloneNode(true);
+        const tokenCount = last_mes
             .querySelector('.tokenCounterDisplay')
             .cloneNode(true);
 
         avatarImg.addEventListener('click', () => {
-            const avatar = $last_mes.querySelector('.avatar');
+            const avatar = last_mes.querySelector('.avatar');
             if (avatar instanceof HTMLElement) avatar.click();
         });
 
         charName.appendChild(mesID);
         charName.appendChild(mesTimer);
         charName.appendChild(tokenCount);
-        $chat_header.append(avatarImg, charName);
+
+        chatHeader.replaceChildren(avatarImg, charName);
     };
 
-    const $sheld = document.querySelector('#sheld');
     // const body = document.body;
 
     // const classes = ['bubblechat', 'hideChatAvatars'];
@@ -294,10 +295,10 @@ function setMobileUI() {
     //     if (!body.classList.contains(className)) body.classList.add(className);
     // }
 
-    $sheld.insertAdjacentHTML(
-        'afterbegin',
-        '<div class="flex-container" id="chat_header"></div>',
-    );
+    const chatHeader = document.createElement('div');
+    chatHeader.id = 'chat_header';
+    chatHeader.className = 'flex-container';
+    sheld.prepend(chatHeader);
 
     const events = [
         'chatLoaded',
@@ -310,36 +311,44 @@ function setMobileUI() {
 }
 
 function moveSwipeButtons() {
-    const $chat = document.querySelector('#chat');
-    const $mesTemplate = document.querySelector('#message_template');
-    const $mesButtons = $mesTemplate.querySelector('.mes_buttons');
-    const $mesEditButtons = $mesTemplate.querySelector('.mes_edit_buttons');
+    const chat = document.querySelector('#chat');
+    const mesTemplate = document.querySelector('#message_template');
+    const mesButtons = mesTemplate.querySelector('.mes_buttons');
+    const mesEditButtons = mesTemplate.querySelector('.mes_edit_buttons');
 
     const handleSwipe = (event, direction) => {
         event.stopPropagation();
         event.preventDefault();
-        const swipeButton = $chat.querySelector(`.last_mes .swipe_${direction}`);
+        const swipeButton = chat.querySelector(`.last_mes .swipe_${direction}`);
         if (swipeButton instanceof HTMLElement) swipeButton.click();
     };
 
-    $mesButtons.insertAdjacentHTML(
-        'afterbegin',
-        `<div class="flex-container swipes">
-            <div class="mes_button mes_swipe_left fa-solid fa-chevron-left"></div>
-            <div class="swipes-counter">1/1</div>
-            <div class="mes_button mes_swipe_right fa-solid fa-chevron-right"></div>
-        </div>`,
-    );
-    $mesTemplate.querySelector('.mes_text').after($mesButtons, $mesEditButtons);
+    const container = document.createElement('div');
+    container.className = 'flex-container swipes';
+
+    const swipeLeft = document.createElement('div');
+    swipeLeft.className = 'mes_button mes_swipe_left fa-solid fa-chevron-left';
+
+    const swipeRight = document.createElement('div');
+    swipeRight.className = 'mes_button mes_swipe_right fa-solid fa-chevron-right';
+
+    const counter = document.createElement('span');
+    counter.className = 'swipes-counter';
+    counter.textContent = '1/1';
+
+    container.append(swipeLeft, counter, swipeRight);
+    mesButtons.prepend(container);
+
+    mesTemplate.querySelector('.mes_text').after(mesButtons, mesEditButtons);
 
     // TODO: append new message content as a swipe (?)
     let mesText;
-    $chat.addEventListener('click', (event) => {
+    chat.addEventListener('click', (event) => {
         if (!(event.target instanceof HTMLElement)) return;
 
         const target = event.target;
         const lastUserMes =
-            Number($chat.querySelector('.last_mes').getAttribute('mesid')) -
+            Number(chat.querySelector('.last_mes').getAttribute('mesid')) -
             1;
 
         if (target.matches('.mes_swipe_left')) {
@@ -369,9 +378,9 @@ function moveSwipeButtons() {
                 break;
             case 'ArrowUp': {
                 const lastUserMesID =
-                    Number($chat.querySelector('.last_mes').getAttribute('mesid')) -
+                    Number(chat.querySelector('.last_mes').getAttribute('mesid')) -
                     1;
-                const mesEdit = $chat.querySelector(`.mes[mesid="${lastUserMesID}"] .mes_edit`);
+                const mesEdit = chat.querySelector(`.mes[mesid="${lastUserMesID}"] .mes_edit`);
                 if (mesEdit instanceof HTMLElement) mesEdit.click();
                 break;
             }
@@ -379,28 +388,32 @@ function moveSwipeButtons() {
     });
 
     eventSource.on(event_types.MESSAGE_UPDATED, (mes_id) => {
-        const idMatch = Number($chat.querySelector('.last_mes').getAttribute('mesid')) === Number(mes_id) + 1;
+        const idMatch = Number(chat.querySelector('.last_mes').getAttribute('mesid')) === Number(mes_id) + 1;
         const mesTextChanged = chat[mes_id]['mes'] !== mesText;
 
         if (!(idMatch && mesTextChanged)) return;
 
         eventSource.once(event_types.GENERATE_AFTER_DATA, () => {
-            const swipeRight = $chat.querySelector('.last_mes .swipe_right');
+            const swipeRight = chat.querySelector('.last_mes .swipe_right');
             if (swipeRight instanceof HTMLElement) swipeRight.click();
         });
     });
 }
 
 function loadBackgroundImage() {
-    const $background_menu = document.querySelector('#logo_block');
+    const backgroundMenu = document.querySelector('#logo_block');
     const backgroundList = tavernGPT_settings.background_list;
+
+    const bgInput = document.createElement('input');
+    bgInput.type = 'checkbox';
+    bgInput.title = 'Add to randomization list';
+    bgInput.className = 'bg_randomizer';
+    bgInput.tabIndex = 0;
+    bgInput.style.alignSelf = 'end';
 
     document
         .querySelector('#background_template .bg_example')
-        .insertAdjacentHTML(
-            'beforeend',
-            '<input type="checkbox" title="Add to randomization list" class="bg_randomizer" tabindex="0" style="align-self: end;"></input>',
-        );
+        .append(bgInput);
 
     const randomizeBackground = () => {
         const idx = Math.floor(Math.random() * backgroundList.length) || 0;
@@ -423,8 +436,8 @@ function loadBackgroundImage() {
             });
     };
 
-    $background_menu.addEventListener('click', () => {
-        $background_menu
+    backgroundMenu.addEventListener('click', () => {
+        backgroundMenu
             .querySelectorAll('.bg_randomizer')
             .forEach((background) => {
                 const bgfile = background.parentElement.getAttribute('bgfile');
@@ -432,7 +445,7 @@ function loadBackgroundImage() {
             });
     }, { once: true });
 
-    $background_menu.addEventListener('click', (event) => {
+    backgroundMenu.addEventListener('click', (event) => {
         if (!(event.target instanceof HTMLElement)) return;
         if (!event.target.matches('.bg_randomizer')) return;
 
@@ -464,35 +477,36 @@ function setWaifuShift() {
 async function setDesktopUI() {
     const drawerArrow = document.createElement('i');
     drawerArrow.className = 'fa-solid fa-chevron-down inline-drawer-icon';
-    document.querySelector('#ai-config-button').appendChild(drawerArrow);
+    document.querySelector('#ai-config-button').append(drawerArrow);
 
-    const $characterPopup = document.querySelector('#character_popup');
-    const $rightNavPanel = document.querySelector('#right-nav-panel');
-    const $rightNavPin = $rightNavPanel.querySelector('#rm_button_panel_pin');
+    const characterPopup = document.querySelector('#character_popup');
+    const rightNavPanel = document.querySelector('#right-nav-panel');
+    const rightNavPin = rightNavPanel.querySelector('#rm_button_panel_pin');
 
     const clickHandler = (event) => {
-        if (!($rightNavPin instanceof HTMLInputElement)) return;
+        if (!(rightNavPin instanceof HTMLInputElement)) return;
 
         switch (event.target.id) {
             case 'advanced_div':
-                if ($rightNavPin.checked === false) $rightNavPin.click();
+                if (rightNavPin.checked === false) rightNavPin.click();
                 break;
             case 'character_cross':
-                if ($rightNavPin.checked === true) $rightNavPin.click();
+                if (rightNavPin.checked === true) rightNavPin.click();
                 break;
         }
     };
 
-    $rightNavPanel
+    rightNavPanel
         .querySelector('#advanced_div')
         .addEventListener('click', clickHandler);
 
-    $characterPopup
+    characterPopup
         .querySelector('#character_cross')
         .addEventListener('click', clickHandler);
 
-    $characterPopup.addEventListener('keydown', (event) => {
+    characterPopup.addEventListener('keydown', (event) => {
         if (!(event instanceof KeyboardEvent)) return;
+
         switch (event.key) {
             case 'Escape':
                 clickHandler();
@@ -502,10 +516,10 @@ async function setDesktopUI() {
 
     document.querySelector('#shadow_select_chat_popup').remove();
 
-    const $renameButton = document.querySelector('#past_chat_template .renameChatButton');
-    const $buttonContainer = document.querySelector('#select_chat_name_wrapper > div.flex-container.gap10px.alignItemsCenter > div.flex-container.gap10px');
-    const $exportButton = $buttonContainer.querySelector('.exportRawChatButton');
-    $buttonContainer.insertBefore($renameButton, $exportButton);
+    const renameButton = document.querySelector('#past_chat_template .renameChatButton');
+    const buttonContainer = document.querySelector('#select_chat_name_wrapper > div.flex-container.gap10px.alignItemsCenter > div.flex-container.gap10px');
+    const exportButton = buttonContainer.querySelector('.exportRawChatButton');
+    buttonContainer.insertBefore(renameButton, exportButton);
 }
 
 async function editUI() {

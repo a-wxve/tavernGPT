@@ -50,13 +50,14 @@ function lazyLoadSearchOptions(selectorMap) {
     const cache = {};
     return new Proxy(cache, {
         get(target, name) {
-            if (!(name in target)) {
-                if (selectorMap[name]) {
-                    target[name] = document.querySelector(selectorMap[name]);
-                } else {
-                    throw new Error(`Selector for '${String(name)}' is not defined!`);
-                }
+            if (name in target) return;
+
+            if (selectorMap[name]) {
+                target[name] = document.querySelector(selectorMap[name]);
+            } else {
+                throw new Error(`Selector for '${String(name)}' is not defined!`);
             }
+
             return target[name];
         },
     });
@@ -106,9 +107,7 @@ function updateButtonState(fullPath, state, errorMessage = '') {
         span.dataset.i18n = text;
         span.textContent = text;
 
-        if (state === BUTTON_STATE.ERROR) {
-            button.title = errorMessage;
-        }
+        if (state === BUTTON_STATE.ERROR) button.title = errorMessage;
     });
 
     if (state === BUTTON_STATE.DONE) {
@@ -586,28 +585,30 @@ function limitTagRows(startIndex, endIndex) {
             moreTag.textContent = `+${hiddenCount} more`;
             fragment.appendChild(moreTag);
 
-            tagContainer.innerHTML = '';
-            tagContainer.appendChild(fragment);
+            tagContainer.replaceChildren(fragment);
         });
     });
 }
 
 function updateCharacterList(characters, reset = false) {
-    if (reset) {
-        searchElements.characterList.innerHTML = '';
-        searchElements.characterList.scrollTop = 0;
-    }
-
     const fragment = document.createDocumentFragment();
     characters.forEach((character, index) => {
         const characterElement = generateCharacterListItem(
             character,
             totalCharactersLoaded + index,
         );
-        fragment.appendChild(characterElement);
+        fragment.append(characterElement);
     });
 
-    searchElements.characterList.appendChild(fragment);
+    searchElements.characterList.classList.remove('searching', 'loading', 'error');
+
+    if (reset) {
+        searchElements.characterList.replaceChildren(fragment);
+        searchElements.characterList.scrollTop = 0;
+    } else {
+        searchElements.characterList.append(fragment);
+    }
+
     limitTagRows(totalCharactersLoaded, totalCharactersLoaded + characters.length);
 
     totalCharactersLoaded += characters.length;
@@ -653,13 +654,13 @@ async function fetchCharacters(searchOptions, resetCharacterList, resetLoadStatu
     searchParams.append('nsfw', searchOptions.nsfw);
     searchParams.append('nsfl', searchOptions.nsfw);
 
-    const includedTags = searchOptions.includedTags.filter((tag) => tag.length > 0);
-    if (includedTags.length > 0) {
+    const includedTags = searchOptions.includedTags.filter((tag) => tag.length);
+    if (includedTags.length) {
         searchParams.append('tags', includedTags.join(',').slice(0, 100));
     }
 
-    const excludedTags = searchOptions.excludedTags.filter((tag) => tag.length > 0);
-    if (excludedTags.length > 0) {
+    const excludedTags = searchOptions.excludedTags.filter((tag) => tag.length);
+    if (excludedTags.length) {
         searchParams.append('exclude_tags', excludedTags.join(',').slice(0, 100));
     }
 
@@ -718,19 +719,19 @@ async function fetchCharacters(searchOptions, resetCharacterList, resetLoadStatu
     characters.push(...newCharacters);
 
     if (newCharacters.length) {
-        if (characterList.classList.contains('error')) {
-            characterList.classList.remove('error');
-            characterList.replaceChildren();
-        }
         updateCharacterList(newCharacters, resetCharacterList);
-        characterList.classList.remove('searching', 'loading');
     } else {
         characterList.classList.remove('searching', 'loading');
         characterList.classList.add('error');
-        characterList.innerHTML = `
-            <i class="fa-solid fa-triangle-exclamation"></i>
-            <span data-i18n="No characters found.">No characters found.</span>
-        `;
+
+        const errorIcon = document.createElement('i');
+        errorIcon.className = 'fa-solid fa-triangle-exclamation';
+
+        const errorSpan = document.createElement('span');
+        errorSpan.dataset.i18n = 'No characters found.';
+        errorSpan.textContent = 'No characters found.';
+
+        characterList.replaceChildren(errorIcon, errorSpan);
     }
 
     if (resetLoadStatus) isLoading = false;
@@ -827,7 +828,10 @@ async function handleCharacterClick(event) {
         const isDownloaded = characterPaths.has(characterPath);
 
         if (isDownloaded) {
-            const confirmed = await callGenericPopup('<h3>This character is already downloaded.</h3>Would you like to update it?', POPUP_TYPE.CONFIRM);
+            const confirmed = await callGenericPopup(
+                '<h3>This character is already downloaded.</h3>Would you like to update it?',
+                POPUP_TYPE.CONFIRM,
+            );
 
             if (!confirmed) return;
         }

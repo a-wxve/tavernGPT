@@ -83,23 +83,28 @@ async function patchedBuildAvatarList(blockElement, entities, { templateID = 'in
             avatarNode.classList.toggle('group_select', entity.type === 'group');
         }
 
-        fragment.appendChild(avatarNode);
+        fragment.append(avatarNode);
     }
 
-    if (empty) blockElement.innerHTML = '';
-    blockElement.appendChild(fragment);
+    if (empty) blockElement.replaceChildren();
+    blockElement.append(fragment);
 }
 
 export function patchedFavsToHotswap() {
     console.log('Running PATCHED favsToHotswap');
 
     const displayEmptyFavsMessage = (container) => {
-        container.innerHTML =
-            `<small>
-                <span>
-                    <i class="fa-solid fa-star"></i>&nbsp;${DOMPurify.sanitize(container.getAttribute('no_favs'))}
-                </span>
-            </small>`;
+        const small = document.createElement('small');
+
+        const span = document.createElement('span');
+        span.textContent = DOMPurify.sanitize(container.getAttribute('no_favs'));
+
+        const icon = document.createElement('i');
+        icon.className = 'fa-solid fa-star';
+
+        span.append(icon);
+        small.append(span);
+        container.append(small);
     };
 
     const entities = getEntitiesList({ doFilter: false });
