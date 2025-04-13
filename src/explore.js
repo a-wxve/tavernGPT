@@ -50,12 +50,12 @@ function lazyLoadSearchOptions(selectorMap) {
     const cache = {};
     return new Proxy(cache, {
         get(target, name) {
-            if (name in target) return;
-
-            if (selectorMap[name]) {
-                target[name] = document.querySelector(selectorMap[name]);
-            } else {
-                throw new Error(`Selector for '${String(name)}' is not defined!`);
+            if (!(name in target)) {
+                if (selectorMap[name]) {
+                    target[name] = document.querySelector(selectorMap[name]);
+                } else {
+                    throw new Error(`Selector for '${String(name)}' is not defined!`);
+                }
             }
 
             return target[name];
