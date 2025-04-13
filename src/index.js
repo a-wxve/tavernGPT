@@ -340,19 +340,13 @@ function moveSwipeButtons() {
             Number($chat.querySelector('.last_mes').getAttribute('mesid')) -
             1;
 
-        switch (true) {
-            case target.matches('.mes_swipe_left'):
-                handleSwipe(event, 'left');
-                break;
-            case target.matches('.mes_swipe_right'):
-                handleSwipe(event, 'right');
-                break;
-            case target.matches(`.mes[mesid="${lastUserMes}"] .mes_edit`): {
-                mesText = chat[lastUserMes]['mes'];
-
-                if (power_user.trim_spaces) mesText = mesText.trim();
-                break;
-            }
+        if (target.matches('.mes_swipe_left')) {
+            handleSwipe(event, 'left');
+        } else if (target.matches('.mes_swipe_right')) {
+            handleSwipe(event, 'right');
+        } else if (target.matches(`.mes[mesid="${lastUserMes}"] .mes_edit`)) {
+            mesText = chat[lastUserMes]['mes'];
+            if (power_user.trim_spaces) mesText = mesText.trim();
         }
     });
 
@@ -362,22 +356,22 @@ function moveSwipeButtons() {
         const inputFocused = activeElement.matches('textarea, input, [contenteditable]');
         const inputEmpty = isTextInput ? activeElement.value.trim().length === 0 : false;
 
-        if (!inputFocused || inputEmpty) {
-            switch (event.key) {
-                case 'ArrowLeft':
-                    handleSwipe(event, 'left');
-                    break;
-                case 'ArrowRight':
-                    handleSwipe(event, 'right');
-                    break;
-                case 'ArrowUp': {
-                    const lastUserMesID =
-                        Number($chat.querySelector('.last_mes').getAttribute('mesid')) -
-                        1;
-                    const mesEdit = $chat.querySelector(`.mes[mesid="${lastUserMesID}"] .mes_edit`);
-                    if (mesEdit instanceof HTMLElement) mesEdit.click();
-                    break;
-                }
+        if (inputFocused || !inputEmpty) return;
+
+        switch (event.key) {
+            case 'ArrowLeft':
+                handleSwipe(event, 'left');
+                break;
+            case 'ArrowRight':
+                handleSwipe(event, 'right');
+                break;
+            case 'ArrowUp': {
+                const lastUserMesID =
+                    Number($chat.querySelector('.last_mes').getAttribute('mesid')) -
+                    1;
+                const mesEdit = $chat.querySelector(`.mes[mesid="${lastUserMesID}"] .mes_edit`);
+                if (mesEdit instanceof HTMLElement) mesEdit.click();
+                break;
             }
         }
     });

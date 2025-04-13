@@ -151,84 +151,72 @@ async function overrideChatButtons(event) {
     const shouldOpen = !target.matches('.renameChatButton, .exportRawChatButton, .exportChatButton, .PastChat_cross');
     const shouldRename = target.matches('.renameChatButton');
     const shouldDelete = target.matches('.PastChat_cross');
+    const filename = chatBlock.getAttribute('file_name');
 
     event.stopPropagation();
     event.preventDefault();
 
-    switch (true) {
-        case shouldOpen: {
-            const filename = chatBlock
-                .getAttribute('file_name')
-                .replace('.jsonl', '');
+    if (shouldOpen) {
+        const chatName = filename.replace('.jsonl', '');
 
-            selected_group
-                ? await openGroupChat(selected_group, filename)
-                : await openCharacterChat(filename);
+        selected_group
+            ? await openGroupChat(selected_group, chatName)
+            : await openCharacterChat(chatName);
 
-            break;
+    } else if (shouldRename) {
+        const newFilename = await callGenericPopup(
+            'Enter a new name for this chat:',
+            POPUP_TYPE.INPUT,
+        );
+
+        if (!newFilename) return;
+
+        const result = await renameChat(filename, String(newFilename));
+        if (!result.success) {
+            console.error(`Failed to rename chat: ${result.error}`);
+            toastr.error(`Failed to rename chat: ${result.error}`);
+            return;
         }
-        case shouldRename: {
-            const oldFilename = chatBlock.getAttribute('file_name');
-            const newFilename = await callGenericPopup(
-                'Enter a new name for this chat:',
-                POPUP_TYPE.INPUT,
-            );
+    } else if (shouldDelete) {
+        const confirmed = await callGenericPopup(
+            'Are you sure you want to delete this chat?',
+            POPUP_TYPE.CONFIRM,
+            '',
+            { okButton: 'Delete', cancelButton: 'Cancel' },
+        );
 
-            if (!newFilename) return;
-
-            const result = await renameChat(oldFilename, String(newFilename));
-            if (!result.success) {
-                console.error(`Failed to rename chat: ${result.error}`);
-                toastr.error(`Failed to rename chat: ${result.error}`);
-                return;
-            }
-
-            break;
+        if (!confirmed) {
+            console.error(`Error deleting ${filename}: User did not confirm.`);
+            toastr.error(`Error deleting ${filename}: User did not confirm.`);
+            return;
         }
-        case shouldDelete: {
-            const chatToDelete = chatBlock.getAttribute('file_name');
-            const confirmed = await callGenericPopup(
-                'Are you sure you want to delete this chat?',
-                POPUP_TYPE.CONFIRM,
-                '',
-                { okButton: 'Delete', cancelButton: 'Cancel' },
-            );
 
-            if (!confirmed) {
-                console.error(`Error deleting ${chatToDelete}: User did not confirm.`);
-                toastr.error(`Error deleting ${chatToDelete}: User did not confirm.`);
-                return;
-            }
-
-            const deleteChat = selected_group
-                ? () => deleteGroupChat(selected_group, chatToDelete)
-                : () => fetch('/api/chats/delete', {
-                    method: 'POST',
-                    headers: getRequestHeaders(),
-                    body: JSON.stringify({
-                        chatfile: chatToDelete,
-                        avatar_url: characters[this_chid].avatar,
-                    }),
-                });
-
-            const response = await deleteChat().catch((error) => {
-                console.error(`Error deleting ${chatToDelete}:`, error);
-                toastr.error(error, `Error deleting ${chatToDelete}:`);
-                return;
+        const deleteChat = selected_group
+            ? () => deleteGroupChat(selected_group, filename)
+            : () => fetch('/api/chats/delete', {
+                method: 'POST',
+                headers: getRequestHeaders(),
+                body: JSON.stringify({
+                    chatfile: filename,
+                    avatar_url: characters[this_chid].avatar,
+                }),
             });
 
-            if (!response || selected_group) return;
+        const response = await deleteChat().catch((error) => {
+            console.error(`Error deleting ${filename}:`, error);
+            toastr.error(error, `Error deleting ${filename}:`);
+            return;
+        });
 
-            const name = chatToDelete.replace('.jsonl', '');
-            if (name === characters[this_chid].chat) await replaceCurrentChat();
+        if (!response || selected_group) return;
 
-            await eventSource.emit(event_types.CHAT_DELETED, name);
+        const chatName = filename.replace('.jsonl', '');
+        if (chatName === characters[this_chid].chat) await replaceCurrentChat();
 
-            displayChats('');
-
-            break;
-        }
+        await eventSource.emit(event_types.CHAT_DELETED, chatName);
     }
+
+    return displayChats('');
 }
 
 /**

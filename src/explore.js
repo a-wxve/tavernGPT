@@ -816,75 +816,58 @@ async function handleCharacterClick(event) {
     const downloadButtonClicked = target.matches('.download-btn') || target.parentNode.matches('.download-btn');
     const popupCloseButton = target.closest('dialog')?.querySelector('.popup-button-close');
 
-    switch (true) {
-        case target.matches('.name'):
-        case target.matches('.thumbnail img'):
-        case target.matches('.tag.more-tags'): {
-            const index = Number(
-                target
-                    .closest('.character-list-item')
-                    .dataset.index,
-            );
-            generateCharacterPopup(characters[index]);
-            break;
+    if (target.matches('.name, .thumbnail img, .tag.more-tags')) {
+        const index = Number(target.closest('.character-list-item').dataset.index);
+        generateCharacterPopup(characters[index]);
+    } else if (downloadButtonClicked) {
+        const downloadBtn = target.closest('.download-btn');
+        if (!downloadBtn) return;
+
+        const characterPath = downloadBtn.dataset.path;
+        const isDownloaded = characterPaths.has(characterPath);
+
+        if (isDownloaded) {
+            const confirmed = await callGenericPopup('<h3>This character is already downloaded.</h3>Would you like to update it?', POPUP_TYPE.CONFIRM);
+
+            if (!confirmed) return;
         }
-        case downloadButtonClicked: {
-            const downloadBtn = target.closest('.download-btn');
-            if (!downloadBtn) return;
 
-            const characterPath = downloadBtn.dataset.path;
-            const isDownloaded = characterPaths.has(characterPath);
+        if (popupCloseButton) popupCloseButton.click();
 
-            if (isDownloaded) {
-                const confirmed = await callGenericPopup('<h3>This character is already downloaded.</h3>Would you like to update it?', POPUP_TYPE.CONFIRM);
+        downloadCharacter(characterPath);
+    } else if (target.matches('.tag')) {
+        if (popupCloseButton) popupCloseButton.click();
 
-                if (!confirmed) {
-                    return;
-                }
-            }
+        const tags = searchElements.includedTags;
+        const tagText = target.textContent.toLowerCase();
 
-            if (popupCloseButton) popupCloseButton.click();
-
-            downloadCharacter(characterPath);
-            break;
+        if (target.classList.contains('included')) {
+            target.classList.remove('included');
+            tags.value = tags.value
+                .split(',')
+                .map((tags) => tags.trim())
+                .filter((tags) => tags !== tagText)
+                .join(', ');
+        } else {
+            tags.value += `${tagText}, `;
         }
-        case target.matches('.tag'): {
-            if (popupCloseButton) popupCloseButton.click();
 
-            const tags = searchElements.includedTags;
-            const tagText = target.textContent.toLowerCase();
+        searchElements.creator.value = '';
+        searchElements.page.value = 1;
+        searchElements.sort.value = 'trending';
 
-            if (target.classList.contains('included')) {
-                target.classList.remove('included');
-                tags.value = tags.value
-                    .split(',')
-                    .map((tags) => tags.trim())
-                    .filter((tags) => tags !== tagText)
-                    .join(', ');
-            } else {
-                tags.value += `${tagText}, `;
-            }
+        search(event, true, false);
+    } else if (target.matches('.creator')) {
+        if (popupCloseButton) popupCloseButton.click();
 
-            searchElements.creator.value = '';
-            searchElements.page.value = 1;
-            searchElements.sort.value = 'trending';
+        searchElements.searchTerm.value = '';
+        searchElements.creator.value = target.textContent.toLowerCase().replace('@', '');
+        searchElements.includedTags.value = '';
+        searchElements.excludedTags.value = '';
+        searchElements.page.value = 1;
+        searchElements.sort.value = 'created_at';
 
-            search(event, true, false);
-            break;
-        }
-        case target.matches('.creator'): {
-            if (popupCloseButton) popupCloseButton.click();
-
-            searchElements.searchTerm.value = '';
-            searchElements.creator.value = target.textContent.toLowerCase().replace('@', '');
-            searchElements.includedTags.value = '';
-            searchElements.excludedTags.value = '';
-            searchElements.page.value = 1;
-            searchElements.sort.value = 'created_at';
-
-            search(event, true, false);
-            break;
-        }
+        search(event, true, false);
     }
 }
 
