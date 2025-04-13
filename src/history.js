@@ -312,17 +312,17 @@ async function setupSystemPromptRename() {
 
     const renameCallback = debounce(renameIfNeeded, debounce_timeout.short);
 
-    renamePromptListeners.push({
-        event: event_types.CHAT_CHANGED,
-        callback: renameCallback,
-    },
-    {
-        event: event_types.MESSAGE_RECEIVED,
-        callback: renameCallback,
+    const events = [
+        event_types.CHAT_CHANGED,
+        event_types.MESSAGE_RECEIVED,
+    ];
+    events.forEach(event => {
+        renamePromptListeners.push({
+            event,
+            callback: renameCallback,
+        });
+        eventSource.on(event, renameCallback);
     });
-
-    eventSource.on(event_types.CHAT_CHANGED, renameCallback);
-    eventSource.on(event_types.MESSAGE_RECEIVED, renameCallback);
 
     renameIfNeeded();
 }

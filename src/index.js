@@ -299,10 +299,14 @@ function setMobileUI() {
         '<div class="flex-container" id="chat_header"></div>',
     );
 
-    eventSource.on('chatLoaded', addChatHeader);
-    eventSource.on(event_types.CHARACTER_MESSAGE_RENDERED, addChatHeader);
-    eventSource.on(event_types.MESSAGE_DELETED, addChatHeader);
-    eventSource.on(event_types.MESSAGE_SWIPED, addChatHeader);
+    const events = [
+        'chatLoaded',
+        event_types.CHARACTER_MESSAGE_RENDERED,
+        event_types.MESSAGE_DELETED,
+        event_types.MESSAGE_SWIPED,
+    ];
+    events.forEach(event => eventSource.on(event, addChatHeader));
+
 }
 
 function moveSwipeButtons() {
@@ -450,8 +454,11 @@ function setWaifuShift() {
         document.querySelector('#sheld').classList.toggle('shifted', hasImage && !hasWaifuMode);
     };
 
-    eventSource.on(event_types.GENERATION_STARTED, checkWaifuVisibility);
-    eventSource.on(event_types.CHAT_CHANGED, checkWaifuVisibility);
+    const events = [
+        event_types.GENERATION_STARTED,
+        event_types.CHAT_CHANGED,
+    ];
+    events.forEach(event => eventSource.on(event, checkWaifuVisibility));
 }
 
 async function setDesktopUI() {
