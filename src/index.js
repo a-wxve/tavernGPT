@@ -518,12 +518,19 @@ async function editUI() {
     formCreate.querySelector('#firstmessage_textarea').setAttribute('rows', '6');
 
     // get rid of bogus webkit scrollbar styling
-    const stylesheet = Array.from(document.styleSheets).find(sheet => sheet.href && sheet.href.includes('style.css'));
+    // weird mobile styles too
+    const stylesheets = Array.from(document.styleSheets);
+    const webkitStyles = stylesheets.find(sheet => sheet.href && sheet.href.includes('style.css'));
 
-    const rulesToDelete = Array.from(stylesheet.cssRules)
+    const rulesToDelete = Array.from(webkitStyles.cssRules)
         .map((rule, index) => ({ rule, index }))
         .filter(({ rule }) => rule.cssText.includes('::-webkit-scrollbar'));
-    rulesToDelete.reverse().forEach(({ index }) => stylesheet.deleteRule(index));
+    rulesToDelete.reverse().forEach(({ index }) => webkitStyles.deleteRule(index));
+
+    if (window.matchMedia('(width > 768px)').matches) {
+        const mobileStyles = stylesheets.find(sheet => sheet.href && sheet.href.includes('mobile-styles.css'));
+        stylesheets.splice(stylesheets.indexOf(mobileStyles), 1);
+    }
 }
 
 async function main() {
@@ -541,7 +548,7 @@ async function main() {
     loadBackgroundImage();
     setWaifuShift();
 
-    if (window.matchMedia('screen and (max-width: 1023px)').matches) {
+    if (window.matchMedia('(width < 768px)').matches) {
         setMobileUI();
         return;
     }

@@ -13,6 +13,11 @@ body.hideChatAvatars .mes .ch_name.flex-container.justifySpaceBetween,
     width: 100% !important;
     height: calc(var(--topBarBlockSize) + 1px);
     top: var(--mobileMargin);
+    padding-bottom: 5rem;
+}
+
+.drawer {
+    align-items: unset;
 }
 
 #sheld,
@@ -33,6 +38,7 @@ body.hideChatAvatars .mes .ch_name.flex-container.justifySpaceBetween,
 
 #persona-management-button {
     order: 9;
+    opacity: 1;
 
     & .drawer-icon span {
         display: none;

@@ -2,5 +2,5 @@
 @import "base.css";
 @import "history.css";
 @import "explore.css";
-@import "desktop.css" screen and (min-width: 1024px);
-@import "mobile.css" screen and (max-width: 1023px);
+@import "desktop.css" (width >= 768px);
+@import "mobile.css" (width < 768px);
