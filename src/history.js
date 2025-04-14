@@ -377,17 +377,13 @@ function registerRenameChatTool() {
     });
 }
 
-export async function loadChatHistory() {
+function setupChatHistory() {
     let lastCharacterLoaded;
     const settingsHolder = document.querySelector('#top-settings-holder');
 
     const searchChats = debounce((searchQuery) => {
         displayChats(searchQuery);
     }, debounce_timeout.short);
-
-    const response = await fetch(`${extensionFolderPath}/html/history.html`);
-    const html = await response.text();
-    settingsHolder.insertAdjacentHTML('beforeend', html);
 
     settingsHolder.addEventListener('click', overrideChatButtons, true);
 
@@ -419,4 +415,11 @@ export async function loadChatHistory() {
         lastCharacterLoaded = characters[this_chid];
         displayChats('');
     });
+}
+
+export async function ChatHistory() {
+    const response = await fetch(`${extensionFolderPath}/html/history.html`);
+    const html = await response.text();
+    document.querySelector('#top-settings-holder').insertAdjacentHTML('beforeend', html);
+    setupChatHistory();
 }

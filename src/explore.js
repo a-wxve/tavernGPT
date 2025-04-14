@@ -924,7 +924,7 @@ function setupExplorePanel() {
     searchElements.characterList.addEventListener('click', handleCharacterClick);
 }
 
-export async function loadExplorePanel() {
+export async function ExplorePanel() {
     const response = await fetch(`${extensionFolderPath}/html/explore.html`);
     const html = await response.text();
     document.querySelector('#top-settings-holder').insertAdjacentHTML('beforeend', html);

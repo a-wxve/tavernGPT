@@ -8,8 +8,8 @@ import {
 } from '../../../../../script.js';
 import { extension_settings } from '../../../../extensions.js';
 import { power_user } from '../../../../power-user.js';
-import { loadExplorePanel } from './explore.js';
-import { loadChatHistory } from './history.js';
+import { ExplorePanel } from './explore.js';
+import { ChatHistory } from './history.js';
 import { monkeyPatch } from './monkeypatch.js';
 import { splashes } from './splashes.js';
 
@@ -555,7 +555,7 @@ async function main() {
     addScrollButton();
     moveSwipeButtons();
 
-    await loadExplorePanel();
+    await ExplorePanel();
     loadSplashText();
     monkeyPatch();
 
@@ -568,7 +568,7 @@ async function main() {
     }
 
     setDesktopUI();
-    loadChatHistory();
+    await ChatHistory();
     addSidebarToggle();
 }
 
