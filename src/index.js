@@ -363,11 +363,11 @@ function moveSwipeButtons() {
 
     document.addEventListener('keydown', (event) => {
         const activeElement = document.activeElement;
-        const isTextInput = activeElement instanceof (HTMLTextAreaElement || HTMLInputElement);
+        const isTextInput = activeElement instanceof HTMLTextAreaElement || activeElement instanceof HTMLInputElement;
+        const inputEmpty = isTextInput ? activeElement.value.trim().length === 0 : true;
         const inputFocused = activeElement.matches('textarea, input, [contenteditable]');
-        const inputEmpty = isTextInput ? activeElement.value.trim().length === 0 : false;
 
-        if (inputFocused || !inputEmpty) return;
+        if ((isTextInput && !inputEmpty) || inputFocused) return;
 
         switch (event.key) {
             case 'ArrowLeft':
