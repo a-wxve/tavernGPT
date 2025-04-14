@@ -100,7 +100,7 @@ function updateButtonState(fullPath, state, errorMessage = '') {
         const parentElement = button.closest('.character-list-item, .chub-popup');
         if (!(parentElement instanceof HTMLElement)) return;
 
-        parentElement.dataset.downloaded = (state === BUTTON_STATE.READY_UPDATE || state === BUTTON_STATE.DONE) ? 'true' : 'false';
+        parentElement.dataset.downloaded = (state === (BUTTON_STATE.READY_UPDATE || BUTTON_STATE.DONE)) ? 'true' : 'false';
 
         button.querySelector('i').className = classes;
         const span = button.querySelector('span');
@@ -479,7 +479,7 @@ async function fetchCharacterData(character) {
     return { success: false, data: null, error: errorMessage };
 }
 
-function limitTagRows(startIndex, endIndex) {
+function truncateTags(startIndex, endIndex) {
     const listItems = Array.from(searchElements.characterList.querySelectorAll('.character-list-item'));
     const itemsToProcess = listItems.slice(startIndex, endIndex);
     if (!itemsToProcess.length) return;
@@ -540,8 +540,6 @@ function limitTagRows(startIndex, endIndex) {
 
         if (maxFirstTagBottom === -Infinity) return;
 
-        const cutoffBottom = maxFirstTagBottom;
-
         rowData.forEach(data => {
             const { tagContainer, tags, tagMeasurements } = data;
 
@@ -549,7 +547,7 @@ function limitTagRows(startIndex, endIndex) {
 
             let visibleCount = 0;
             for (let i = 0; i < tagMeasurements.length; i++) {
-                if (tagMeasurements[i].rect.bottom <= cutoffBottom) {
+                if (tagMeasurements[i].rect.bottom <= maxFirstTagBottom) {
                     visibleCount++;
                 } else {
                     break;
@@ -560,30 +558,28 @@ function limitTagRows(startIndex, endIndex) {
 
             if (!needsTruncation) return;
 
-            let finalVisibleCount = visibleCount;
-            const totalTags = tags.length;
-            let hiddenCount = totalTags - finalVisibleCount;
+            let hiddenCount = tags.length - visibleCount;
 
-            if (needsTruncation && finalVisibleCount > 0 && finalVisibleCount < totalTags) {
-                const lastVisibleTagTop = tagMeasurements[finalVisibleCount - 1].rect.top;
-                const firstHiddenTagTop = tagMeasurements[finalVisibleCount].rect.top;
+            if (needsTruncation && visibleCount > 0 && visibleCount < tags.length) {
+                const lastVisibleTagTop = tagMeasurements[visibleCount - 1].rect.top;
+                const firstHiddenTagTop = tagMeasurements[visibleCount].rect.top;
                 const lineBreakTolerance = 2;
 
                 if (firstHiddenTagTop > lastVisibleTagTop + lineBreakTolerance) {
-                    finalVisibleCount--;
-                    hiddenCount = totalTags - finalVisibleCount;
+                    visibleCount--;
+                    hiddenCount = tags.length - visibleCount;
                 }
             }
 
             const fragment = document.createDocumentFragment();
-            for (let i = 0; i < finalVisibleCount; i++) {
-                fragment.appendChild(tags[i].cloneNode(true));
+            for (let i = 0; i < visibleCount; i++) {
+                fragment.append(tags[i].cloneNode(true));
             }
 
             const moreTag = document.createElement('span');
             moreTag.className = 'tag more-tags';
             moreTag.textContent = `+${hiddenCount} more`;
-            fragment.appendChild(moreTag);
+            fragment.append(moreTag);
 
             tagContainer.replaceChildren(fragment);
         });
@@ -609,7 +605,7 @@ function updateCharacterList(characters, reset = false) {
         searchElements.characterList.append(fragment);
     }
 
-    limitTagRows(totalCharactersLoaded, totalCharactersLoaded + characters.length);
+    truncateTags(totalCharactersLoaded, totalCharactersLoaded + characters.length);
 
     totalCharactersLoaded += characters.length;
 }
