@@ -1,5 +1,5 @@
 :root {
-    --mobileMargin: calc(100dvh - var(--topBarBlockSize) - 1.5rem);
+    --mobile-margin: calc(100dvh - var(--topBarBlockSize) - 1.5rem);
 }
 
 body.hideChatAvatars .mes .ch_name.flex-container.justifySpaceBetween,
@@ -12,7 +12,7 @@ body.hideChatAvatars .mes .ch_name.flex-container.justifySpaceBetween,
 #top-settings-holder {
     width: 100% !important;
     height: calc(var(--topBarBlockSize) + 1px);
-    top: var(--mobileMargin);
+    top: var(--mobile-margin);
     padding-bottom: 5rem;
 }
 
@@ -33,7 +33,7 @@ body.hideChatAvatars .mes .ch_name.flex-container.justifySpaceBetween,
 #character_popup,
 .drawer-content,
 #sheld {
-    height: var(--mobileMargin) !important;
+    height: var(--mobile-margin) !important;
 }
 
 #persona-management-button {
@@ -70,7 +70,7 @@ body.hideChatAvatars .mes .ch_name.flex-container.justifySpaceBetween,
     position: absolute;
     top: 0;
     left: 0;
-    backdrop-filter: blur(var(--backdropBlur));
+    backdrop-filter: blur(var(--backdrop-blur));
 
     &:has(~ #chat [ch_name="SillyTavern System"][mesid="0"]),
     body:not(.hideChatAvatars) & {

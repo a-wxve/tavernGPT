@@ -1,4 +1,5 @@
 import {
+    chat as chatContext,
     eventSource,
     event_types,
     getUserAvatar,
@@ -389,7 +390,7 @@ function moveSwipeButtons() {
 
     eventSource.on(event_types.MESSAGE_UPDATED, (mes_id) => {
         const idMatch = Number(chat.querySelector('.last_mes').getAttribute('mesid')) === Number(mes_id) + 1;
-        const mesTextChanged = chat[mes_id]['mes'] !== mesText;
+        const mesTextChanged = chatContext[mes_id]['mes'] !== mesText;
 
         if (!(idMatch && mesTextChanged)) return;
 

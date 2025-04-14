@@ -19,7 +19,7 @@
     --grid-max-cols: 4;
     --grid-min-width: 200px;
     --grid-col-size-calc: calc(
-        (100% - var(--insidePadding) * var(--grid-max-cols)) /
+        (100% - var(--inside-padding) * var(--grid-max-cols)) /
             var(--grid-max-cols)
     );
     --grid-col-min-size: min(
@@ -32,7 +32,7 @@
         auto-fit,
         minmax(var(--grid-col-min-size), 1fr)
     );
-    gap: var(--insidePadding, 1rem);
+    gap: var(--inside-padding, 1rem);
     padding: 0.25rem 0.25rem 0;
     overflow-y: auto;
 
@@ -74,12 +74,12 @@
         &:hover:not(:has(.skeleton-image)) {
             transform: translateY(-0.25rem);
             box-shadow: 0 0.25rem 0 0.125rem var(--grey5050a);
-            border-radius: var(--borderRadiusSmol);
+            border-radius: var(--border-radius-smol);
         }
 
         & img {
             object-fit: cover;
-            border-radius: var(--borderRadiusSmol);
+            border-radius: var(--border-radius-smol);
             width: 100%;
             cursor: pointer;
         }
@@ -122,7 +122,7 @@
 }
 
 .download-btn {
-    backdrop-filter: blur(var(--backdropBlur));
+    backdrop-filter: blur(var(--backdrop-blur));
     border-radius: 0.5rem;
     position: absolute;
     opacity: 0.8;
@@ -183,7 +183,7 @@
 .skeleton-image,
 .skeleton-text {
     position: relative;
-    border-radius: var(--borderRadiusSmol);
+    border-radius: var(--border-radius-smol);
     background-color: rgb(from dimgray r g b / 0.75);
     overflow: hidden;
 
@@ -254,7 +254,7 @@
     }
 
     & img {
-        border-radius: var(--borderRadiusSmol);
+        border-radius: var(--border-radius-smol);
     }
 
     & .download-btn {
@@ -275,7 +275,7 @@
     }
 
     & .chub-padding {
-        padding: var(--insidePadding);
+        padding: var(--inside-padding);
         overflow-y: scroll;
     }
 
@@ -288,7 +288,7 @@
         }
 
         & p:nth-of-type(2) {
-            margin-top: calc(var(--lineHeight) / 1.25);
+            margin-top: calc(var(--line-height) / 1.25);
         }
     }
 
@@ -309,7 +309,7 @@
 @media (width < 768px) {
     .character-list-item {
         flex-direction: row;
-        gap: var(--insidePadding);
+        gap: var(--inside-padding);
 
         & .thumbnail {
             width: 33%;
