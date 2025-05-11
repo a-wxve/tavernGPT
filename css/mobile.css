@@ -24,6 +24,7 @@ body.hideChatAvatars .mes .ch_name.flex-container.justifySpaceBetween,
 #right-nav-panel,
 #left-nav-panel,
 #floatingPrompt,
+.drawer-content,
 #cfgConfig,
 #logprobsViewer,
 #movingDivs > div {
