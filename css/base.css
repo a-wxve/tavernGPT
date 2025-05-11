@@ -57,8 +57,10 @@ body.bubblechat {
                 content: "";
             }
 
-            &:has(#curEditTextarea) {
-                width: unset;
+            @supports not (field-sizing: content) {
+                &:has(#curEditTextarea) {
+                    width: -webkit-fill-available;
+                }
             }
 
             .smallSysMes & {
@@ -196,6 +198,11 @@ body.swipeAllMessages {
     & .drawer-icon::before {
         content: "";
     }
+}
+
+#extensions_settings,
+#extensions_settings2 {
+    flex-basis: auto;
 }
 
 #persona-management-button {

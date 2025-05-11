@@ -1,7 +1,7 @@
 import { DOMPurify } from '../../../../../lib.js';
 import {
-    event_types,
     eventSource,
+    event_types,
     getOneCharacter,
     getRequestHeaders,
     messageFormatting,
@@ -10,7 +10,7 @@ import {
     this_chid,
 } from '../../../../../script.js';
 import { debounce_timeout } from '../../../../constants.js';
-import { callGenericPopup, POPUP_TYPE } from '../../../../popup.js';
+import { POPUP_TYPE, callGenericPopup } from '../../../../popup.js';
 import { debounce } from '../../../../utils.js';
 import { extensionFolderPath, tavernGPT_settings } from './index.js';
 

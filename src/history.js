@@ -330,9 +330,7 @@ function registerRenameChatTool() {
     ToolManager.unregisterFunctionTool('renameChat');
 
     if (!ToolManager.isToolCallingSupported()) {
-        console.warn(
-            'Tool calling not supported, falling back to system prompt method.',
-        );
+        console.warn('Tool calling not supported, falling back to system prompt method.');
         tavernGPT_settings.rename_method = 'system';
         saveSettingsDebounced();
         return setupSystemPromptRename();

@@ -16,7 +16,7 @@ import { splashes } from './splashes.js';
 
 export const extensionName = 'tavernGPT';
 export const extensionFolderPath = `scripts/extensions/third-party/${extensionName}`;
-export var tavernGPT_settings = extension_settings[extensionName];
+export let tavernGPT_settings = extension_settings[extensionName];
 
 const default_settings = {
     rename_chats: true,
@@ -63,6 +63,7 @@ async function initSettings() {
         '#rename_method_system',
     );
     const api_key_chub = settings.querySelector('#api_key_chub');
+    const api_key_chub_show = settings.querySelector('#api_key_chub_show');
 
     if (tavernGPT_settings.rename_chats) {
         rename_chats.setAttribute('checked', 'true');
@@ -108,7 +109,7 @@ async function initSettings() {
         saveSettingsDebounced();
     });
 
-    api_key_chub.nextElementSibling.addEventListener('click', (event) => {
+    api_key_chub_show.addEventListener('click', (event) => {
         if (!(event.currentTarget instanceof HTMLElement)) return;
 
         const eyeIcon = event.currentTarget;
@@ -549,7 +550,7 @@ async function editUI() {
 }
 
 async function main() {
-    initSettings();
+    await initSettings();
 
     editUI();
     setPersona();
