@@ -432,37 +432,15 @@ function generateCharacterPopup(character) {
 
 /**
 * Fetches a character from the primary API, falling back to the backup if needed
-* @param {Object} character - Character node data from search results
+* @param {Object} node - Character node data from search results
 * @returns {Promise<{success: boolean, data: Blob?, error: string?}>} - Promise resolving to result object
 */
-async function fetchCharacterData(character) {
-    const endpoint = 'https://api.chub.ai/api/characters/download';
-    const backupEndpoint = `https://avatars.charhub.io/avatars/${character.fullPath}/avatar.webp`;
+async function fetchCharacterData(node) {
+    const backupEndpoint = `https://avatars.charhub.io/avatars/${node.fullPath}/avatar.webp`;
 
     const headers = new Headers({
         'Content-Type': 'application/json',
     });
-
-    const primaryResponse = await fetch(endpoint, {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify({
-            fullPath: character.fullPath,
-            format: 'tavern',
-            version: 'main',
-        }),
-    });
-
-    if (primaryResponse.ok) {
-        const blob = await primaryResponse.blob();
-        return { success: true, data: blob, error: null };
-    }
-
-    console.warn('Primary API failed for', character.fullPath, ':', primaryResponse.status, primaryResponse.statusText);
-    toastr.warning(
-        `Using backup source for ${character.name || character.fullPath}`,
-        'API Fallback',
-    );
 
     const backupResponse = await fetch(backupEndpoint, {
         method: 'GET',
@@ -474,7 +452,7 @@ async function fetchCharacterData(character) {
         return { success: true, data: blob, error: null };
     }
 
-    const errorMessage = `Failed to fetch character "${character.name || character.fullPath}" from both primary and backup sources`;
+    const errorMessage = `Failed to fetch character "${node.name || node.fullPath}" from both primary and backup sources`;
     console.error(errorMessage, backupResponse.status, backupResponse.statusText);
     return { success: false, data: null, error: errorMessage };
 }
