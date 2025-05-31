@@ -431,29 +431,29 @@ function generateCharacterPopup(character) {
 }
 
 /**
-* Fetches a character from the primary API, falling back to the backup if needed
+* Fetches a character from the API
 * @param {Object} node - Character node data from search results
 * @returns {Promise<{success: boolean, data: Blob?, error: string?}>} - Promise resolving to result object
 */
 async function fetchCharacterData(node) {
-    const backupEndpoint = `https://avatars.charhub.io/avatars/${node.fullPath}/avatar.webp`;
+    const endpoint = `https://avatars.charhub.io/avatars/${node.fullPath}/avatar.webp`;
 
     const headers = new Headers({
         'Content-Type': 'application/json',
     });
 
-    const backupResponse = await fetch(backupEndpoint, {
+    const response = await fetch(endpoint, {
         method: 'GET',
         headers: headers,
     });
 
-    if (backupResponse.ok) {
-        const blob = await backupResponse.blob();
+    if (response.ok) {
+        const blob = await response.blob();
         return { success: true, data: blob, error: null };
     }
 
     const errorMessage = `Failed to fetch character "${node.name || node.fullPath}" from both primary and backup sources`;
-    console.error(errorMessage, backupResponse.status, backupResponse.statusText);
+    console.error(errorMessage, response.status, response.statusText);
     return { success: false, data: null, error: errorMessage };
 }
 
