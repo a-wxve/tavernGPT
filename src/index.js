@@ -264,7 +264,7 @@ function loadSplashText() {
     setTimeout(() => observer.disconnect(), 10000);
 }
 
-function setMobileUI() {
+function addChatHeader() {
     const sheld = document.querySelector('#sheld');
     const addChatHeader = () => {
         const chatHeader = sheld.querySelector('#chat_header');
@@ -564,10 +564,8 @@ async function main() {
     loadBackgroundImage();
     setWaifuShift();
 
-    if (window.matchMedia('(width < 768px)').matches) {
-        setMobileUI();
-        return;
-    }
+    addChatHeader();
+    if (!window.matchMedia('(width > 768px)').matches) return;
 
     setDesktopUI();
     await ChatHistory();
