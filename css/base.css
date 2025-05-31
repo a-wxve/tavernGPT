@@ -54,7 +54,7 @@ body.bubblechat {
                 width: calc(var(--border-radius) / 2);
                 height: var(--border-radius);
                 position: absolute;
-                content: "";
+                /* content: ""; */
             }
 
             @supports not (field-sizing: content) {
@@ -84,6 +84,7 @@ body.bubblechat {
             margin-left: auto;
             padding-left: 0;
             overflow-y: hidden;
+            max-width: 80%;
         }
 
         & .ch_name.flex-container.justifySpaceBetween {
@@ -155,6 +156,26 @@ body.bubblechat {
 body.hideChatAvatars {
     & .mes_block {
         padding-left: 0;
+    }
+
+    .mes[is_user="false"] {
+        & details.mes_reasoning_details {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        & .mes_text {
+            padding: 0;
+            background-color: transparent;
+        }
+
+        & .ch_name.flex-container.justifySpaceBetween {
+            display: none;
+        }
+    }
+
+    .welcomePanel .recentChatList .recentChat .avatar {
+        display: flex;
     }
 }
 
@@ -312,13 +333,59 @@ body.swipeAllMessages {
 #sheld {
     top: 0;
     background-color: var(--SmartThemeChatTintColor);
-    backdrop-filter: blur(var(--SmartThemeBlurStrength));
 }
 
 #chat {
-    backdrop-filter: none;
     background-color: transparent;
     max-height: 100dvh;
+
+    &:has(.welcomePanel) {
+        padding-top: 1rem;
+    }
+
+    body.hideChatAvatars &:not(:has(.welcomePanel)) {
+        padding-top: 6rem;
+    }
+}
+
+#chat_header {
+    z-index: 100;
+    justify-content: center;
+    width: 100%;
+    padding: 10px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    backdrop-filter: blur(var(--backdrop-blur));
+
+    &:has(~ #chat .welcomePanel),
+    body:not(.hideChatAvatars) & {
+        display: none;
+    }
+
+    & .avatar {
+        flex: 0;
+        align-self: center;
+    }
+
+    & .ch_name {
+        flex-direction: column;
+        align-items: baseline;
+
+        & .mes_buttons {
+            display: none !important;
+        }
+    }
+
+    & .mes_timer,
+    & .mesIDDisplay,
+    & .tokenCounterDisplay {
+        cursor: default;
+        opacity: 0.7;
+        font-size: calc(var(--mainFontSize) * 0.69);
+        text-align: center;
+        font-weight: 600;
+    }
 }
 
 #hypeBotBar {
@@ -389,6 +456,10 @@ body.swipeAllMessages {
 #send_but {
     &::before {
         content: "";
+    }
+
+    #send_form.no-connection & {
+        display: flex !important;
     }
 }
 
@@ -721,5 +792,6 @@ details {
 
 #toast-container {
     top: 0 !important;
+    margin-top: 0 !important;
     z-index: 999999;
 }
